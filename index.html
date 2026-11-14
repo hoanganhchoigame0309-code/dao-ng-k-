@@ -871,7 +871,7 @@
 
     const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
     const LICENSE_GAS_URL = "https://script.google.com/macros/s/AKfycbwC9gwiwBdIsfvv2nGZQNrkeR1O43GTW9lhMCu6fEn-LGjjbmMEcy-3153DZRkOaLdx3Q/exec";
-    const CHAT_GAS_URL = "https://script.google.com/macros/s/AKfycbwTmvi8AHzGvdGyq1mAsMaMRCfV5EoI0hSFHQ_6156yUQBGbKXkZ_jSfcvKk_OFse2K/exec";
+    const CHAT_GAS_URL = "https://script.google.com/macros/s/AKfycbwllsi_eXt98JRwTDyHPtD8qtgx6nnyhnDD8sSk5mIgEeB0EGLHkIwydpATOWohKJLuEg/exec";
 
     const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
     const pauseButton = document.getElementById('pauseButton'), resetButton = document.getElementById('resetButton'), btnCalib = document.getElementById('btnCalib');
@@ -2911,6 +2911,106 @@
         }
     }
 
+    let foxChatHistory = [];
+
+    function getLabTelemetry() {
+        let fA = (lockedFrequency || detectedFrequency || 0);
+        let fB = (typeof currentCalcFreqB !== 'undefined' ? currentCalcFreqB : 0);
+        let mode = (typeof getActiveChannelMode === 'function') ? getActiveChannelMode() : '1';
+
+        let ampA = (typeof currentAmpA !== 'undefined' && parseFloat(currentAmpA) > 0) ? currentAmpA : '0.00';
+        let ampB = (typeof currentAmpB !== 'undefined' && parseFloat(currentAmpB) > 0) ? currentAmpB : '0.00';
+
+        if (ampA === '0.00' && channelConfig && channelConfig.A && channelConfig.A.data && channelConfig.A.index > 512) {
+            let d = channelConfig.A.data, idx = channelConfig.A.index, l = d.length, maxV = 0;
+            for (let i = 0; i < 512; i++) {
+                let v = Math.abs(d[((idx - 512 + i) % l + l) % l]);
+                if (v > maxV) maxV = v;
+            }
+            if (maxV > 0) ampA = maxV.toFixed(2);
+        }
+
+        let phaseDeg = '0', phaseRad = '0.00';
+        const pDegEl = document.getElementById('hudPhaseDeg');
+        const pRadEl = document.getElementById('hudPhaseRad');
+        if (pDegEl && pDegEl.innerText) phaseDeg = pDegEl.innerText;
+        if (pRadEl && pRadEl.innerText) phaseRad = pRadEl.innerText;
+
+        let timeBase = (typeof totalTimeOnScreen !== 'undefined') ? (totalTimeOnScreen / 10 * 1000).toFixed(2) + ' ms/ô' : '1.42 ms/ô';
+
+        let fftPeak = null;
+        const fftTargetEl = document.getElementById('fftTargetFreq');
+        if (fftTargetEl && fftTargetEl.value) {
+            fftPeak = fftTargetEl.value + ' Hz';
+        }
+
+        return {
+            mode: mode === '2' ? '2 Kênh (Dual-channel)' : '1 Kênh (Single-channel)',
+            isPaused: isPaused ? 'Đang Dừng (Freeze/Hold)' : 'Đang Đo thời gian thực (Live)',
+            timeBaseMs: timeBase,
+            channelA: {
+                active: !!(channelConfig && channelConfig.A && channelConfig.A.active),
+                frequency: fA > 0 ? fA.toFixed(1) + ' Hz' : '0.0 Hz',
+                period: fA > 0 ? (1000 / fA).toFixed(2) + ' ms' : '0.00 ms',
+                amplitudePeak: ampA
+            },
+            channelB: {
+                active: !!(channelConfig && channelConfig.B && channelConfig.B.active),
+                frequency: fB > 0 ? fB.toFixed(1) + ' Hz' : '0.0 Hz',
+                period: fB > 0 ? (1000 / fB).toFixed(2) + ' ms' : '0.00 ms',
+                amplitudePeak: ampB
+            },
+            phaseDifference: {
+                degrees: phaseDeg + '°',
+                radians: phaseRad + ' rad'
+            },
+            fftPeak: fftPeak
+        };
+    }
+
+    function captureOscilloscopeSnapshot() {
+        try {
+            const activeCanvas = (typeof isTwoSourceModalOpen !== 'undefined' && isTwoSourceModalOpen)
+                ? document.getElementById('twoSourceCanvas') 
+                : canvas;
+            if (!activeCanvas || activeCanvas.width <= 0) return null;
+            const thumbCanvas = document.createElement('canvas');
+            thumbCanvas.width = 600;
+            thumbCanvas.height = Math.round(600 * (activeCanvas.height / activeCanvas.width));
+            const tCtx = thumbCanvas.getContext('2d');
+            tCtx.drawImage(activeCanvas, 0, 0, thumbCanvas.width, thumbCanvas.height);
+            return thumbCanvas.toDataURL('image/jpeg', 0.65);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function fetchGasChatWithRetry(payload, maxRetries = 1, timeoutMs = 20000) {
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            const controller = new AbortController();
+            const timerId = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const response = await fetch(CHAT_GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                });
+                clearTimeout(timerId);
+                if (response.ok) return await response.json();
+            } catch (err) {
+                clearTimeout(timerId);
+                if (attempt < maxRetries) {
+                    const statusText = document.getElementById('foxStatusText');
+                    if (statusText) statusText.innerText = "Đang kết nối lại...";
+                    await new Promise(r => setTimeout(r, 600));
+                    continue;
+                }
+                throw err;
+            }
+        }
+    }
+
     async function sendFoxMessage() {
         const text = chatInput.value.trim();
         if (!text && !uploadedImageBase64) return;
@@ -2920,6 +3020,9 @@
         let imgBase64ToSend = uploadedImageBase64;
         if (uploadedImageBase64) {
             userDisplayHtml = `<img src="${uploadedImageBase64}" class="fox-preview-img"><br>` + text;
+        } else {
+            // Tự động chụp snapshot canvas dao động ký để AI có thể quan sát trực tiếp dạng sóng và đồ thị
+            imgBase64ToSend = captureOscilloscopeSnapshot();
         }
 
         addChatMessage('user', userDisplayHtml); 
@@ -2930,23 +3033,29 @@
 
         let thinkingId = addTypingIndicator(); 
         let currentFreq = lockedFrequency || detectedFrequency;
+        let labTelemetry = getLabTelemetry();
+
+        // Cập nhật lịch sử hội thoại cho user
+        foxChatHistory.push({ role: 'user', content: text || "Phân tích đồ thị dao động ký và thông số thí nghiệm này." });
 
         try {
-            const response = await fetch(CHAT_GAS_URL, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-                body: JSON.stringify({ 
-                    message: text || "Phân tích hình ảnh đề bài vật lý sóng cơ này.", 
-                    frequency: currentFreq, 
-                    role: currentFoxRole,
-                    imageBase64: imgBase64ToSend 
-                }) 
+            const result = await fetchGasChatWithRetry({
+                message: text || "Phân tích hình ảnh đề bài hoặc đồ thị dao động ký này.",
+                frequency: currentFreq,
+                role: currentFoxRole,
+                imageBase64: imgBase64ToSend,
+                history: foxChatHistory.slice(0, -1).slice(-8), // Truyền 8 lượt hội thoại trước đó
+                labData: labTelemetry
             });
-            const result = await response.json();
             removeTypingIndicator(thinkingId); 
             document.getElementById('foxStatusText').innerText = "Trực tuyến";
-            let replyText = result.reply || "Fox-lab AI đã ghi nhận câu hỏi của thầy.";
+            let replyText = (result && result.reply) ? result.reply : "Fox-lab AI đã ghi nhận câu hỏi của thầy.";
             replyText = formatCompleteSentences(replyText);
+
+            // Cập nhật phản hồi bot vào lịch sử hội thoại
+            foxChatHistory.push({ role: 'model', content: replyText });
+            if (foxChatHistory.length > 10) foxChatHistory = foxChatHistory.slice(-10);
+
             addChatMessage('bot', replyText);
         } catch (e) {
             removeTypingIndicator(thinkingId); 
