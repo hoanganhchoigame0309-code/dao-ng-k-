@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-512.png">
-    <link rel="apple-touch-icon" href="icon-512.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Cpath d='M8 32 Q18 10 28 32 T48 32 T56 32' fill='none' stroke='%23f97316' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -964,6 +963,13 @@
         .hud-eq {
             color: #34d399;
             font-style: italic;
+            overflow-wrap: anywhere;
+        }
+
+        #hudEquations {
+            top: auto;
+            bottom: 16px;
+            left: 16px;
         }
 
         .math-symbol {
@@ -1497,7 +1503,7 @@
             background: #1e293b;
             border: 1px solid #334155;
             color: #f1f5f9;
-            font-size: 11.5px;
+            font-size: 12px;
             padding: 5px 10px;
             border-radius: var(--radius-full);
             white-space: nowrap;
@@ -1861,7 +1867,7 @@
                 width: calc(100% - 16px);
                 margin: 0 auto 6px auto;
                 border-radius: var(--radius-sm);
-                font-size: 11.5px;
+                font-size: 12px;
                 text-align: center;
                 box-sizing: border-box;
             }
@@ -1889,7 +1895,7 @@
                 left: 0;
                 max-width: 100%;
                 margin-top: 6px;
-                font-size: 11.5px;
+                font-size: 12px;
                 box-sizing: border-box;
             }
 
@@ -1900,7 +1906,7 @@
                 left: 0;
                 max-width: 100%;
                 margin-top: 6px;
-                font-size: 11.5px;
+                font-size: 12px;
                 box-sizing: border-box;
             }
 
@@ -1913,6 +1919,10 @@
             #fox-chat-widget {
                 bottom: 14px;
                 right: 14px;
+            }
+
+            #fox-chat-box {
+                max-height: calc(100dvh - 370px);
             }
         }
 
@@ -2006,17 +2016,17 @@
                             <div class="settings-group-header" data-group="channelMode"><span>Chế độ nguồn
                                     âm</span><span class="group-arrow">›</span></div>
                             <div class="settings-group-items">
-                                <div class="settings-item active" data-target="channelModeSelect" data-value="1">1 Nguồn
+                                <div class="settings-item active" role="menuitem" tabindex="0" data-target="channelModeSelect" data-value="1">1 Nguồn
                                 </div>
-                                <div class="settings-item" data-target="channelModeSelect" data-value="2">2 Nguồn</div>
+                                <div class="settings-item" role="menuitem" tabindex="0" data-target="channelModeSelect" data-value="2">2 Nguồn</div>
                             </div>
                         </div>
                         <div class="settings-group" id="groupMode">
                             <div class="settings-group-header" data-group="mode"><span>Chức năng khảo sát</span><span
                                     class="group-arrow">›</span></div>
                             <div class="settings-group-items">
-                                <div class="settings-item" data-target="modeSelect" data-value="auto">Tự dừng</div>
-                                <div class="settings-item active" data-target="modeSelect" data-value="continuous">Liên
+                                <div class="settings-item" role="menuitem" tabindex="0" data-target="modeSelect" data-value="auto">Tự dừng</div>
+                                <div class="settings-item active" role="menuitem" tabindex="0" data-target="modeSelect" data-value="continuous">Liên
                                     tục</div>
                             </div>
                         </div>
@@ -2024,9 +2034,9 @@
                             <div class="settings-group-header" data-group="displayMode"><span>Chế độ hiển
                                     thị</span><span class="group-arrow">›</span></div>
                             <div class="settings-group-items">
-                                <div class="settings-item active" data-target="displayModeSelect"
+                                <div class="settings-item active" role="menuitem" tabindex="0" data-target="displayModeSelect"
                                     data-value="oscilloscope">Dao động ký</div>
-                                <div class="settings-item" data-target="displayModeSelect" data-value="dbMeter">Cường độ
+                                <div class="settings-item" role="menuitem" tabindex="0" data-target="displayModeSelect" data-value="dbMeter">Cường độ
                                     âm (dB)</div>
                             </div>
                         </div>
@@ -2034,9 +2044,9 @@
                             <div class="settings-group-header" data-group="speed"><span>Tốc độ quét</span><span
                                     class="group-arrow">›</span></div>
                             <div class="settings-group-items">
-                                <div class="settings-item active" data-target="speedSelect" data-value="fast">Nhanh
+                                <div class="settings-item active" role="menuitem" tabindex="0" data-target="speedSelect" data-value="fast">Nhanh
                                 </div>
-                                <div class="settings-item" data-target="speedSelect" data-value="slow">Chậm</div>
+                                <div class="settings-item" role="menuitem" tabindex="0" data-target="speedSelect" data-value="slow">Chậm</div>
                             </div>
                         </div>
 
@@ -2155,7 +2165,7 @@
                     </div>
                 </div>
 
-                <div id="hudEquations" class="hud-overlay" style="top: auto; bottom: 16px; left: 16px;">
+                <div id="hudEquations" class="hud-overlay">
                     <div class="hud-title">PHƯƠNG TRÌNH DAO ĐỘNG</div>
                     <div class="hud-eq">Kênh A: <span class="math-symbol">u<sub>A</sub> = <span
                                 id="eqAmpA">A</span>·cos(2π·<span id="eqFreqA">0</span>·t)</span></div>
@@ -2542,6 +2552,7 @@
         let snapDataA = [], snapDataB = [], snapIdxA = 0, snapIdxB = 0, tsViewMode = 'overlay';
         let showTsResults = false, showTsEquations = false;
         let currentCalcFreqA = 0, currentCalcFreqB = 0, currentAmpA = 0, currentAmpB = 0;
+        let lastMeasuredFftPeak = 0;
 
         let dbHistoryA = [];
         let dbHistoryB = [];
@@ -2567,8 +2578,7 @@
             let rms = Math.sqrt(sum / buffer.length);
             if (rms < 0.0001) rms = 0.0001;
             let rawDb = 20 * Math.log10(rms / 0.00002);
-            rawDb = Math.max(30.0, Math.min(120.0, rawDb));
-            if (isRaw) return rawDb;
+            if (isRaw) return Math.max(30.0, Math.min(120.0, rawDb));
             let offset = (channel === 'B') ? micCalibOffsetB : micCalibOffsetA;
             let calibDb = rawDb + offset;
             return Math.max(30.0, Math.min(120.0, calibDb));
@@ -2778,28 +2788,35 @@
         }
 
         function restoreAppState() {
-            channelModeSelect.value = '1';
-            modeSelect.value = 'continuous';
-            if (displayModeSelect) displayModeSelect.value = 'oscilloscope';
-            speedSelect.value = 'fast';
+            const savedChannelMode = localStorage.getItem('fox_channel_mode') || '1';
+            const savedMode = localStorage.getItem('fox_mode_select') || 'continuous';
+            const savedDisplayMode = localStorage.getItem('fox_display_mode') || 'oscilloscope';
+            const savedSpeed = localStorage.getItem('fox_speed_select') || 'fast';
 
-            if (typeof isContinuousMode !== 'undefined') isContinuousMode = true;
+            channelModeSelect.value = savedChannelMode;
+            modeSelect.value = savedMode;
+            if (displayModeSelect) displayModeSelect.value = savedDisplayMode;
+            speedSelect.value = savedSpeed;
+
+            if (typeof isContinuousMode !== 'undefined') isContinuousMode = (savedMode === 'continuous');
+            if (typeof targetFPS !== 'undefined') targetFPS = (savedSpeed === 'slow') ? 10 : 60;
 
             document.querySelectorAll('#groupChannelMode .settings-item').forEach(el => {
-                el.classList.toggle('active', el.dataset.value === '1');
+                el.classList.toggle('active', el.dataset.value === savedChannelMode);
             });
             document.querySelectorAll('#groupMode .settings-item').forEach(el => {
-                el.classList.toggle('active', el.dataset.value === 'continuous');
+                el.classList.toggle('active', el.dataset.value === savedMode);
             });
             document.querySelectorAll('#groupDisplayMode .settings-item').forEach(el => {
-                el.classList.toggle('active', el.dataset.value === 'oscilloscope');
+                el.classList.toggle('active', el.dataset.value === savedDisplayMode);
             });
             document.querySelectorAll('#groupSpeed .settings-item').forEach(el => {
-                el.classList.toggle('active', el.dataset.value === 'fast');
+                el.classList.toggle('active', el.dataset.value === savedSpeed);
             });
 
-            document.getElementById('groupSpeed').style.display = 'block';
-            document.getElementById('cardChannelB').style.display = 'none'; updateToolbarButtonsVisibility();
+            document.getElementById('groupSpeed').style.display = (savedDisplayMode === 'dbMeter') ? 'none' : 'block';
+            document.getElementById('cardChannelB').style.display = (savedChannelMode === '2') ? 'flex' : 'none';
+            updateToolbarButtonsVisibility();
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
@@ -2965,6 +2982,12 @@
                 targetSelect.value = item.dataset.value; targetSelect.dispatchEvent(new Event('change'));
                 updateSettingsPill(item.parentElement, item, true); saveAppState();
             });
+            item.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    item.click();
+                }
+            });
         });
 
         let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = (modeSelect ? modeSelect.value === 'continuous' : true), stopTimer;
@@ -2972,7 +2995,7 @@
             A: { stream: null, source: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#dc2626', active: false },
             B: { stream: null, source: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#2563eb', active: false }
         };
-        let lastCorrelateTime = 0, targetFPS = 60, lastDrawTime = performance.now();
+        let lastCorrelateTime = 0, lastTsCorrelateTime = 0, tsNeedsSnapshotHud = false, targetFPS = 60, lastDrawTime = performance.now();
 
         function getActiveChannelMode() { return channelModeSelect.value || '1'; }
 
@@ -2985,6 +3008,13 @@
             if (cfg.filterLP) { try { cfg.filterLP.disconnect(); } catch (e) { } cfg.filterLP = null; }
             if (cfg.dummy) { try { cfg.dummy.disconnect(); } catch (e) { } cfg.dummy = null; }
             cfg.active = false; cfg.index = 0; if (cfg.data) cfg.data.fill(0);
+            if (channelId === 'A') { currentCalcFreqA = 0; currentAmpA = 0; lastMeasuredFftPeak = 0; }
+            if (channelId === 'B') { currentCalcFreqB = 0; currentAmpB = 0; }
+            if (!channelConfig.A.active || !channelConfig.B.active) {
+                const pDegEl = document.getElementById('hudPhaseDeg'), pRadEl = document.getElementById('hudPhaseRad');
+                if (pDegEl) pDegEl.innerText = '0';
+                if (pRadEl) pRadEl.innerText = '0.00';
+            }
         }
 
         function updateAnalysisButtonState() {
@@ -3235,13 +3265,13 @@
             let SIZE = buffer.length, sumSq = 0; for (let i = 0; i < SIZE; i++) sumSq += buffer[i] * buffer[i];
             let rootMeanSq = Math.sqrt(sumSq / SIZE); if (rootMeanSq < 0.02) return -1;
             let c = new Float32Array(SIZE), halfSize = Math.floor(SIZE / 2);
-            for (let i = 0; i < halfSize; i++) { let sum = 0; for (let j = 0; j < SIZE - i; j++) { sum += buffer[j] * buffer[j + i]; } c[i] = sum; }
+            for (let i = 0; i < halfSize; i++) { let sum = 0; for (let j = 0; j < SIZE - i; j++) { sum += buffer[j] * buffer[j + i]; } c[i] = sum / (SIZE - i); }
             let d = 0; while (d < halfSize - 1 && c[d] > c[d + 1]) d++;
             let maxval = -1, maxpos = -1; for (let i = d; i < halfSize; i++) { if (c[i] > maxval) { maxval = c[i]; maxpos = i; } }
             if (maxpos <= 0 || maxval < c[0] * 0.3) return -1;
             let truePos = maxpos;
             if (maxpos > 0 && maxpos < halfSize - 1) { let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1], a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2; if (a < 0) truePos = maxpos - b / (2 * a); }
-            let freq = sampleRate / truePos; if (freq < 45 || freq > 2800) return -1; return freq;
+            let freq = sampleRate / truePos; if (freq < 45 || freq > 5000) return -1; return freq;
         }
 
         function calculatePhaseDifference(dataA, dataB, freq, sampleRate, indexA, indexB) {
@@ -3271,8 +3301,11 @@
             }
             if (Math.sqrt(sqA / winSize) < 0.005 || Math.sqrt(sqB / winSize) < 0.005) return 0;
 
-            let maxCorr = -Infinity, bestShift = 0;
-            for (let shift = -searchLimit; shift <= searchLimit; shift++) {
+            const numShifts = 2 * searchLimit + 1;
+            const corrs = new Float32Array(numShifts);
+            let maxCorr = -Infinity, bestShift = 0, bestIdx = searchLimit;
+            for (let sIdx = 0; sIdx < numShifts; sIdx++) {
+                const shift = sIdx - searchLimit;
                 let corr = 0, count = 0;
                 const iStart = Math.max(0, -shift);
                 const iEnd = Math.min(winSize, winSize - shift);
@@ -3281,9 +3314,16 @@
                     count++;
                 }
                 if (count > 0) corr /= count;
-                if (corr > maxCorr) { maxCorr = corr; bestShift = shift; }
+                corrs[sIdx] = corr;
+                if (corr > maxCorr) { maxCorr = corr; bestShift = shift; bestIdx = sIdx; }
             }
-            let phaseRad = (bestShift / samplesPerCycle) * 2 * Math.PI;
+            let trueShift = bestShift;
+            if (bestIdx > 0 && bestIdx < numShifts - 1) {
+                const c1 = corrs[bestIdx - 1], c2 = corrs[bestIdx], c3 = corrs[bestIdx + 1];
+                const a = (c1 + c3 - 2 * c2) / 2, b = (c3 - c1) / 2;
+                if (a < 0) trueShift = bestShift - b / (2 * a);
+            }
+            let phaseRad = -(trueShift / samplesPerCycle) * 2 * Math.PI;
             while (phaseRad > Math.PI) phaseRad -= 2 * Math.PI;
             while (phaseRad < -Math.PI) phaseRad += 2 * Math.PI;
             return phaseRad;
@@ -3340,61 +3380,17 @@
             ctx.stroke();
 
             if (showTime) {
-                let timePerGrid = totalTimeOnScreen / 10;
-                for (let i = 1; i < 10; i++) { if (i !== 5) drawLabelWithPill(ctx, parseFloat(((i - 5) * timePerGrid * 1000).toFixed(2)).toString().replace('.', ','), boxX + i * stepGridX, centerY + 8, 'center', 'top'); }
-                drawLabelWithPill(ctx, "t (ms)", boxX + boxW - 8, centerY - 24, 'right', 'top');
-            }
-
-            const maxY = 1.0 / currentZoomY, valPerStep = (maxY * 2) / 8; let drawYLabels = (boxH > 120);
-            for (let i = 1; i < 8; i++) { if (i !== 4) { if (!drawYLabels && i % 2 !== 0) continue; drawLabelWithPill(ctx, parseFloat((maxY - i * valPerStep).toFixed(2)).toString().replace('.', ','), centerX + 8, boxY + i * stepGridY, 'left', 'middle'); } }
-            drawLabelWithPill(ctx, "0", centerX + 8, centerY + 8, 'left', 'top');
-
-            if (titleText) { let textPosX = (titleText === 'Biên độ') ? (centerX + 6) : (boxX + 8); drawLabelWithPill(ctx, titleText, textPosX, boxY + 8, 'left', 'top', titleColor); }
-        }
-
-        // =========================================================================
-        // CODE BỔ SUNG: Sửa lỗi chia tỉ lệ các ô trục thời gian không đồng đều khi zoom
-        // (Chỉ thêm phần override hàm drawMainGrid này, không sửa bất kỳ code gốc nào)
-        // =========================================================================
-        drawMainGrid = function (ctx, boxX, boxY, boxW, boxH, titleColor, titleText, showTime) {
-            ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1; const stepGridX = boxW / 10, stepGridY = boxH / 8;
-            ctx.beginPath();
-            for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepGridX, boxY); ctx.lineTo(boxX + i * stepGridX, boxY + boxH); }
-            for (let i = 0; i <= 8; i++) { ctx.moveTo(boxX, boxY + i * stepGridY); ctx.lineTo(boxX + boxW, boxY + i * stepGridY); }
-            ctx.stroke();
-
-            ctx.lineWidth = 2; ctx.strokeStyle = '#334155'; ctx.beginPath();
-            let centerY = boxY + boxH / 2, centerX = boxX + boxW / 2;
-            ctx.moveTo(boxX, centerY); ctx.lineTo(boxX + boxW, centerY);
-            ctx.moveTo(centerX, boxY); ctx.lineTo(centerX, boxY + boxH);
-
-            const tickSize = 4;
-            for (let i = 0; i <= 10; i++) { ctx.moveTo(boxX + i * stepGridX, centerY - tickSize); ctx.lineTo(boxX + i * stepGridX, centerY + tickSize); }
-            for (let i = 0; i <= 8; i++) { ctx.moveTo(centerX - tickSize, boxY + i * stepGridY); ctx.lineTo(centerX + tickSize, boxY + i * stepGridY); }
-            ctx.stroke();
-
-            if (showTime) {
                 let rawStepMs = (totalTimeOnScreen / 10) * 1000;
                 // Xác định số chữ số thập phân phù hợp theo độ thu phóng (zoom) để không mất độ chính xác
                 let decimals = 2;
                 if (rawStepMs < 1 && rawStepMs > 0) {
                     decimals = Math.min(4, Math.max(2, Math.ceil(-Math.log10(rawStepMs)) + 1));
                 }
-                // Định lượng giá trị 1 ô chuẩn
-                let stepMs = parseFloat(rawStepMs.toFixed(decimals));
-                if (stepMs === 0) stepMs = rawStepMs;
-
-                // Lấy đúng số chữ số thập phân thực tế của stepMs để đồng bộ hiển thị cho mọi ô
-                const sStep = stepMs.toString();
-                const dotIdx = sStep.indexOf('.');
-                const prec = dotIdx === -1 ? 0 : sStep.length - dotIdx - 1;
-
-                // Hiển thị nhãn cho các ô đối xứng qua tâm: Giá trị = k * stepMs
-                // Đảm bảo khoảng cách giữa 2 ô liền kề LUÔN LUÔN bằng đúng stepMs (không sai lệch dù chỉ 0.01)
+                // Hiển thị nhãn khớp chính xác với totalTimeOnScreen của đồ thị sóng
                 for (let i = 1; i < 10; i++) {
                     if (i !== 5) {
                         let k = i - 5;
-                        let val = (k * stepMs).toFixed(prec).replace('.', ',');
+                        let val = (k * rawStepMs).toFixed(decimals).replace('.', ',');
                         drawLabelWithPill(ctx, val, boxX + i * stepGridX, centerY + 8, 'center', 'top');
                     }
                 }
@@ -3677,7 +3673,7 @@
                         let recentA = new Float32Array(chunkSize);
                         let lenA = channelConfig.A.data.length, idxA = channelConfig.A.index;
                         for (let i = 0; i < chunkSize; i++) recentA[i] = channelConfig.A.data[((idxA - chunkSize + i) % lenA + lenA) % lenA];
-                        let currentDbA = calculateRMSdB(recentA);
+                        let currentDbA = calculateRMSdB(recentA, 'A');
                         let rawDbA = calculateRMSdB(recentA, 'A', true); dbHistoryA.push({ time: now, elapsedMs: elapsedMs, db: currentDbA, rawDb: rawDbA });
                         if (dbHistoryA.length > 120) dbHistoryA.shift();
                     }
@@ -3686,15 +3682,15 @@
                         let recentB = new Float32Array(chunkSize);
                         let lenB = channelConfig.B.data.length, idxB = channelConfig.B.index;
                         for (let i = 0; i < chunkSize; i++) recentB[i] = channelConfig.B.data[((idxB - chunkSize + i) % lenB + lenB) % lenB];
-                        let currentDbB = calculateRMSdB(recentB);
+                        let currentDbB = calculateRMSdB(recentB, 'B');
                         let rawDbB = calculateRMSdB(recentB, 'B', true); dbHistoryB.push({ time: now, elapsedMs: elapsedMs, db: currentDbB, rawDb: rawDbB });
                         if (dbHistoryB.length > 120) dbHistoryB.shift();
                     }
                 }
             }
 
-            const unitA = (micCalibOffsetA !== 0) ? 'dB SPL - Đã hiệu chuẩn' : 'dB FS - Chưa hiệu chuẩn';
-            const unitB = (micCalibOffsetB !== 0) ? 'dB SPL - Đã hiệu chuẩn' : 'dB FS - Chưa hiệu chuẩn';
+            const unitA = (micCalibOffsetA !== 0) ? 'dB SPL - Đã hiệu chuẩn' : 'dB (tương đối - chưa hiệu chuẩn)';
+            const unitB = (micCalibOffsetB !== 0) ? 'dB SPL - Đã hiệu chuẩn' : 'dB (tương đối - chưa hiệu chuẩn)';
             if (mode === '2') {
                 let subH = height / 2;
                 renderSingleDbChart(ctx, dbHistoryA, selectedBarIndexA, `🔴 KÊNH A - MỨC CƯỜNG ĐỘ ÂM (${unitA})`, '#dc2626', 0, 0, width, subH);
@@ -3708,12 +3704,37 @@
             let now = performance.now();
             if (audioCtx && !isPaused && (channelConfig.A.index > 2048 || channelConfig.B.index > 2048)) {
                 if (now - lastCorrelateTime > 300) {
-                    let mainCfg = channelConfig.A.active ? channelConfig.A : channelConfig.B;
-                    if (mainCfg.active && mainCfg.index > 2048) {
-                        let recentData = new Float32Array(2048), len = mainCfg.data.length, currentIdx = mainCfg.index;
-                        for (let i = 0; i < 2048; i++) recentData[i] = mainCfg.data[((currentIdx - 2048 + i) % len + len) % len];
-                        let freq = autoCorrelate(recentData, sampleRate);
-                        if (freq > 0) { detectedFrequency = (detectedFrequency === 0) ? freq : (detectedFrequency * 0.7 + freq * 0.3); if (lockedFrequency <= 0 || Math.abs(detectedFrequency - lockedFrequency) / lockedFrequency > 0.08) lockedFrequency = detectedFrequency; if (typeof updateFoxLiveFrequency === 'function') updateFoxLiveFrequency(lockedFrequency || detectedFrequency); }
+                    if (channelConfig.A.active && channelConfig.A.index > 2048) {
+                        let recentA = new Float32Array(2048), lenA = channelConfig.A.data.length, idxA = channelConfig.A.index, sqA = 0;
+                        for (let i = 0; i < 2048; i++) {
+                            let v = channelConfig.A.data[((idxA - 2048 + i) % lenA + lenA) % lenA];
+                            recentA[i] = v; sqA += v * v;
+                        }
+                        let fA = autoCorrelate(recentA, sampleRate);
+                        if (fA > 0) {
+                            currentCalcFreqA = (currentCalcFreqA === 0) ? fA : (currentCalcFreqA * 0.7 + fA * 0.3);
+                            detectedFrequency = (detectedFrequency === 0) ? fA : (detectedFrequency * 0.7 + fA * 0.3);
+                            if (lockedFrequency <= 0 || Math.abs(detectedFrequency - lockedFrequency) / lockedFrequency > 0.08) lockedFrequency = detectedFrequency;
+                            if (typeof updateFoxLiveFrequency === 'function') updateFoxLiveFrequency(lockedFrequency || detectedFrequency);
+                        }
+                        currentAmpA = (Math.sqrt(sqA / 2048) * 1.414).toFixed(2);
+                    }
+                    if (channelConfig.B.active && channelConfig.B.index > 2048) {
+                        let recentB = new Float32Array(2048), lenB = channelConfig.B.data.length, idxB = channelConfig.B.index, sqB = 0;
+                        for (let i = 0; i < 2048; i++) {
+                            let v = channelConfig.B.data[((idxB - 2048 + i) % lenB + lenB) % lenB];
+                            recentB[i] = v; sqB += v * v;
+                        }
+                        let fB = autoCorrelate(recentB, sampleRate);
+                        if (fB > 0) {
+                            currentCalcFreqB = (currentCalcFreqB === 0) ? fB : (currentCalcFreqB * 0.7 + fB * 0.3);
+                            if (!channelConfig.A.active) {
+                                detectedFrequency = (detectedFrequency === 0) ? fB : (detectedFrequency * 0.7 + fB * 0.3);
+                                if (lockedFrequency <= 0 || Math.abs(detectedFrequency - lockedFrequency) / lockedFrequency > 0.08) lockedFrequency = detectedFrequency;
+                                if (typeof updateFoxLiveFrequency === 'function') updateFoxLiveFrequency(lockedFrequency || detectedFrequency);
+                            }
+                        }
+                        currentAmpB = (Math.sqrt(sqB / 2048) * 1.414).toFixed(2);
                     }
                     lastCorrelateTime = now;
                 }
@@ -3792,6 +3813,10 @@
             if (qrPanel) qrPanel.style.display = 'none';
 
             isUserZoomed = false; currentZoomY = 2.0; detectedFrequency = 0; lockedFrequency = 0; totalTimeOnScreen = 5 * (1.0 / 440);
+            currentCalcFreqA = 0; currentCalcFreqB = 0; currentAmpA = 0; currentAmpB = 0; lastMeasuredFftPeak = 0;
+            const pDegEl = document.getElementById('hudPhaseDeg'), pRadEl = document.getElementById('hudPhaseRad');
+            if (pDegEl) pDegEl.innerText = '0';
+            if (pRadEl) pRadEl.innerText = '0.00';
             if (typeof updateFoxLiveFrequency === 'function') updateFoxLiveFrequency(0);
 
             if (modeSelect) modeSelect.value = 'continuous';
@@ -4216,11 +4241,14 @@
             fCtx.fillText("Biên độ chuẩn hóa (A)", 0, 0);
             fCtx.restore();
 
-            let maxMag = 0;
+            let maxMag = 0, overallPeakBin = 0;
             let maxBins = Math.floor((maxFreqShow / binFreq));
             let limitBins = Math.min(magnitudes.length, maxBins);
 
-            for (let i = 2; i < limitBins; i++) { if (magnitudes[i] > maxMag) maxMag = magnitudes[i]; }
+            for (let i = 2; i < limitBins; i++) {
+                if (magnitudes[i] > maxMag) { maxMag = magnitudes[i]; overallPeakBin = i; }
+            }
+            lastMeasuredFftPeak = (maxMag > 0 && overallPeakBin > 0) ? (overallPeakBin * binFreq) : 0;
             if (maxMag === 0) maxMag = 1;
 
             fCtx.strokeStyle = '#3b82f6'; fCtx.lineWidth = 1.5; fCtx.beginPath();
@@ -4236,18 +4264,19 @@
                 let targetFreq = f0 * n; if (targetFreq > maxFreqShow) break;
                 let centerBin = Math.round(targetFreq / binFreq); if (centerBin >= limitBins) continue;
                 let bestBin = centerBin;
-                for (let b = Math.max(2, centerBin - 1); b <= Math.min(limitBins - 1, centerBin + 1); b++) {
+                for (let b = Math.max(2, centerBin - 2); b <= Math.min(limitBins - 1, centerBin + 2); b++) {
                     if (magnitudes[b] > magnitudes[bestBin]) bestBin = b;
                 }
 
-                let x = leftM + (targetFreq / maxFreqShow) * plotW;
+                let peakFreq = bestBin * binFreq;
+                let x = leftM + (peakFreq / maxFreqShow) * plotW;
                 let magNorm = magnitudes[bestBin] / maxMag, yPeak = axisY - (magNorm * chartH);
 
                 fCtx.strokeStyle = '#ef4444'; fCtx.lineWidth = 2.5;
                 fCtx.beginPath(); fCtx.moveTo(x, axisY); fCtx.lineTo(x, yPeak); fCtx.stroke();
 
                 fCtx.fillStyle = '#ef4444'; fCtx.beginPath(); fCtx.arc(x, yPeak, 3.5, 0, 2 * Math.PI); fCtx.fill();
-                fCtx.fillStyle = '#0f172a'; fCtx.fillText(`${n}f0 (${Math.round(targetFreq)}Hz)`, x, Math.max(topM + 10, yPeak - 8));
+                fCtx.fillStyle = '#0f172a'; fCtx.fillText(`${n}f0 (${Math.round(peakFreq)}Hz)`, x, Math.max(topM + 10, yPeak - 8));
             }
         }
 
@@ -4390,6 +4419,7 @@
                     snapDataB = Array.from(channelConfig.B.data);
                     snapIdxB = channelConfig.B.index;
                 }
+                tsNeedsSnapshotHud = true;
                 calculatePhaseAndDrawLive();
             }
         }
@@ -4411,51 +4441,49 @@
                 if (!activeDataA || !activeDataB) return;
 
                 let len = activeDataA.length, cIdxA = channelConfig.A.index, cIdxB = channelConfig.B.index;
-
-                if (!isTsPaused) {
-                    let now = performance.now();
-                    if (now - lastCorrelateTime > 300) {
-                        let sqA = 0, sqB = 0;
-                        if (cIdxA > 2048) {
-                            let recA = new Float32Array(2048);
-                            for (let i = 0; i < 2048; i++) {
-                                let v = activeDataA[((cIdxA - 2048 + i) % len + len) % len];
-                                recA[i] = v; sqA += v * v;
-                            }
-                            let fA = autoCorrelate(recA, sampleRate);
-                            if (fA > 0) currentCalcFreqA = (currentCalcFreqA === 0) ? fA : (currentCalcFreqA * 0.7 + fA * 0.3);
-                            currentAmpA = (Math.sqrt(sqA / 2048) * 1.414).toFixed(2);
-                        }
-                        if (cIdxB > 2048) {
-                            let recB = new Float32Array(2048);
-                            for (let i = 0; i < 2048; i++) {
-                                let v = activeDataB[((cIdxB - 2048 + i) % len + len) % len];
-                                recB[i] = v; sqB += v * v;
-                            }
-                            let fB = autoCorrelate(recB, sampleRate);
-                            if (fB > 0) currentCalcFreqB = (currentCalcFreqB === 0) ? fB : (currentCalcFreqB * 0.7 + fB * 0.3);
-                            currentAmpB = (Math.sqrt(sqB / 2048) * 1.414).toFixed(2);
-                        }
-                        lastCorrelateTime = now;
-
-                        document.getElementById('hudFreqA').innerText = currentCalcFreqA > 0 ? currentCalcFreqA.toFixed(1) : "0.0";
-                        document.getElementById('hudFreqB').innerText = currentCalcFreqB > 0 ? currentCalcFreqB.toFixed(1) : "0.0";
-                        document.getElementById('hudPerA').innerText = currentCalcFreqA > 0 ? (1000 / currentCalcFreqA).toFixed(2) : "0.00";
-                        document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000 / currentCalcFreqB).toFixed(2) : "0.00";
-
-                        let avgFreq = (currentCalcFreqA + currentCalcFreqB) / 2;
-                        let calculatedPhase = (currentCalcFreqA > 10 && currentCalcFreqB > 10 && Math.abs(currentCalcFreqA - currentCalcFreqB) <= 1.0)
-                            ? calculatePhaseDifference(activeDataA, activeDataB, avgFreq, sampleRate, cIdxA, cIdxB)
-                            : 0;
-
-                        updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase, currentAmpA, currentAmpB);
-                    }
-                }
-
                 let refDataA = isTsPaused ? snapDataA : activeDataA;
                 let refDataB = isTsPaused ? snapDataB : activeDataB;
                 let refIdxA = isTsPaused ? snapIdxA : cIdxA;
                 let refIdxB = isTsPaused ? snapIdxB : cIdxB;
+
+                let now = performance.now();
+                if ((!isTsPaused && now - lastTsCorrelateTime > 300) || (isTsPaused && tsNeedsSnapshotHud)) {
+                    let sqA = 0, sqB = 0;
+                    if (refIdxA > 2048 && refDataA && refDataA.length >= len) {
+                        let recA = new Float32Array(2048);
+                        for (let i = 0; i < 2048; i++) {
+                            let v = refDataA[((refIdxA - 2048 + i) % len + len) % len];
+                            recA[i] = v; sqA += v * v;
+                        }
+                        let fA = autoCorrelate(recA, sampleRate);
+                        if (fA > 0) currentCalcFreqA = (currentCalcFreqA === 0 || isTsPaused) ? fA : (currentCalcFreqA * 0.7 + fA * 0.3);
+                        currentAmpA = (Math.sqrt(sqA / 2048) * 1.414).toFixed(2);
+                    }
+                    if (refIdxB > 2048 && refDataB && refDataB.length >= len) {
+                        let recB = new Float32Array(2048);
+                        for (let i = 0; i < 2048; i++) {
+                            let v = refDataB[((refIdxB - 2048 + i) % len + len) % len];
+                            recB[i] = v; sqB += v * v;
+                        }
+                        let fB = autoCorrelate(recB, sampleRate);
+                        if (fB > 0) currentCalcFreqB = (currentCalcFreqB === 0 || isTsPaused) ? fB : (currentCalcFreqB * 0.7 + fB * 0.3);
+                        currentAmpB = (Math.sqrt(sqB / 2048) * 1.414).toFixed(2);
+                    }
+                    lastTsCorrelateTime = now;
+                    tsNeedsSnapshotHud = false;
+
+                    document.getElementById('hudFreqA').innerText = currentCalcFreqA > 0 ? currentCalcFreqA.toFixed(1) : "0.0";
+                    document.getElementById('hudFreqB').innerText = currentCalcFreqB > 0 ? currentCalcFreqB.toFixed(1) : "0.0";
+                    document.getElementById('hudPerA').innerText = currentCalcFreqA > 0 ? (1000 / currentCalcFreqA).toFixed(2) : "0.00";
+                    document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000 / currentCalcFreqB).toFixed(2) : "0.00";
+
+                    let avgFreq = (currentCalcFreqA + currentCalcFreqB) / 2;
+                    let calculatedPhase = (currentCalcFreqA > 10 && currentCalcFreqB > 10 && Math.abs(currentCalcFreqA - currentCalcFreqB) <= 1.0)
+                        ? calculatePhaseDifference(refDataA, refDataB, avgFreq, sampleRate, refIdxA, refIdxB)
+                        : 0;
+
+                    updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase, currentAmpA, currentAmpB);
+                }
 
                 let offsetA = findZeroCrossingOffset({ active: true, data: refDataA }, refIdxA, samplesDraw);
 
@@ -4469,7 +4497,7 @@
                     for (let i = 0; i < samplesDraw; i += step) {
                         let idxA = ((refIdxA - offsetA - samplesDraw + i) % len + len) % len;
                         let val = refDataA[idxA];
-                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                        let x = (i / samplesDraw) * cw, y = Math.max(0, Math.min(ch, ch / 2 - (val * currentZoomY * ch / 2)));
                         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     }
                     ctx.stroke();
@@ -4478,14 +4506,14 @@
                     for (let i = 0; i < samplesDraw; i += step) {
                         let idxB = ((refIdxB - offsetA - samplesDraw + i) % len + len) % len;
                         let val = refDataB[idxB];
-                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                        let x = (i / samplesDraw) * cw, y = Math.max(0, Math.min(ch, ch / 2 - (val * currentZoomY * ch / 2)));
                         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     }
                     ctx.stroke();
                 }
                 else if (tsViewMode === 'sum') {
                     let diff = Math.abs(currentCalcFreqA - currentCalcFreqB);
-                    let isSameFreq = (diff <= 3.0);
+                    let isSameFreq = (diff <= 1.0);
                     const warnEl = document.getElementById('tsWarningText');
 
                     if (currentCalcFreqA > 10 && currentCalcFreqB > 10 && !isSameFreq) {
@@ -4504,7 +4532,7 @@
                         let idxB = ((refIdxB - offsetA - samplesDraw + i) % len + len) % len;
                         let val = refDataA[idxA] + refDataB[idxB];
 
-                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                        let x = (i / samplesDraw) * cw, y = Math.max(0, Math.min(ch, ch / 2 - (val * currentZoomY * ch / 2)));
                         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     }
                     ctx.stroke();
@@ -4587,17 +4615,19 @@
                 btn.innerHTML = "👨‍🏫 GV";
                 btn.style.borderColor = "#f97316";
                 btn.style.color = "#ff7849";
-                addChatMessage('bot', "Đã chuyển sang <b>Chế độ Giáo viên</b>: AI sẽ cung cấp gợi ý sư phạm chuyên sâu, chuẩn kiến thức SGK vật lý và lưu ý an toàn phòng thí nghiệm.");
+                addChatMessage('bot', "Đã chuyển sang Chế độ Giáo viên: AI sẽ cung cấp gợi ý sư phạm chuyên sâu, chuẩn kiến thức SGK vật lý và lưu ý an toàn phòng thí nghiệm.");
             } else {
                 currentFoxRole = 'student';
                 btn.innerHTML = "👨‍🎓 HS";
                 btn.style.borderColor = "#475569";
                 btn.style.color = "#38bdf8";
-                addChatMessage('bot', "Đã chuyển sang <b>Chế độ Học sinh</b>: AI sẽ đóng vai trò gia sư gợi ý, hướng dẫn tư duy từng bước.");
+                addChatMessage('bot', "Đã chuyển sang Chế độ Học sinh: AI sẽ đóng vai trò gia sư gợi ý, hướng dẫn tư duy từng bước.");
             }
         }
 
+        let isFoxSending = false;
         function sendQuickPrompt(promptText) {
+            if (isFoxSending) return;
             document.getElementById('fox-chat-input').value = promptText;
             sendFoxMessage();
         }
@@ -4740,8 +4770,8 @@
         function getLabTelemetry() {
             const activeA = !!(channelConfig && channelConfig.A && channelConfig.A.active);
             const activeB = !!(channelConfig && channelConfig.B && channelConfig.B.active);
-            let fA = activeA ? (lockedFrequency || detectedFrequency || 0) : 0;
-            let fB = activeB && (typeof currentCalcFreqB !== 'undefined') ? currentCalcFreqB : 0;
+            let fA = activeA ? ((typeof currentCalcFreqA !== 'undefined' && currentCalcFreqA > 0) ? currentCalcFreqA : (lockedFrequency || detectedFrequency || 0)) : 0;
+            let fB = activeB ? ((typeof currentCalcFreqB !== 'undefined' && currentCalcFreqB > 0) ? currentCalcFreqB : (!activeA ? (lockedFrequency || detectedFrequency || 0) : 0)) : 0;
             let mode = (typeof getActiveChannelMode === 'function') ? getActiveChannelMode() : '1';
 
             let ampA = (activeA && typeof currentAmpA !== 'undefined' && parseFloat(currentAmpA) > 0) ? currentAmpA : '0.00';
@@ -4755,22 +4785,29 @@
                 }
                 if (maxV > 0) ampA = maxV.toFixed(2);
             }
+            if (activeB && ampB === '0.00' && channelConfig.B.data && channelConfig.B.index > 512) {
+                let d = channelConfig.B.data, idx = channelConfig.B.index, l = d.length, maxV = 0;
+                for (let i = 0; i < 512; i++) {
+                    let v = Math.abs(d[((idx - 512 + i) % l + l) % l]);
+                    if (v > maxV) maxV = v;
+                }
+                if (maxV > 0) ampB = maxV.toFixed(2);
+            }
 
             const phaseApplicable = !(activeA && activeB && fA > 10 && fB > 10 && Math.abs(fA - fB) > 1.0);
             let phaseDeg = '0', phaseRad = '0.00';
             const pDegEl = document.getElementById('hudPhaseDeg');
             const pRadEl = document.getElementById('hudPhaseRad');
             if (phaseApplicable) {
-                if (pDegEl && pDegEl.innerText) phaseDeg = pDegEl.innerText;
-                if (pRadEl && pRadEl.innerText) phaseRad = pRadEl.innerText;
+                if (pDegEl && pDegEl.innerText) phaseDeg = pDegEl.innerText.trim();
+                if (pRadEl && pRadEl.innerText) phaseRad = pRadEl.innerText.trim();
             }
 
             let timeBase = (typeof totalTimeOnScreen !== 'undefined') ? (totalTimeOnScreen / 10 * 1000).toFixed(2) + ' ms/ô' : '1.14 ms/ô';
 
             let fftPeak = null;
-            const fftTargetEl = document.getElementById('fftTargetFreq');
-            if (activeA && fftTargetEl && fftTargetEl.value) {
-                fftPeak = fftTargetEl.value + ' Hz';
+            if (activeA && typeof lastMeasuredFftPeak === 'number' && lastMeasuredFftPeak > 0) {
+                fftPeak = lastMeasuredFftPeak.toFixed(1) + ' Hz';
             }
 
             return {
@@ -4791,7 +4828,7 @@
                 },
                 phaseDifference: {
                     applicable: phaseApplicable,
-                    degrees: phaseApplicable ? (phaseDeg + '°') : 'Biến thiên (Phách)',
+                    degrees: phaseApplicable ? (phaseDeg === 'không cố định' ? phaseDeg : phaseDeg + '°') : 'Biến thiên (Phách)',
                     radians: phaseApplicable ? (phaseRad + ' rad') : 'Biến thiên'
                 },
                 fftPeak: fftPeak
@@ -4800,9 +4837,13 @@
 
         function captureOscilloscopeSnapshot() {
             try {
-                const activeCanvas = (typeof isTwoSourceModalOpen !== 'undefined' && isTwoSourceModalOpen)
-                    ? document.getElementById('twoSourceCanvas')
-                    : canvas;
+                const fftOverlay = document.getElementById('fftModalOverlay');
+                const isFftOpen = !!(fftOverlay && fftOverlay.style.display !== 'none' && fftOverlay.classList.contains('animUI-visible'));
+                const activeCanvas = isFftOpen
+                    ? document.getElementById('fftDisplayCanvas')
+                    : ((typeof isTwoSourceModalOpen !== 'undefined' && isTwoSourceModalOpen)
+                        ? document.getElementById('twoSourceCanvas')
+                        : canvas);
                 if (!activeCanvas || activeCanvas.width <= 0) return null;
                 const thumbCanvas = document.createElement('canvas');
                 thumbCanvas.width = 600;
@@ -4827,7 +4868,12 @@
                         signal: controller.signal
                     });
                     clearTimeout(timerId);
-                    if (response.ok) return await response.json();
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const result = await response.json();
+                    if (!result || result.status !== 'success' || !result.reply) {
+                        throw new Error((result && result.message) ? result.message : 'Invalid AI response');
+                    }
+                    return result;
                 } catch (err) {
                     clearTimeout(timerId);
                     if (attempt < maxRetries) {
@@ -4842,6 +4888,7 @@
         }
 
         async function sendFoxMessage() {
+            if (isFoxSending) return;
             const text = chatInput.value.trim();
             if (!text && !uploadedImageBase64) return;
             if (_foxLicense.isDemo()) {
@@ -4853,6 +4900,7 @@
                 demoChatCount++;
             }
 
+            isFoxSending = true;
             let imgBase64ToSend = uploadedImageBase64;
             let userMsgPayload = { text: text, imageSrc: null };
             if (uploadedImageBase64 && uploadedImageBase64.indexOf('data:image/') === 0) {
@@ -4869,10 +4917,10 @@
 
             let thinkingId = addTypingIndicator();
             const activeA = !!(channelConfig && channelConfig.A && channelConfig.A.active);
-            let currentFreq = activeA ? (lockedFrequency || detectedFrequency) : 0;
+            const activeB = !!(channelConfig && channelConfig.B && channelConfig.B.active);
+            let currentFreq = (activeA || activeB) ? (lockedFrequency || detectedFrequency) : 0;
             let labTelemetry = getLabTelemetry();
-
-            foxChatHistory.push({ role: 'user', content: text || "Phân tích đồ thị dao động ký và thông số thí nghiệm này." });
+            const userTurnContent = text || "Phân tích đồ thị dao động ký và thông số thí nghiệm này.";
 
             try {
                 const result = await fetchGasChatWithRetry({
@@ -4880,14 +4928,14 @@
                     frequency: currentFreq,
                     role: currentFoxRole,
                     imageBase64: imgBase64ToSend,
-                    history: foxChatHistory.slice(0, -1).slice(-8),
+                    history: foxChatHistory.slice(-8),
                     labData: labTelemetry
                 });
                 removeTypingIndicator(thinkingId);
                 document.getElementById('foxStatusText').innerText = "Trực tuyến";
-                let replyText = (result && result.reply) ? result.reply : "Fox-lab AI đã ghi nhận câu hỏi của bạn.";
-                replyText = formatCompleteSentences(replyText);
+                let replyText = formatCompleteSentences(result.reply);
 
+                foxChatHistory.push({ role: 'user', content: userTurnContent });
                 foxChatHistory.push({ role: 'model', content: replyText });
                 if (foxChatHistory.length > 10) foxChatHistory = foxChatHistory.slice(-10);
 
@@ -4898,6 +4946,9 @@
                 const statusFreqNote = activeA && currentFreq > 0 ? ` Tần số đang đo trên Kênh A là ${currentFreq.toFixed(1)} Hz.` : ' Hiện chưa có tín hiệu đo trên Kênh A.';
                 let fallbackText = `⚠️ Không thể kết nối máy chủ Fox-lab AI lúc này (mất mạng hoặc quá thời gian chờ).${statusFreqNote} Vui lòng bấm gửi lại sau ít giây.`;
                 addChatMessage('bot', fallbackText);
+            } finally {
+                isFoxSending = false;
+                sendBtn.disabled = chatInput.value.trim() === '' && !uploadedImageBase64;
             }
         }
 
