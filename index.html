@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-512.png">
     <link rel="apple-touch-icon" href="icon-512.png">
@@ -214,8 +214,8 @@
             background: var(--bg-surface);
             border-bottom: 1px solid var(--border-default);
             z-index: 10;
-            padding: 8px 12px;
-            gap: 10px;
+            padding: 6px 10px;
+            gap: 8px;
             align-items: stretch;
             flex-shrink: 0;
             box-shadow: var(--shadow-sm);
@@ -225,7 +225,7 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            gap: 6px;
+            gap: 5px;
             min-width: 0;
         }
 
@@ -242,7 +242,7 @@
         .toolbar-row > button {
             flex: 1 1 auto;
             min-width: 96px;
-            min-height: 34px;
+            min-height: 44px;
         }
 
         .channel-row {
@@ -260,18 +260,19 @@
             background: var(--bg-surface);
             border: 1px solid var(--border-default);
             border-radius: var(--radius-sm);
-            padding: 3px;
+            padding: 2px 3px;
             gap: 4px;
             align-items: center;
             box-shadow: var(--shadow-sm);
-            min-height: 36px;
+            min-height: 46px;
             transition: border-color var(--m-in) var(--ease-out);
         }
 
         .channel-card button {
             border-radius: 4px;
             min-width: 118px;
-            height: 28px;
+            min-height: 44px;
+            height: 44px;
             font-size: 12px;
             font-weight: 700;
             flex-shrink: 0;
@@ -282,7 +283,8 @@
 
         .channel-card select {
             flex-grow: 1;
-            height: 28px;
+            min-height: 44px;
+            height: 44px;
             border: 1px solid transparent;
             border-radius: 4px;
             background: var(--bg-subtle);
@@ -309,6 +311,22 @@
         .channel-b-indicator {
             border-color: #93c5fd;
             background: linear-gradient(90deg, #eff6ff 0%, #ffffff 35%);
+        }
+
+        @keyframes channelBEnter {
+            from {
+                opacity: 0;
+                transform: translateY(-6px) scale(0.985);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        #cardChannelB {
+            animation: channelBEnter 220ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .qr-panel {
@@ -403,11 +421,13 @@
             font-weight: 700;
             color: var(--text-primary);
             cursor: pointer;
-            padding: 4px 10px;
+            padding: 4px 12px;
+            min-height: 44px;
             display: inline-flex;
             align-items: center;
             gap: 5px;
             box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
         }
 
         .license-gear-btn:hover {
@@ -514,6 +534,13 @@
             cursor: crosshair;
             touch-action: none;
             background-color: var(--bg-subtle);
+        }
+
+        #oscilloscope {
+            flex: 1 1 0%;
+            min-height: 0;
+            width: 100%;
+            height: auto;
         }
 
         .settings-dropdown {
@@ -857,8 +884,45 @@
             background: linear-gradient(90deg, #0f172a, #1e3a8a);
         }
 
+        #twoSourceModalOverlay {
+            opacity: 0;
+            transition: opacity 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #twoSourceModalOverlay.animUI-visible {
+            opacity: 1;
+        }
+
+        #twoSourceModal {
+            opacity: 0;
+            transform: translateY(10px) scale(0.985);
+            transition: opacity 0.24s cubic-bezier(0.4, 0, 0.2, 1), transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: opacity, transform;
+        }
+
+        #twoSourceModalOverlay.animUI-visible #twoSourceModal {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
         #twoSourceModal .modal-header {
             background: linear-gradient(90deg, #0f172a, #115e59);
+        }
+
+        @keyframes tsCanvasSwitch {
+            from {
+                opacity: 0.72;
+                transform: scale(0.992);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #twoSourceCanvas.ts-canvas-switching {
+            animation: tsCanvasSwitch 200ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .hud-overlay {
@@ -929,7 +993,7 @@
             border-radius: 4px;
             pointer-events: none;
             z-index: 1;
-            transition: transform 0.22s var(--ease-out), width 0.22s var(--ease-out);
+            transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), width 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease;
             opacity: 0;
         }
 
@@ -945,12 +1009,58 @@
             cursor: pointer;
             border-radius: 4px;
             box-shadow: none;
+            transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .ts-mode-toggle button.active-mode {
             color: #ffffff;
-            background: #1d4ed8;
+            background: transparent;
             font-weight: 700;
+        }
+
+        @keyframes hudPanelEnter {
+            from {
+                opacity: 0;
+                transform: translateY(6px) scale(0.985);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        #hudResults,
+        #hudEquations {
+            animation: hudPanelEnter 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes beatWarningEnter {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -6px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(1);
+            }
+        }
+
+        @keyframes beatWarningEnterMobile {
+            from {
+                opacity: 0;
+                transform: translateY(-6px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        #tsWarningText {
+            animation: beatWarningEnter 200ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .beat-warning {
@@ -1376,26 +1486,22 @@
 
         .fox-chips-container {
             display: flex;
+            flex-wrap: wrap;
             gap: 6px;
-            overflow-x: auto;
-            padding: 6px 10px;
+            padding: 8px 10px;
             flex-shrink: 0;
-            scrollbar-width: none;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .fox-chips-container::-webkit-scrollbar {
-            display: none;
         }
 
         .fox-chip {
             background: #1e293b;
             border: 1px solid #334155;
             color: #f1f5f9;
-            font-size: 12px;
-            padding: 4px 10px;
+            font-size: 11.5px;
+            padding: 5px 10px;
             border-radius: var(--radius-full);
             white-space: nowrap;
+            flex-shrink: 0;
             cursor: pointer;
             font-weight: 600;
             box-shadow: none;
@@ -1735,12 +1841,73 @@
 
             .toolbar-row > button {
                 min-width: 78px;
+                min-height: 44px;
                 padding: 6px 8px;
                 font-size: 12px;
             }
 
             .channel-card {
                 flex: 1 1 100%;
+            }
+
+            .fft-canvas-container {
+                min-height: 280px;
+            }
+
+            .beat-warning {
+                position: static;
+                transform: none;
+                order: -1;
+                width: calc(100% - 16px);
+                margin: 0 auto 6px auto;
+                border-radius: var(--radius-sm);
+                font-size: 11.5px;
+                text-align: center;
+                box-sizing: border-box;
+            }
+
+            #tsWarningText {
+                animation: beatWarningEnterMobile 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            #tsContainer {
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: flex-start;
+            }
+
+            #tsContainer > .modal-display-canvas {
+                flex: 1 1 0%;
+                min-height: 220px;
+                height: auto;
+            }
+
+            #hudResults {
+                position: relative;
+                top: auto;
+                bottom: auto;
+                left: 0;
+                max-width: 100%;
+                margin-top: 6px;
+                font-size: 11.5px;
+                box-sizing: border-box;
+            }
+
+            #hudEquations {
+                position: relative;
+                top: auto;
+                bottom: auto;
+                left: 0;
+                max-width: 100%;
+                margin-top: 6px;
+                font-size: 11.5px;
+                box-sizing: border-box;
+            }
+
+            #calibModal button {
+                white-space: normal;
+                line-height: 1.3;
+                min-height: 44px;
             }
 
             #fox-chat-widget {
@@ -1757,6 +1924,19 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
                 scroll-behavior: auto !important;
+            }
+
+            #twoSourceModalOverlay,
+            #twoSourceModal,
+            .ts-mode-pill,
+            .ts-mode-toggle button,
+            #twoSourceCanvas.ts-canvas-switching,
+            #cardChannelB,
+            #hudResults,
+            #hudEquations,
+            #tsWarningText {
+                animation: none !important;
+                transition: none !important;
             }
         }
     </style>
@@ -1945,6 +2125,7 @@
                 style="justify-content: space-between; padding: 8px 14px; display: flex; align-items: center;">
                 <button class="btn-dark" onclick="closeTwoSourceModal()">⬅ Quay lại</button>
                 <div class="ts-mode-toggle" role="group" aria-label="Chế độ hiển thị 2 nguồn âm">
+                    <div class="ts-mode-pill" id="tsModePill"></div>
                     <button id="btnModeOverlay" class="active-mode" onclick="setTsMode('overlay')">Ghép sóng</button>
                     <button id="btnModeSum" onclick="setTsMode('sum')">Tổng hợp (A+B)</button>
                 </div>
@@ -2057,7 +2238,10 @@
                 <span id="calibModalTitle" style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="22"></line>
+                        <line x1="8" y1="22" x2="16" y2="22"></line>
                     </svg>
                     Hiệu chuẩn Micro (Microphone Calibration)
                 </span>
@@ -2338,7 +2522,7 @@
 
         if (btnCalib) {
             btnCalib.addEventListener('click', () => {
-                if (isDemoMode) {
+                if (_foxLicense.isDemo()) {
                     alert("⚠️ Chức năng Hiệu chuẩn Micro bị khóa ở bản Dùng thử Demo. Vui lòng kích hoạt bản Full để sử dụng!");
                     openLicenseModal();
                     return;
@@ -2350,8 +2534,8 @@
         let micCalibOffsetA = parseFloat(localStorage.getItem('fox_mic_calib_offset_a') || '0.0');
         let micCalibOffsetB = parseFloat(localStorage.getItem('fox_mic_calib_offset_b') || '0.0');
 
-        let isDemoMode = true; let demoTimer = null; let demoChatCount = 0; const MAX_DEMO_CHAT = 5;
-        let detectedFrequency = 0, lockedFrequency = 440;
+        let demoChatCount = 0; const MAX_DEMO_CHAT = 5;
+        let detectedFrequency = 0, lockedFrequency = 0;
         let isUserZoomed = false, totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0;
 
         let isTwoSourceModalOpen = false, isTsPaused = false;
@@ -2399,23 +2583,133 @@
             return deviceId;
         }
 
-        function selectMode(mode) {
-            if (mode === 'demo') {
-                isDemoMode = true; document.getElementById('licenseModalOverlay').style.display = 'none';
-                const gearBtn = document.querySelector('.license-gear-btn');
-                if (gearBtn) gearBtn.style.display = 'inline-flex';
-                updateAnalysisButtonState();
-            } else {
-                document.getElementById('keyInputContainer').style.display = 'block';
-            }
-        }
-
         // =========================================================================
-        // INTERNAL SECURITY: Khởi tạo Endpoint ngầm từ ID (Ẩn cơ chế giải mã URL)
+        // INTERNAL SECURITY: Khởi tạo Endpoint & Bảo vệ trạng thái bản quyền
         // =========================================================================
         const _getGasEndpoint = (id) => (typeof atob === 'function' ? atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy8=") : "https://script.google.com/macros/s/") + id + "/exec";
         const LICENSE_GAS_URL = _getGasEndpoint(LICENSE_GAS_ID);
         const CHAT_GAS_URL = _getGasEndpoint(CHAT_GAS_ID);
+
+        const _foxLicense = (() => {
+            let demoMode = true;
+            let demoTimer = null;
+
+            function setFullUnlocked(key, verifiedAt = Date.now()) {
+                demoMode = false;
+                localStorage.setItem('fox_license_key', key);
+                localStorage.setItem('fox_last_verify_time', String(verifiedAt));
+                if (demoTimer) clearTimeout(demoTimer);
+                document.getElementById('licenseModalOverlay').style.display = 'none';
+                infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
+                const gearBtn = document.querySelector('.license-gear-btn');
+                if (gearBtn) gearBtn.style.display = 'none';
+                updateAnalysisButtonState();
+                checkAndShowQR();
+            }
+
+            function lockToDemoTransient(reasonText) {
+                demoMode = true;
+                document.getElementById('licenseModalOverlay').style.display = 'none';
+                const gearBtn = document.querySelector('.license-gear-btn');
+                if (gearBtn) gearBtn.style.display = 'inline-flex';
+                infoMessageText.innerHTML = reasonText;
+                infoMessageText.style.color = "#b91c1c";
+                updateAnalysisButtonState();
+                checkAndShowQR();
+            }
+
+            function resetToDemo() {
+                localStorage.removeItem('fox_license_key');
+                localStorage.removeItem('fox_last_verify_time');
+                demoMode = true;
+                document.getElementById('settingsDropdown').classList.remove('open');
+                stopAudioChannel('A'); stopAudioChannel('B');
+                document.getElementById('keyInputContainer').style.display = 'none';
+                document.getElementById('licenseKeyInput').value = '';
+                document.getElementById('licenseModalOverlay').style.display = 'flex';
+                const gearBtn = document.querySelector('.license-gear-btn');
+                if (gearBtn) gearBtn.style.display = 'inline-flex';
+                infoMessageText.innerHTML = "Bản Dùng thử Demo (Khóa tính năng nâng cao).";
+                infoMessageText.style.color = "#b91c1c";
+                isPaused = true; clearTimeout(stopTimer);
+                pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
+                updateUIState(); checkAndShowQR(); drawFrame(true);
+            }
+
+            async function verifyWithServer(key, type, isSilent = false) {
+                if (!isSilent) infoMessageText.innerHTML = "Đang kiểm tra Key bản Full với Google Sheets...";
+                try {
+                    const response = await fetch(LICENSE_GAS_URL, {
+                        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: "verifyKey", key: key, deviceId: getDeviceId(), type: type })
+                    });
+                    const result = await response.json();
+                    if (result.status === "success") {
+                        setFullUnlocked(key, Date.now());
+                    } else {
+                        if (!isSilent) {
+                            let confirmChange = confirm(`❌ Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máy mới - tối đa 3 lần) không?`);
+                            if (confirmChange) {
+                                await changeDevice(key, type);
+                            } else {
+                                resetToDemo();
+                            }
+                        } else {
+                            resetToDemo();
+                        }
+                    }
+                } catch (e) {
+                    if (!isSilent) {
+                        alert("⚠️ Không thể kết nối máy chủ xác thực Key.");
+                        resetToDemo();
+                    } else {
+                        // Fail-closed: keep demoMode=true when server unreachable while preserving key for retry
+                        lockToDemoTransient("⚠️ Ngoại tuyến: Chưa xác thực được Key, đang chạy chế độ Dùng thử.");
+                    }
+                }
+            }
+
+            async function changeDevice(key, type) {
+                infoMessageText.innerHTML = "Đang gửi yêu cầu Đổi thiết bị...";
+                try {
+                    const response = await fetch(LICENSE_GAS_URL, {
+                        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: "changeDevice", key: key, deviceId: getDeviceId(), type: type })
+                    });
+                    const result = await response.json();
+                    if (result.status === "success") {
+                        alert("✅ Đổi thiết bị thành công! Key đã được gán cho máy này.");
+                        setFullUnlocked(key, Date.now());
+                    } else {
+                        alert(`❌ Không thể đổi thiết bị: ${result.message}\n(Có thể mã Key này đã hết số lần Đổi thiết bị)`);
+                        resetToDemo();
+                    }
+                } catch (e) { alert("Lỗi kết nối khi yêu cầu đổi thiết bị!"); resetToDemo(); }
+            }
+
+            return {
+                isDemo: () => demoMode,
+                enterDemo: () => {
+                    demoMode = true;
+                    document.getElementById('licenseModalOverlay').style.display = 'none';
+                    const gearBtn = document.querySelector('.license-gear-btn');
+                    if (gearBtn) gearBtn.style.display = 'inline-flex';
+                    updateAnalysisButtonState();
+                },
+                verify: verifyWithServer,
+                changeDevice: changeDevice,
+                markVerifiedNow: () => localStorage.setItem('fox_last_verify_time', String(Date.now())),
+                logout: resetToDemo
+            };
+        })();
+
+        function selectMode(mode) {
+            if (mode === 'demo') {
+                _foxLicense.enterDemo();
+            } else {
+                document.getElementById('keyInputContainer').style.display = 'block';
+            }
+        }
 
         function openLicenseModal() {
             document.getElementById('licenseModalOverlay').style.display = 'flex';
@@ -2428,7 +2722,7 @@
 
             if (action === 'logout') {
                 if (confirm("🚪 Bạn muốn Đăng xuất khỏi thiết bị này?\n(Key vẫn giữ quyền sử dụng trên hệ thống)")) {
-                    forceLogout(false);
+                    _foxLicense.logout();
                 }
             } else if (action === 'change') {
                 if (confirm("🔄 Bạn muốn Đổi thiết bị?\n(Thiết bị này sẽ bị gỡ bỏ khỏi Google Sheet để bạn kích hoạt trên máy mới - Tối đa 3 lần đổi/Key)")) {
@@ -2443,7 +2737,7 @@
                     } catch (e) {
                         console.log("Lỗi gửi releaseDevice:", e);
                     }
-                    forceLogout(false);
+                    _foxLicense.logout();
                 }
             } else if (action === 'delete') {
                 if (confirm("🗑 XÓA KEY VĨNH VIỄN?\nBạn có chắc chắn muốn xóa Key và xóa Device ID khỏi Google Sheet? (Thao tác không thể hoàn tác)")) {
@@ -2458,84 +2752,20 @@
                     } catch (e) {
                         console.log("Lỗi xóa key:", e);
                     }
-                    forceLogout(false);
+                    _foxLicense.logout();
                 }
             }
             document.getElementById('settingsDropdown').classList.remove('open');
         }
 
-        function activateFullMode(key) {
-            isDemoMode = false; localStorage.setItem('fox_license_key', key);
-            if (demoTimer) clearTimeout(demoTimer);
-            document.getElementById('licenseModalOverlay').style.display = 'none';
-            infoMessageText.innerHTML = "✅ Bản Full Chính Thức đã kích hoạt thành công!";
-            const gearBtn = document.querySelector('.license-gear-btn');
-            if (gearBtn) gearBtn.style.display = 'none';
-            updateAnalysisButtonState(); checkAndShowQR();
-        }
-
-        async function verifyKeyWithServer(key, type, isSilent = false) {
-            if (!isSilent) infoMessageText.innerHTML = "Đang kiểm tra Key bản Full với Google Sheets...";
-            try {
-                const response = await fetch(LICENSE_GAS_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: "verifyKey", key: key, deviceId: getDeviceId(), type: type })
-                });
-                const result = await response.json();
-                if (result.status === "success") {
-                    activateFullMode(key);
-                } else {
-                    if (!isSilent) {
-                        let confirmChange = confirm(`❌ Lỗi: ${result.message}\n\nMã Key này có thể đang được sử dụng ở thiết bị khác.\nBạn có muốn XÁC NHẬN ĐỔI THIẾT BỊ (tự động đăng xuất máy cũ, lưu vào máy mới - tối đa 3 lần) không?`);
-                        if (confirmChange) {
-                            forceChangeDevice(key, type);
-                        } else {
-                            forceLogout();
-                        }
-                    } else { forceLogout(); }
-                }
-            } catch (e) {
-                if (isSilent) { activateFullMode(key); infoMessageText.innerHTML = "✅ Bản Full (Ngoại tuyến)"; }
-                else { alert("Lỗi mạng khi kiểm tra Key."); forceLogout(); }
-            }
-        }
-
-        async function forceChangeDevice(key, type) {
-            infoMessageText.innerHTML = "Đang gửi yêu cầu Đổi thiết bị...";
-            try {
-                const response = await fetch(LICENSE_GAS_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: "changeDevice", key: key, deviceId: getDeviceId(), type: type })
-                });
-                const result = await response.json();
-                if (result.status === "success") {
-                    alert("✅ Đổi thiết bị thành công! Key đã được gán cho máy này.");
-                    activateFullMode(key);
-                } else {
-                    alert(`❌ Không thể đổi thiết bị: ${result.message}\n(Có thể mã Key này đã hết số lần Đổi thiết bị)`);
-                    forceLogout();
-                }
-            } catch (e) { alert("Lỗi kết nối khi yêu cầu đổi thiết bị!"); forceLogout(); }
-        }
-
-        async function verifyEnteredKey() {
+        async function verifyEnteredKey(mode = 'verify') {
             const keyInput = document.getElementById('licenseKeyInput').value.trim();
             if (!keyInput) { alert("⚠️ Vui lòng nhập mã Key hợp lệ!"); return; }
-            await verifyKeyWithServer(keyInput, "full");
-        }
-
-        function forceLogout(isManual = false) {
-            localStorage.removeItem('fox_license_key'); isDemoMode = true;
-            document.getElementById('settingsDropdown').classList.remove('open');
-            stopAudioChannel('A'); stopAudioChannel('B');
-            document.getElementById('keyInputContainer').style.display = 'none';
-            document.getElementById('licenseKeyInput').value = '';
-            document.getElementById('licenseModalOverlay').style.display = 'flex';
-            const gearBtn = document.querySelector('.license-gear-btn');
-            if (gearBtn) gearBtn.style.display = 'inline-flex';
-            infoMessageText.innerHTML = "Bản Dùng thử Demo (Khóa tính năng nâng cao)."; infoMessageText.style.color = "#b91c1c";
-            isPaused = true; clearTimeout(stopTimer); pauseButton.textContent = "Đo / Dừng"; pauseButton.className = "btn-green";
-            updateUIState(); checkAndShowQR(); drawFrame(true);
+            if (mode === 'change') {
+                await _foxLicense.changeDevice(keyInput, "full");
+            } else {
+                await _foxLicense.verify(keyInput, "full");
+            }
         }
 
         function saveAppState() {
@@ -2576,27 +2806,18 @@
             restoreAppState();
             const urlParams = new URLSearchParams(window.location.search);
             const keyParam = urlParams.get('key');
-            if (keyParam) {
-                localStorage.setItem('fox_license_key', keyParam);
-                if (window.history && window.history.replaceState) {
-                    const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                    window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
-                }
+            if (keyParam && window.history && window.history.replaceState) {
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
             }
 
             let savedKey = localStorage.getItem('fox_license_key');
-            let lastVerify = parseInt(localStorage.getItem('fox_last_verify_time') || '0', 10);
-            let now = Date.now();
 
-            if (savedKey) {
-                if (now - lastVerify < 20000) {
-                    activateFullMode(savedKey);
-                } else {
-                    verifyKeyWithServer(savedKey, "full", true);
-                }
-            } else if (keyParam) {
+            if (keyParam) {
                 document.getElementById('licenseModalOverlay').style.display = 'none';
-                await verifyKeyWithServer(keyParam, "full");
+                await _foxLicense.verify(keyParam, "full", false);
+            } else if (savedKey) {
+                _foxLicense.verify(savedKey, "full", true);
             } else {
                 openLicenseModal();
             }
@@ -2604,15 +2825,15 @@
 
         setInterval(async () => {
             let activeKey = localStorage.getItem('fox_license_key');
-            if (activeKey && !isDemoMode) {
+            if (activeKey && !_foxLicense.isDemo()) {
                 try {
                     const response = await fetch(LICENSE_GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: "verifyKey", key: activeKey, deviceId: getDeviceId(), type: "full" }) });
                     const result = await response.json();
                     if (result.status !== "success") {
                         alert("⚠️ Key bản quyền của bạn đã bị đăng xuất hoặc giải phóng khỏi thiết bị. Ứng dụng sẽ quay lại bản dùng thử!");
-                        forceLogout();
+                        _foxLicense.logout();
                     } else {
-                        localStorage.setItem('fox_last_verify_time', Date.now().toString());
+                        _foxLicense.markVerifiedNow();
                     }
                 } catch (e) { }
             }
@@ -2624,9 +2845,7 @@
             const isSmartDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 900;
             if (isSmartDevice) { qrPanel.style.display = 'none'; return; }
             qrPanel.style.display = 'flex';
-            let currentUrl = window.location.href.split('?')[0];
-            let activeKey = localStorage.getItem('fox_license_key') || '', qrUrl = currentUrl;
-            if (activeKey) { qrUrl += '?key=' + encodeURIComponent(activeKey); }
+            let qrUrl = window.location.href.split('?')[0];
 
             container.innerHTML = '';
             try {
@@ -2739,7 +2958,7 @@
             item.addEventListener('mouseenter', () => updateSettingsPill(item.parentElement, item, true));
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (isDemoMode && item.dataset.target === 'speedSelect' && item.dataset.value === 'slow') { alert("Tốc độ quét 'Chậm' chỉ hỗ trợ trên bản Full."); return; }
+                if (_foxLicense.isDemo() && item.dataset.target === 'speedSelect' && item.dataset.value === 'slow') { alert("Tốc độ quét 'Chậm' chỉ hỗ trợ trên bản Full."); return; }
                 const targetSelect = document.getElementById(item.dataset.target);
                 item.parentElement.querySelectorAll('.settings-item').forEach(s => s.classList.remove('active'));
                 item.classList.add('active');
@@ -2771,7 +2990,7 @@
         function updateAnalysisButtonState() {
             const mode = getActiveChannelMode(), surveyMode = modeSelect.value, activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
 
-            if (isDemoMode) {
+            if (_foxLicense.isDemo()) {
                 btnAnalysis.disabled = true;
                 btnAnalysis.textContent = (getDisplayMode() === 'dbMeter') ? "Phân tích MCĐ (Bản Full)" : (mode === '1' ? "Phân tích FFT (Bản Full)" : "Xử lý nguồn âm (Bản Full)");
                 btnAnalysis.className = 'btn-slate';
@@ -2808,21 +3027,21 @@
 
         btnAnalysis.addEventListener('click', () => {
             if (getDisplayMode() === 'dbMeter') {
-                if (isDemoMode) {
+                if (_foxLicense.isDemo()) {
                     alert("⚠️ Chức năng Phân tích Mức cường độ âm bị khóa ở chế độ Dùng thử Demo. Vui lòng nhập Key bản Full!");
                     openLicenseModal();
                     return;
                 }
                 openMcdModal();
             } else if (getActiveChannelMode() === '1') {
-                if (isDemoMode) {
+                if (_foxLicense.isDemo()) {
                     alert("⚠️ Chức năng Phân tích Họa âm FFT chỉ dành cho bản Full.");
                     openLicenseModal();
                     return;
                 }
                 openFFTModal();
             } else {
-                if (isDemoMode) {
+                if (_foxLicense.isDemo()) {
                     alert("⚠️ Chức năng Xử lý 2 Nguồn âm chỉ dành cho bản Full.");
                     openLicenseModal();
                     return;
@@ -2870,7 +3089,13 @@
             const dpr = window.devicePixelRatio || 1, cssWidth = canvas.clientWidth, cssHeight = canvas.clientHeight;
             canvas.width = Math.round(cssWidth * dpr); canvas.height = Math.round(cssHeight * dpr);
             canvasCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            if (isTwoSourceModalOpen) { const container = document.getElementById('tsContainer'), canv = document.getElementById('twoSourceCanvas'); if (container && canv) { canv.width = container.clientWidth - 12; canv.height = container.clientHeight - 12; } }
+            if (isTwoSourceModalOpen) {
+                calculatePhaseAndDrawLive();
+            }
+            const fftOverlay = document.getElementById('fftModalOverlay');
+            if (fftOverlay && fftOverlay.style.display === 'flex') {
+                processAndDrawFFT();
+            }
             drawFrame();
         }
         window.addEventListener('resize', resizeCanvas);
@@ -2938,7 +3163,7 @@
                     isUserZoomed = false;
                     currentZoomY = 2.0;
                     detectedFrequency = 0;
-                    lockedFrequency = 440;
+                    lockedFrequency = 0;
                     totalTimeOnScreen = 5 * (1.0 / 440);
                     if (isPaused) drawFrame();
                 }
@@ -3019,17 +3244,41 @@
             let freq = sampleRate / truePos; if (freq < 45 || freq > 2800) return -1; return freq;
         }
 
-        function calculatePhaseDifference(dataA, dataB, freq, sampleRate) {
-            if (!dataA || !dataB || freq <= 0) return 0;
-            const samplesPerCycle = sampleRate / freq;
-            let maxCorr = -999999, bestShift = 0;
-            let searchLimit = Math.min(Math.floor(samplesPerCycle), 200);
+        function calculatePhaseDifference(dataA, dataB, freq, sampleRate, indexA, indexB) {
+            if (!dataA || !dataB || freq <= 0 || !sampleRate) return 0;
+            const lenA = dataA.length, lenB = dataB.length;
+            const winSize = Math.min(2048, lenA, lenB);
+            if (winSize < 64) return 0;
 
+            const samplesPerCycle = sampleRate / freq;
+            const halfCycle = Math.ceil(samplesPerCycle / 2) + 2;
+            const searchLimit = Math.min(halfCycle, Math.floor(winSize / 2) - 4);
+            if (searchLimit < 1) return 0;
+
+            const segA = new Float32Array(winSize);
+            const segB = new Float32Array(winSize);
+            const ptrA = (typeof indexA === 'number' && indexA > 0) ? indexA : lenA;
+            const ptrB = (typeof indexB === 'number' && indexB > 0) ? indexB : lenB;
+
+            let sqA = 0, sqB = 0;
+            for (let i = 0; i < winSize; i++) {
+                const iA = ((ptrA - winSize + i) % lenA + lenA) % lenA;
+                const iB = ((ptrB - winSize + i) % lenB + lenB) % lenB;
+                segA[i] = dataA[iA];
+                segB[i] = dataB[iB];
+                sqA += segA[i] * segA[i];
+                sqB += segB[i] * segB[i];
+            }
+            if (Math.sqrt(sqA / winSize) < 0.005 || Math.sqrt(sqB / winSize) < 0.005) return 0;
+
+            let maxCorr = -Infinity, bestShift = 0;
             for (let shift = -searchLimit; shift <= searchLimit; shift++) {
                 let corr = 0, count = 0;
-                for (let i = 200; i < 2000; i++) {
-                    let idxA = i, idxB = i + shift;
-                    if (idxB >= 0 && idxB < dataB.length) { corr += dataA[idxA] * dataB[idxB]; count++; }
+                const iStart = Math.max(0, -shift);
+                const iEnd = Math.min(winSize, winSize - shift);
+                for (let i = iStart; i < iEnd; i++) {
+                    corr += segA[i] * segB[i + shift];
+                    count++;
                 }
                 if (count > 0) corr /= count;
                 if (corr > maxCorr) { maxCorr = corr; bestShift = shift; }
@@ -3199,7 +3448,7 @@
             if (channelConfig.A.active || channelConfig.B.active) { pauseButton.disabled = false; resetButton.disabled = false; if (isPaused) { infoMessageText.innerHTML = "Đã kết nối. Bấm <span class='info-badge'>Đo / Dừng</span> để khảo sát."; infoMessageText.style.color = "#0369a1"; } }
             else { pauseButton.disabled = true; resetButton.disabled = true; infoMessageText.innerHTML = "Nhấn vào <span class='info-badge'>Kênh A</span> hoặc <span class='info-badge'>Kênh B</span> để bật mic."; infoMessageText.style.color = "#0369a1"; }
             updateAnalysisButtonState();
-            const gearBtn = document.querySelector('.license-gear-btn'); if (gearBtn) { gearBtn.style.display = isDemoMode ? 'inline-flex' : 'none'; }
+            const gearBtn = document.querySelector('.license-gear-btn'); if (gearBtn) { gearBtn.style.display = _foxLicense.isDemo() ? 'inline-flex' : 'none'; }
         }
 
         async function initAudioChannel(channelId, deviceId = null) {
@@ -3223,7 +3472,7 @@
                 let finalSourceNode = cfg.source;
                 if (mode === '2' && isSharedDevice) { const splitter = audioCtx.createChannelSplitter(2); cfg.source.connect(splitter); const channelSelector = audioCtx.createGain(); splitter.connect(channelSelector, (channelId === 'A') ? 0 : 1); finalSourceNode = channelSelector; }
                 cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 45; cfg.filterHP.type = 'highpass';
-                cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
+                cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 5500; cfg.filterLP.type = 'lowpass';
                 cfg.workletNode = new AudioWorkletNode(audioCtx, 'fox-audio-processor');
                 cfg.workletNode.port.onmessage = (event) => { if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) { let inputChunk = event.data, len = cfg.data.length, currentIdx = cfg.index; for (let i = 0; i < inputChunk.length; i++) { cfg.data[(currentIdx + i) % len] = inputChunk[i]; } cfg.index += inputChunk.length; } };
                 cfg.dummy = audioCtx.createGain(); cfg.dummy.gain.value = 0;
@@ -3265,7 +3514,7 @@
                 lastDbSampleTime = 0;
                 if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
                 if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
-                isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / lockedFrequency);
+                isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 0; totalTimeOnScreen = 5 * (1.0 / 440);
                 pauseButton.textContent = "Đang đo..."; pauseButton.className = "btn-red";
                 let text = "Đang quét tín hiệu: ";
                 if (channelConfig.A.active) text += "<span class='channel-tag-a'>Kênh A</span>";
@@ -3444,12 +3693,14 @@
                 }
             }
 
+            const unitA = (micCalibOffsetA !== 0) ? 'dB SPL - Đã hiệu chuẩn' : 'dB FS - Chưa hiệu chuẩn';
+            const unitB = (micCalibOffsetB !== 0) ? 'dB SPL - Đã hiệu chuẩn' : 'dB FS - Chưa hiệu chuẩn';
             if (mode === '2') {
                 let subH = height / 2;
-                renderSingleDbChart(ctx, dbHistoryA, selectedBarIndexA, '🔴 KÊNH A - MỨC CƯỜNG ĐỘ ÂM (dB)', '#dc2626', 0, 0, width, subH);
-                renderSingleDbChart(ctx, dbHistoryB, selectedBarIndexB, '🔵 KÊNH B - MỨC CƯỜNG ĐỘ ÂM (dB)', '#2563eb', 0, subH, width, subH);
+                renderSingleDbChart(ctx, dbHistoryA, selectedBarIndexA, `🔴 KÊNH A - MỨC CƯỜNG ĐỘ ÂM (${unitA})`, '#dc2626', 0, 0, width, subH);
+                renderSingleDbChart(ctx, dbHistoryB, selectedBarIndexB, `🔵 KÊNH B - MỨC CƯỜNG ĐỘ ÂM (${unitB})`, '#2563eb', 0, subH, width, subH);
             } else {
-                renderSingleDbChart(ctx, dbHistoryA, selectedBarIndexA, '🔴 KÊNH A - MỨC CƯỜNG ĐỘ ÂM (dB)', '#10b981', 0, 0, width, height);
+                renderSingleDbChart(ctx, dbHistoryA, selectedBarIndexA, `🔴 KÊNH A - MỨC CƯỜNG ĐỘ ÂM (${unitA})`, '#10b981', 0, 0, width, height);
             }
         }
 
@@ -3462,7 +3713,7 @@
                         let recentData = new Float32Array(2048), len = mainCfg.data.length, currentIdx = mainCfg.index;
                         for (let i = 0; i < 2048; i++) recentData[i] = mainCfg.data[((currentIdx - 2048 + i) % len + len) % len];
                         let freq = autoCorrelate(recentData, sampleRate);
-                        if (freq > 0) { detectedFrequency = (detectedFrequency === 0) ? freq : (detectedFrequency * 0.7 + freq * 0.3); if (Math.abs(detectedFrequency - lockedFrequency) / lockedFrequency > 0.08) lockedFrequency = detectedFrequency; if (typeof updateFoxLiveFrequency === 'function') updateFoxLiveFrequency(lockedFrequency || detectedFrequency); }
+                        if (freq > 0) { detectedFrequency = (detectedFrequency === 0) ? freq : (detectedFrequency * 0.7 + freq * 0.3); if (lockedFrequency <= 0 || Math.abs(detectedFrequency - lockedFrequency) / lockedFrequency > 0.08) lockedFrequency = detectedFrequency; if (typeof updateFoxLiveFrequency === 'function') updateFoxLiveFrequency(lockedFrequency || detectedFrequency); }
                     }
                     lastCorrelateTime = now;
                 }
@@ -3540,7 +3791,8 @@
             const qrPanel = document.getElementById('qrPanel');
             if (qrPanel) qrPanel.style.display = 'none';
 
-            isUserZoomed = false; currentZoomY = 2.0; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440);
+            isUserZoomed = false; currentZoomY = 2.0; detectedFrequency = 0; lockedFrequency = 0; totalTimeOnScreen = 5 * (1.0 / 440);
+            if (typeof updateFoxLiveFrequency === 'function') updateFoxLiveFrequency(0);
 
             if (modeSelect) modeSelect.value = 'continuous';
             isContinuousMode = true; clearTimeout(stopTimer);
@@ -3556,18 +3808,21 @@
         }
 
         function handleAppReturn() {
-            resetFeaturesAndAdjustments();
+            const hasActiveMic = (channelConfig.A.active || channelConfig.B.active);
+            const wasMeasuring = !isPaused;
+            if (wasMeasuring) {
+                isPaused = true;
+                clearTimeout(stopTimer);
+                pauseButton.textContent = "Đo / Dừng";
+                pauseButton.className = "btn-green";
+            }
+            pauseButton.disabled = !hasActiveMic;
+            resetButton.disabled = !hasActiveMic;
 
-            isPaused = true;
-            clearTimeout(stopTimer);
-
-            pauseButton.textContent = "Đo / Dừng";
-            pauseButton.className = "btn-green";
-            pauseButton.disabled = true;
-            resetButton.disabled = false;
-
-            infoMessageText.innerHTML = "⚠️ Ứng dụng vừa quay lại. Vui lòng bấm <span class='info-badge'>Làm mới</span> để tiếp tục đo.";
-            infoMessageText.style.color = "#b91c1c";
+            if (wasMeasuring && hasActiveMic) {
+                infoMessageText.innerHTML = "⏸ Đã tạm dừng thu âm khi chuyển tab (dữ liệu vẫn được giữ). Bấm <span class='info-badge'>Đo / Dừng</span> để tiếp tục.";
+                infoMessageText.style.color = "#0369a1";
+            }
 
             updateAnalysisButtonState();
             drawFrame(false);
@@ -3593,11 +3848,11 @@
             const offAEl = document.getElementById('calibOffsetDisplayA');
             const offBEl = document.getElementById('calibOffsetDisplayB');
 
-            let lastA = (dbHistoryA.length > 0) ? dbHistoryA[dbHistoryA.length - 1].rawDb : 60.0;
-            let lastB = (dbHistoryB.length > 0) ? dbHistoryB[dbHistoryB.length - 1].rawDb : 60.0;
+            let lastA = (dbHistoryA.length > 0) ? dbHistoryA[dbHistoryA.length - 1].rawDb : null;
+            let lastB = (dbHistoryB.length > 0) ? dbHistoryB[dbHistoryB.length - 1].rawDb : null;
 
-            if (rawAEl) rawAEl.innerText = lastA.toFixed(1) + " dB";
-            if (rawBEl) rawBEl.innerText = lastB.toFixed(1) + " dB";
+            if (rawAEl) rawAEl.innerText = (lastA !== null) ? (lastA.toFixed(1) + " dB") : "Chưa đo (--)";
+            if (rawBEl) rawBEl.innerText = (lastB !== null) ? (lastB.toFixed(1) + " dB") : "Chưa đo (--)";
 
             if (offAEl) offAEl.innerText = (micCalibOffsetA >= 0 ? "+" : "") + micCalibOffsetA.toFixed(1) + " dB";
             if (offBEl) offBEl.innerText = (micCalibOffsetB >= 0 ? "+" : "") + micCalibOffsetB.toFixed(1) + " dB";
@@ -3612,7 +3867,11 @@
             }
 
             let history = (channel === 'B') ? dbHistoryB : dbHistoryA;
-            let rawVal = (history.length > 0) ? history[history.length - 1].rawDb : 60.0;
+            if (history.length === 0) {
+                alert(`⚠️ Chưa có dữ liệu đo thô cho Kênh ${channel}. Vui lòng bật Micro và bấm Đo trước khi hiệu chuẩn!`);
+                return;
+            }
+            let rawVal = history[history.length - 1].rawDb;
 
             let offset = refVal - rawVal;
             if (channel === 'B') {
@@ -3672,6 +3931,11 @@
 
             const mode = getActiveChannelMode();
             const tableContainer = document.getElementById('mcdReportTableContainer');
+            const isCalibA = (micCalibOffsetA !== 0);
+            const isCalibB = (micCalibOffsetB !== 0);
+            const calibBanner = (!isCalibA || (mode === '2' && !isCalibB))
+                ? `<div style="margin-bottom:12px; padding:10px 12px; border-radius:6px; background:#fffbeb; border:1px solid #f59e0b; color:#92400e; font-size:12.5px; font-weight:600;">⚠️ Micro chưa hiệu chuẩn theo máy đo SPL chuẩn: các số liệu hiện tại là mức tương đối (dB FS). Ngưỡng an toàn thính giác và khoảng cách chỉ mang tính tham khảo cho tới khi hoàn tất hiệu chuẩn.</div>`
+                : '';
 
             if (mode === '2') {
                 let calDbA = dbHistoryA.map(h => h.db);
@@ -3682,7 +3946,7 @@
                 let calMaxA = calDbA.length > 0 ? Math.max(...calDbA) : 0;
                 let calMaxB = calDbB.length > 0 ? Math.max(...calDbB) : 0;
 
-                let htmlContent = `
+                let htmlContent = calibBanner + `
                     <div style="padding: 14px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px;">
                         <h3 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 15px; text-transform: uppercase;">
                             📊 BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM (MCĐ)
@@ -3729,10 +3993,10 @@
                 let calMinDb = calDbValues.length > 0 ? Math.min(...calDbValues) : 0;
                 let calAvgDb = calDbValues.length > 0 ? (calDbValues.reduce((a, b) => a + b, 0) / calDbValues.length) : 0;
 
-                let htmlContent = `
+                let htmlContent = calibBanner + `
                     <div style="padding: 14px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px;">
                         <h3 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 15px; text-transform: uppercase;">
-                            📊 BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM (MCĐ)
+                            📊 BẢNG THỐNG KÊ MỨC CƯỜNG ĐỘ ÂM (${isCalibA ? 'dB SPL' : 'dB tương đối'})
                         </h3>
                         <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13.5px;">
                             <thead>
@@ -3782,6 +4046,9 @@
             box.style.display = 'block';
 
             let r0 = 1.0, L0 = 90.0;
+            const distDisclaimer = (micCalibOffsetA === 0)
+                ? '<div style="margin-top:10px; font-size:12px; color:#92400e; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:6px;">⚠️ <b>Lưu ý khoa học:</b> Khoảng cách quy đổi theo mô hình nguồn điểm trường tự do lý tưởng ($L_0 = 90\\text{ dB}$ tại $r_0 = 1\\text{ m}$). Kết quả mét tuyệt đối chỉ chính xác sau khi hiệu chuẩn Micro với nguồn chuẩn; trong trường hợp 2 kênh cùng độ nhạy, <b>tỷ số khoảng cách</b> vẫn đáng tin cậy hơn.</div>'
+                : '<div style="margin-top:10px; font-size:12px; color:#0369a1; background:#f0f9ff; border:1px solid #bae6fd; padding:8px 10px; border-radius:6px;">ℹ️ <b>Mô hình lý thuyết:</b> Quy đổi giả định nguồn điểm đẳng hướng trong không gian tự do ($L_0 = 90\\text{ dB}$ tại $r_0 = 1\\text{ m}$).</div>';
 
             if (mode === '2') {
                 if (dbHistoryA.length === 0 || dbHistoryB.length === 0) {
@@ -3834,6 +4101,7 @@
                             <div class="dist-card-sub">$10^{\\frac{L_A - L_B}{20}}$</div>
                         </div>
                     </div>
+                    ${distDisclaimer}
                 `;
             } else {
                 if (dbHistoryA.length === 0) {
@@ -3858,11 +4126,12 @@
                     <div class="dist-card-container">
                         
                         <div class="dist-card dist-card-border-a">
-                            <div class="dist-card-title">KHOẢNG CÁCH ƯỚC TÍNH</div>
+                            <div class="dist-card-title">KHOẢNG CÁCH ƯỚC TÍNH (MÔ HÌNH LÝ THUYẾT)</div>
                             <div class="dist-card-value" style="color:#b91c1c;">${dist.toFixed(2)} <span style="font-size:14px; font-weight:bold;">m</span></div>
                             <div class="dist-card-sub">Ước tính từ chuẩn $L_0 = 90\\text{ dB}$ tại $1\\text{m}$</div>
                         </div>
                     </div>
+                    ${distDisclaimer}
                 `;
             }
 
@@ -3872,7 +4141,7 @@
         }
 
         function openFFTModal() {
-            if (isDemoMode) { alert("Chức năng Phân tích Họa âm FFT chỉ có trên bản Full."); return; }
+            if (_foxLicense.isDemo()) { alert("Chức năng Phân tích Họa âm FFT chỉ có trên bản Full."); return; }
             document.getElementById('fftModalOverlay').classList.add('animUI-visible'); document.getElementById('fftModalOverlay').style.display = 'flex';
             const inputFreq = document.getElementById('fftTargetFreq'); if (lockedFrequency > 20) inputFreq.value = Math.round(lockedFrequency);
             setTimeout(processAndDrawFFT, 350);
@@ -3889,7 +4158,8 @@
             if (!f0 || f0 <= 0 || !channelConfig.A.data) return;
             const fftCanvas = document.getElementById('fftDisplayCanvas');
             const fCtx = fftCanvas.getContext('2d');
-            const cw = fftCanvas.parentElement.clientWidth - 12, ch = fftCanvas.parentElement.clientHeight - 12;
+            const cw = Math.max(240, fftCanvas.parentElement.clientWidth - 12);
+            const ch = Math.max(220, fftCanvas.parentElement.clientHeight - 12);
             fftCanvas.width = cw; fftCanvas.height = ch;
 
             fCtx.fillStyle = '#f8fafc'; fCtx.fillRect(0, 0, cw, ch);
@@ -3901,44 +4171,49 @@
             }
 
             let magnitudes = computeFFT(recentData);
+            for (let i = 0; i < magnitudes.length; i++) magnitudes[i] *= 2.0; // Bù suy hao biên độ cửa sổ Hann
             let binFreq = sampleRate / fftSize;
+
+            const leftM = 46, rightM = 22, topM = 14, bottomM = 40;
+            const plotW = cw - leftM - rightM;
+            const chartH = ch - topM - bottomM;
+            const axisY = ch - bottomM;
 
             fCtx.strokeStyle = '#e2e8f0'; fCtx.lineWidth = 1;
             fCtx.beginPath();
             let gridCols = 10, gridRows = 8;
-            for (let i = 1; i < gridCols; i++) { let x = (i / gridCols) * cw; fCtx.moveTo(x, 0); fCtx.lineTo(x, ch - 25); }
-            for (let i = 1; i < gridRows; i++) { let y = (i / gridRows) * (ch - 25); fCtx.moveTo(0, y); fCtx.lineTo(cw, y); }
+            for (let i = 1; i <= gridCols; i++) { let x = leftM + (i / gridCols) * plotW; fCtx.moveTo(x, topM); fCtx.lineTo(x, axisY); }
+            for (let i = 1; i < gridRows; i++) { let y = topM + (i / gridRows) * chartH; fCtx.moveTo(leftM, y); fCtx.lineTo(cw - rightM, y); }
             fCtx.stroke();
 
             fCtx.strokeStyle = '#64748b'; fCtx.lineWidth = 1.5;
             fCtx.beginPath();
-            fCtx.moveTo(40, ch - 25); fCtx.lineTo(cw - 10, ch - 25);
-            fCtx.moveTo(40, 10); fCtx.lineTo(40, ch - 25);
+            fCtx.moveTo(leftM, axisY); fCtx.lineTo(cw - rightM, axisY);
+            fCtx.moveTo(leftM, topM); fCtx.lineTo(leftM, axisY);
             fCtx.stroke();
 
             fCtx.fillStyle = '#475569'; fCtx.font = '10px "Inter", sans-serif'; fCtx.textAlign = 'center';
             let maxFreqShow = 5000;
             for (let i = 0; i <= 5; i++) {
                 let freqVal = (maxFreqShow / 5) * i;
-                let x = 40 + (freqVal / maxFreqShow) * (cw - 50);
-                fCtx.beginPath(); fCtx.moveTo(x, ch - 25); fCtx.lineTo(x, ch - 20); fCtx.stroke();
-                fCtx.fillText(`${freqVal}Hz`, x, ch - 10);
+                let x = leftM + (freqVal / maxFreqShow) * plotW;
+                fCtx.beginPath(); fCtx.moveTo(x, axisY); fCtx.lineTo(x, axisY + 5); fCtx.stroke();
+                fCtx.fillText(`${freqVal}Hz`, x, axisY + 16);
             }
-            fCtx.font = 'bold 11px "Inter", sans-serif'; fCtx.textAlign = 'right';
-            fCtx.fillText("Tần số (Hz) ➔", cw - 10, ch - 10);
+            fCtx.font = 'bold 11px "Inter", sans-serif'; fCtx.textAlign = 'center';
+            fCtx.fillText("Tần số (Hz) ➔", leftM + plotW / 2, ch - 6);
 
             fCtx.textAlign = 'right'; fCtx.font = '10px "Inter", sans-serif';
-            let chartH = ch - 35;
             for (let i = 0; i <= 4; i++) {
-                let y = 10 + (chartH / 4) * i;
+                let y = topM + (chartH / 4) * i;
                 let valLabel = (1.0 - i * 0.25).toFixed(2);
-                fCtx.fillText(valLabel, 35, y + 3);
+                fCtx.fillText(valLabel, leftM - 6, y + 3);
             }
             fCtx.save();
-            fCtx.translate(15, ch / 2);
+            fCtx.translate(14, topM + chartH / 2);
             fCtx.rotate(-Math.PI / 2);
             fCtx.font = 'bold 11px "Inter", sans-serif'; fCtx.textAlign = 'center';
-            fCtx.fillText("Biên độ (A)", 0, 0);
+            fCtx.fillText("Biên độ chuẩn hóa (A)", 0, 0);
             fCtx.restore();
 
             let maxMag = 0;
@@ -3950,8 +4225,8 @@
 
             fCtx.strokeStyle = '#3b82f6'; fCtx.lineWidth = 1.5; fCtx.beginPath();
             for (let i = 2; i < limitBins; i++) {
-                let freq = i * binFreq, x = 40 + (freq / maxFreqShow) * (cw - 50);
-                let magNorm = magnitudes[i] / maxMag, y = (ch - 25) - (magNorm * chartH);
+                let freq = i * binFreq, x = leftM + (freq / maxFreqShow) * plotW;
+                let magNorm = magnitudes[i] / maxMag, y = axisY - (magNorm * chartH);
                 if (i === 2) fCtx.moveTo(x, y); else fCtx.lineTo(x, y);
             }
             fCtx.stroke();
@@ -3959,23 +4234,47 @@
             fCtx.font = 'bold 11px "Inter", sans-serif'; fCtx.textAlign = 'center';
             for (let n = 1; n <= 5; n++) {
                 let targetFreq = f0 * n; if (targetFreq > maxFreqShow) break;
-                let targetBin = Math.round(targetFreq / binFreq); if (targetBin >= limitBins) continue;
+                let centerBin = Math.round(targetFreq / binFreq); if (centerBin >= limitBins) continue;
+                let bestBin = centerBin;
+                for (let b = Math.max(2, centerBin - 1); b <= Math.min(limitBins - 1, centerBin + 1); b++) {
+                    if (magnitudes[b] > magnitudes[bestBin]) bestBin = b;
+                }
 
-                let x = 40 + (targetFreq / maxFreqShow) * (cw - 50);
-                let magNorm = magnitudes[targetBin] / maxMag, yPeak = (ch - 25) - (magNorm * chartH);
+                let x = leftM + (targetFreq / maxFreqShow) * plotW;
+                let magNorm = magnitudes[bestBin] / maxMag, yPeak = axisY - (magNorm * chartH);
 
                 fCtx.strokeStyle = '#ef4444'; fCtx.lineWidth = 2.5;
-                fCtx.beginPath(); fCtx.moveTo(x, ch - 25); fCtx.lineTo(x, yPeak); fCtx.stroke();
+                fCtx.beginPath(); fCtx.moveTo(x, axisY); fCtx.lineTo(x, yPeak); fCtx.stroke();
 
                 fCtx.fillStyle = '#ef4444'; fCtx.beginPath(); fCtx.arc(x, yPeak, 3.5, 0, 2 * Math.PI); fCtx.fill();
-                fCtx.fillStyle = '#0f172a'; fCtx.fillText(`${n}f0 (${Math.round(targetFreq)}Hz)`, x, Math.max(15, yPeak - 8));
+                fCtx.fillStyle = '#0f172a'; fCtx.fillText(`${n}f0 (${Math.round(targetFreq)}Hz)`, x, Math.max(topM + 10, yPeak - 8));
             }
         }
 
+        function updateTsModePill(animated = true) {
+            const pill = document.getElementById('tsModePill');
+            const activeBtn = document.querySelector('.ts-mode-toggle button.active-mode');
+            if (!pill || !activeBtn || activeBtn.offsetWidth === 0) return;
+            pill.style.transition = animated
+                ? 'transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), width 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease'
+                : 'none';
+            pill.style.width = `${activeBtn.offsetWidth}px`;
+            pill.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+            pill.style.opacity = '1';
+        }
+
         function setTsMode(mode) {
+            const prevMode = tsViewMode;
             tsViewMode = mode;
             document.getElementById('btnModeOverlay').classList.toggle('active-mode', mode === 'overlay');
             document.getElementById('btnModeSum').classList.toggle('active-mode', mode === 'sum');
+            updateTsModePill(true);
+            const tsCanvas = document.getElementById('twoSourceCanvas');
+            if (tsCanvas && prevMode !== mode) {
+                tsCanvas.classList.remove('ts-canvas-switching');
+                void tsCanvas.offsetWidth;
+                tsCanvas.classList.add('ts-canvas-switching');
+            }
             if (isTsPaused) calculatePhaseAndDrawLive();
         }
 
@@ -4002,22 +4301,34 @@
             document.getElementById('eqAmpA').innerText = ampA;
             document.getElementById('eqAmpB').innerText = ampB;
 
-            let phaseStr = phaseRad >= 0 ? ` + ${phaseRad.toFixed(2)}` : ` - ${Math.abs(phaseRad).toFixed(2)}`;
-            document.getElementById('eqPhase').innerText = phaseStr;
+            const diff = Math.abs(freqA - freqB);
+            const isBeat = (freqA > 10 && freqB > 10 && diff > 1.0);
 
-            document.getElementById('hudPhaseRad').innerText = phaseRad.toFixed(2);
-            document.getElementById('hudPhaseDeg').innerText = Math.round(phaseRad * 180 / Math.PI);
+            if (isBeat) {
+                document.getElementById('eqPhase').innerText = " + Δφ(t)";
+                document.getElementById('hudPhaseRad').innerText = "Biến thiên (Phách)";
+                document.getElementById('hudPhaseDeg').innerText = "không cố định";
+            } else {
+                let phaseStr = phaseRad >= 0 ? ` + ${phaseRad.toFixed(2)}` : ` - ${Math.abs(phaseRad).toFixed(2)}`;
+                document.getElementById('eqPhase').innerText = phaseStr;
+                document.getElementById('hudPhaseRad').innerText = phaseRad.toFixed(2);
+                document.getElementById('hudPhaseDeg').innerText = Math.round(phaseRad * 180 / Math.PI);
+            }
 
             const sumLine = document.getElementById('eqSumLine');
             if (sumLine) {
-                let diff = Math.abs(freqA - freqB);
-                if (freqA > 10 && freqB > 10 && diff > 3.0) {
+                let a1 = parseFloat(ampA) || 0;
+                let a2 = parseFloat(ampB) || 0;
+                if (isBeat) {
                     let f_beat = diff.toFixed(1);
                     let f_carrier = ((freqA + freqB) / 2).toFixed(1);
-                    sumLine.innerHTML = `Tổng hợp (Sóng Phách): <span class="math-symbol" style="color:#38bdf8;">u = 2A·cos(2π·${(diff / 2).toFixed(1)}·t)·cos(2π·${f_carrier}·t) &rarr; f<sub>phách</sub> = ${f_beat} Hz</span>`;
+                    if (Math.abs(a1 - a2) < 0.05) {
+                        sumLine.innerHTML = `Tổng hợp (Sóng Phách): <span class="math-symbol" style="color:#38bdf8;">u = ${(2 * a1).toFixed(2)}·cos(2π·${(diff / 2).toFixed(1)}·t)·cos(2π·${f_carrier}·t) &rarr; f<sub>phách</sub> = ${f_beat} Hz</span>`;
+                    } else {
+                        let aMin = Math.abs(a1 - a2).toFixed(2), aMax = (a1 + a2).toFixed(2);
+                        sumLine.innerHTML = `Tổng hợp (Phách không đều): <span class="math-symbol" style="color:#38bdf8;">u = ${a1.toFixed(2)}·cos(2π·${freqA.toFixed(1)}·t) + ${a2.toFixed(2)}·cos(2π·${freqB.toFixed(1)}·t) &rarr; A ∈ [${aMin}, ${aMax}], f<sub>phách</sub> = ${f_beat} Hz</span>`;
+                    }
                 } else {
-                    let a1 = parseFloat(ampA) || 0;
-                    let a2 = parseFloat(ampB) || 0;
                     let sum_amp_sq = a1 * a1 + a2 * a2 + 2 * a1 * a2 * Math.cos(phaseRad);
                     let sum_amp = Math.sqrt(Math.max(0, sum_amp_sq)).toFixed(2);
                     let phi_sum = Math.atan2(a2 * Math.sin(phaseRad), a1 + a2 * Math.cos(phaseRad));
@@ -4033,7 +4344,7 @@
             showTsResults = false; showTsEquations = false;
 
             const overlay = document.getElementById('twoSourceModalOverlay');
-            if (overlay) { overlay.style.display = 'flex'; setTimeout(() => overlay.classList.add('animUI-visible'), 10); }
+            if (overlay) { overlay.style.display = 'flex'; updateTsModePill(false); setTimeout(() => overlay.classList.add('animUI-visible'), 10); }
 
             const resBtn = document.getElementById('tsResultBtn'), eqBtn = document.getElementById('tsEquationBtn');
             if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
@@ -4133,7 +4444,9 @@
                         document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000 / currentCalcFreqB).toFixed(2) : "0.00";
 
                         let avgFreq = (currentCalcFreqA + currentCalcFreqB) / 2;
-                        let calculatedPhase = calculatePhaseDifference(activeDataA, activeDataB, avgFreq > 0 ? avgFreq : 440, sampleRate);
+                        let calculatedPhase = (currentCalcFreqA > 10 && currentCalcFreqB > 10 && Math.abs(currentCalcFreqA - currentCalcFreqB) <= 1.0)
+                            ? calculatePhaseDifference(activeDataA, activeDataB, avgFreq, sampleRate, cIdxA, cIdxB)
+                            : 0;
 
                         updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase, currentAmpA, currentAmpB);
                     }
@@ -4415,15 +4728,26 @@
 
         let foxChatHistory = [];
 
+        function escapeFoxHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function getLabTelemetry() {
-            let fA = (lockedFrequency || detectedFrequency || 0);
-            let fB = (typeof currentCalcFreqB !== 'undefined' ? currentCalcFreqB : 0);
+            const activeA = !!(channelConfig && channelConfig.A && channelConfig.A.active);
+            const activeB = !!(channelConfig && channelConfig.B && channelConfig.B.active);
+            let fA = activeA ? (lockedFrequency || detectedFrequency || 0) : 0;
+            let fB = activeB && (typeof currentCalcFreqB !== 'undefined') ? currentCalcFreqB : 0;
             let mode = (typeof getActiveChannelMode === 'function') ? getActiveChannelMode() : '1';
 
-            let ampA = (typeof currentAmpA !== 'undefined' && parseFloat(currentAmpA) > 0) ? currentAmpA : '0.00';
-            let ampB = (typeof currentAmpB !== 'undefined' && parseFloat(currentAmpB) > 0) ? currentAmpB : '0.00';
+            let ampA = (activeA && typeof currentAmpA !== 'undefined' && parseFloat(currentAmpA) > 0) ? currentAmpA : '0.00';
+            let ampB = (activeB && typeof currentAmpB !== 'undefined' && parseFloat(currentAmpB) > 0) ? currentAmpB : '0.00';
 
-            if (ampA === '0.00' && channelConfig && channelConfig.A && channelConfig.A.data && channelConfig.A.index > 512) {
+            if (activeA && ampA === '0.00' && channelConfig.A.data && channelConfig.A.index > 512) {
                 let d = channelConfig.A.data, idx = channelConfig.A.index, l = d.length, maxV = 0;
                 for (let i = 0; i < 512; i++) {
                     let v = Math.abs(d[((idx - 512 + i) % l + l) % l]);
@@ -4432,17 +4756,20 @@
                 if (maxV > 0) ampA = maxV.toFixed(2);
             }
 
+            const phaseApplicable = !(activeA && activeB && fA > 10 && fB > 10 && Math.abs(fA - fB) > 1.0);
             let phaseDeg = '0', phaseRad = '0.00';
             const pDegEl = document.getElementById('hudPhaseDeg');
             const pRadEl = document.getElementById('hudPhaseRad');
-            if (pDegEl && pDegEl.innerText) phaseDeg = pDegEl.innerText;
-            if (pRadEl && pRadEl.innerText) phaseRad = pRadEl.innerText;
+            if (phaseApplicable) {
+                if (pDegEl && pDegEl.innerText) phaseDeg = pDegEl.innerText;
+                if (pRadEl && pRadEl.innerText) phaseRad = pRadEl.innerText;
+            }
 
-            let timeBase = (typeof totalTimeOnScreen !== 'undefined') ? (totalTimeOnScreen / 10 * 1000).toFixed(2) + ' ms/ô' : '1.42 ms/ô';
+            let timeBase = (typeof totalTimeOnScreen !== 'undefined') ? (totalTimeOnScreen / 10 * 1000).toFixed(2) + ' ms/ô' : '1.14 ms/ô';
 
             let fftPeak = null;
             const fftTargetEl = document.getElementById('fftTargetFreq');
-            if (fftTargetEl && fftTargetEl.value) {
+            if (activeA && fftTargetEl && fftTargetEl.value) {
                 fftPeak = fftTargetEl.value + ' Hz';
             }
 
@@ -4451,20 +4778,21 @@
                 isPaused: isPaused ? 'Đang Dừng (Freeze/Hold)' : 'Đang Đo thời gian thực (Live)',
                 timeBaseMs: timeBase,
                 channelA: {
-                    active: !!(channelConfig && channelConfig.A && channelConfig.A.active),
+                    active: activeA,
                     frequency: fA > 0 ? fA.toFixed(1) + ' Hz' : '0.0 Hz',
                     period: fA > 0 ? (1000 / fA).toFixed(2) + ' ms' : '0.00 ms',
                     amplitudePeak: ampA
                 },
                 channelB: {
-                    active: !!(channelConfig && channelConfig.B && channelConfig.B.active),
+                    active: activeB,
                     frequency: fB > 0 ? fB.toFixed(1) + ' Hz' : '0.0 Hz',
                     period: fB > 0 ? (1000 / fB).toFixed(2) + ' ms' : '0.00 ms',
                     amplitudePeak: ampB
                 },
                 phaseDifference: {
-                    degrees: phaseDeg + '°',
-                    radians: phaseRad + ' rad'
+                    applicable: phaseApplicable,
+                    degrees: phaseApplicable ? (phaseDeg + '°') : 'Biến thiên (Phách)',
+                    radians: phaseApplicable ? (phaseRad + ' rad') : 'Biến thiên'
                 },
                 fftPeak: fftPeak
             };
@@ -4487,7 +4815,7 @@
             }
         }
 
-        async function fetchGasChatWithRetry(payload, maxRetries = 1, timeoutMs = 20000) {
+        async function fetchGasChatWithRetry(payload, maxRetries = 1, timeoutMs = 45000) {
             for (let attempt = 0; attempt <= maxRetries; attempt++) {
                 const controller = new AbortController();
                 const timerId = setTimeout(() => controller.abort(), timeoutMs);
@@ -4516,28 +4844,34 @@
         async function sendFoxMessage() {
             const text = chatInput.value.trim();
             if (!text && !uploadedImageBase64) return;
-            if (isDemoMode) { if (demoChatCount >= MAX_DEMO_CHAT) { alert("⚠️ Bản Demo chỉ cho phép hỏi AI tối đa 3 lần. Vui lòng nhập Key Bản Full để sử dụng tiếp!"); openLicenseModal(); return; } demoChatCount++; }
+            if (_foxLicense.isDemo()) {
+                if (demoChatCount >= MAX_DEMO_CHAT) {
+                    alert(`⚠️ Bản Demo chỉ cho phép hỏi AI tối đa ${MAX_DEMO_CHAT} lần. Vui lòng nhập Key Bản Full để sử dụng tiếp!`);
+                    openLicenseModal();
+                    return;
+                }
+                demoChatCount++;
+            }
 
-            let userDisplayHtml = text;
             let imgBase64ToSend = uploadedImageBase64;
-            if (uploadedImageBase64) {
-                userDisplayHtml = `<img src="${uploadedImageBase64}" class="fox-preview-img"><br>` + text;
+            let userMsgPayload = { text: text, imageSrc: null };
+            if (uploadedImageBase64 && uploadedImageBase64.indexOf('data:image/') === 0) {
+                userMsgPayload.imageSrc = uploadedImageBase64;
             } else {
-                // Tự động chụp snapshot canvas dao động ký để AI có thể quan sát trực tiếp dạng sóng và đồ thị
                 imgBase64ToSend = captureOscilloscopeSnapshot();
             }
 
-            addChatMessage('user', userDisplayHtml);
+            addChatMessage('user', userMsgPayload);
             chatInput.value = '';
             clearImageUpload();
             sendBtn.disabled = true;
             document.getElementById('foxStatusText').innerText = "Đang phân tích...";
 
             let thinkingId = addTypingIndicator();
-            let currentFreq = lockedFrequency || detectedFrequency;
+            const activeA = !!(channelConfig && channelConfig.A && channelConfig.A.active);
+            let currentFreq = activeA ? (lockedFrequency || detectedFrequency) : 0;
             let labTelemetry = getLabTelemetry();
 
-            // Cập nhật lịch sử hội thoại cho user
             foxChatHistory.push({ role: 'user', content: text || "Phân tích đồ thị dao động ký và thông số thí nghiệm này." });
 
             try {
@@ -4546,15 +4880,14 @@
                     frequency: currentFreq,
                     role: currentFoxRole,
                     imageBase64: imgBase64ToSend,
-                    history: foxChatHistory.slice(0, -1).slice(-8), // Truyền 8 lượt hội thoại trước đó
+                    history: foxChatHistory.slice(0, -1).slice(-8),
                     labData: labTelemetry
                 });
                 removeTypingIndicator(thinkingId);
                 document.getElementById('foxStatusText').innerText = "Trực tuyến";
-                let replyText = (result && result.reply) ? result.reply : "Fox-lab AI đã ghi nhận câu hỏi của thầy.";
+                let replyText = (result && result.reply) ? result.reply : "Fox-lab AI đã ghi nhận câu hỏi của bạn.";
                 replyText = formatCompleteSentences(replyText);
 
-                // Cập nhật phản hồi bot vào lịch sử hội thoại
                 foxChatHistory.push({ role: 'model', content: replyText });
                 if (foxChatHistory.length > 10) foxChatHistory = foxChatHistory.slice(-10);
 
@@ -4562,23 +4895,65 @@
             } catch (e) {
                 removeTypingIndicator(thinkingId);
                 document.getElementById('foxStatusText').innerText = "Trực tuyến";
-                let fallbackText = `Fox-lab AI hiện tại đang đo đạc tần số <b>${currentFreq.toFixed(1)} Hz</b>. (Phản hồi tự động do kết nối mạng tạm thời).`;
-                fallbackText = formatCompleteSentences(fallbackText);
+                const statusFreqNote = activeA && currentFreq > 0 ? ` Tần số đang đo trên Kênh A là ${currentFreq.toFixed(1)} Hz.` : ' Hiện chưa có tín hiệu đo trên Kênh A.';
+                let fallbackText = `⚠️ Không thể kết nối máy chủ Fox-lab AI lúc này (mất mạng hoặc quá thời gian chờ).${statusFreqNote} Vui lòng bấm gửi lại sau ít giây.`;
                 addChatMessage('bot', fallbackText);
             }
         }
 
         window.copyFoxText = function (btn, text) { navigator.clipboard.writeText(text).then(() => { let oldText = btn.innerText; btn.innerText = "Đã Copy ✓"; setTimeout(() => btn.innerText = oldText, 1500); }); }
 
-        async function addChatMessage(sender, text) {
-            const row = document.createElement('div'); row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
-            let html = ''; if (sender === 'bot') html += `<div class="fox-msg-avatar">${FOX_AVATAR_SVG}</div>`;
-            const formattedText = sender === 'bot' ? formatMathText(text) : text;
-            let copyStr = text.replace(/<[^>]+>/g, '').replace(/'/g, "\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
-            let copyBtn = sender === 'bot' ? `<button class="fox-copy-btn" onclick="copyFoxText(this, '${copyStr}')">Copy</button><button class="fox-export-btn" onclick="exportChatReport(this)">📥 Tải báo cáo</button>` : '';
-            let actionsBar = sender === 'bot' ? `<div class="fox-msg-actions-bar">${copyBtn}</div>` : '';
-            html += `<div class="fox-msg-group"><div class="fox-msg-bubble">${formattedText}</div>${actionsBar}</div>`;
-            row.innerHTML = html; chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
+        async function addChatMessage(sender, payload) {
+            const row = document.createElement('div');
+            row.className = `fox-msg-row ${sender === 'user' ? 'fox-msg-user' : 'fox-msg-bot'}`;
+
+            if (sender === 'bot') {
+                const avatar = document.createElement('div');
+                avatar.className = 'fox-msg-avatar';
+                avatar.innerHTML = FOX_AVATAR_SVG;
+                row.appendChild(avatar);
+            }
+
+            const group = document.createElement('div');
+            group.className = 'fox-msg-group';
+            const bubble = document.createElement('div');
+            bubble.className = 'fox-msg-bubble';
+
+            const rawText = (payload && typeof payload === 'object') ? (payload.text || '') : String(payload || '');
+
+            if (sender === 'user') {
+                if (payload && typeof payload === 'object' && payload.imageSrc && payload.imageSrc.indexOf('data:image/') === 0) {
+                    const imgEl = document.createElement('img');
+                    imgEl.src = payload.imageSrc;
+                    imgEl.className = 'fox-preview-img';
+                    bubble.appendChild(imgEl);
+                    bubble.appendChild(document.createElement('br'));
+                }
+                bubble.appendChild(document.createTextNode(rawText));
+                group.appendChild(bubble);
+            } else {
+                const safeBotHtml = formatMathText(escapeFoxHtml(rawText));
+                bubble.innerHTML = safeBotHtml;
+                group.appendChild(bubble);
+
+                const actionsBar = document.createElement('div');
+                actionsBar.className = 'fox-msg-actions-bar';
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'fox-copy-btn';
+                copyBtn.innerText = 'Copy';
+                copyBtn.addEventListener('click', () => window.copyFoxText(copyBtn, rawText));
+                const expBtn = document.createElement('button');
+                expBtn.className = 'fox-export-btn';
+                expBtn.innerText = '📥 Tải báo cáo';
+                expBtn.addEventListener('click', () => exportChatReport(expBtn));
+                actionsBar.appendChild(copyBtn);
+                actionsBar.appendChild(expBtn);
+                group.appendChild(actionsBar);
+            }
+
+            row.appendChild(group);
+            chatContent.appendChild(row);
+            chatContent.scrollTop = chatContent.scrollHeight;
 
             if (sender === 'bot' && window.MathJax && MathJax.typesetPromise) {
                 try {
