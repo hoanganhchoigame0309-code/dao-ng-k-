@@ -1532,7 +1532,7 @@
         if (maxpos <= 0 || maxval < c[0] * 0.3) return -1;
         let truePos = maxpos;
         if (maxpos > 0 && maxpos < halfSize - 1) { let x1 = c[maxpos - 1], x2 = c[maxpos], x3 = c[maxpos + 1], a = (x1 + x3 - 2 * x2) / 2, b = (x3 - x1) / 2; if (a < 0) truePos = maxpos - b / (2 * a); }
-        let freq = sampleRate / truePos; if (freq < 100 || freq > 1500) return -1; return freq;
+        let freq = sampleRate / truePos; if (freq < 45 || freq > 2800) return -1; return freq;
     }
 
     function calculatePhaseDifference(dataA, dataB, freq, sampleRate) {
@@ -1738,7 +1738,7 @@
             cfg.source = audioCtx.createMediaStreamSource(cfg.stream);
             let finalSourceNode = cfg.source;
             if (mode === '2' && isSharedDevice) { const splitter = audioCtx.createChannelSplitter(2); cfg.source.connect(splitter); const channelSelector = audioCtx.createGain(); splitter.connect(channelSelector, (channelId === 'A') ? 0 : 1); finalSourceNode = channelSelector; }
-            cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 80; cfg.filterHP.type = 'highpass';
+            cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 45; cfg.filterHP.type = 'highpass';
             cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
             cfg.workletNode = new AudioWorkletNode(audioCtx, 'fox-audio-processor');
             cfg.workletNode.port.onmessage = (event) => { if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) { let inputChunk = event.data, len = cfg.data.length, currentIdx = cfg.index; for (let i = 0; i < inputChunk.length; i++) { cfg.data[(currentIdx + i) % len] = inputChunk[i]; } cfg.index += inputChunk.length; } };
@@ -2528,13 +2528,18 @@
         if (sumLine) {
             let diff = Math.abs(freqA - freqB);
             if (freqA > 10 && freqB > 10 && diff > 3.0) {
-                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol" style="color:#f87171;">⚠️ Tạo Sóng Phách (f<sub>1</sub> ≠ f<sub>2</sub>)</span>`;
+                let f_beat = diff.toFixed(1);
+                let f_carrier = ((freqA + freqB) / 2).toFixed(1);
+                sumLine.innerHTML = `Tổng hợp (Sóng Phách): <span class="math-symbol" style="color:#a78bfa;">u = 2A·cos(2π·${(diff/2).toFixed(1)}·t)·cos(2π·${f_carrier}·t) &rarr; f<sub>phách</sub> = ${f_beat} Hz</span>`;
             } else {
-                let A_val = ((parseFloat(ampA) + parseFloat(ampB)) / 2).toFixed(2);
-                let phase_half = (phaseRad / 2).toFixed(2);
-                let phase_half_sign = phaseRad >= 0 ? `+ ${phase_half}` : `- ${Math.abs(phase_half).toFixed(2)}`;
-                let sum_amp = Math.abs(2 * A_val * Math.cos(phaseRad / 2)).toFixed(2);
-                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = 2(${A_val})·cos(${phase_half})·cos(2πft ${phase_half_sign}) = ${sum_amp}·cos(2πft ${phase_half_sign})</span>`;
+                let a1 = parseFloat(ampA) || 0;
+                let a2 = parseFloat(ampB) || 0;
+                let sum_amp_sq = a1 * a1 + a2 * a2 + 2 * a1 * a2 * Math.cos(phaseRad);
+                let sum_amp = Math.sqrt(Math.max(0, sum_amp_sq)).toFixed(2);
+                let phi_sum = Math.atan2(a2 * Math.sin(phaseRad), a1 + a2 * Math.cos(phaseRad));
+                let phi_sum_str = phi_sum >= 0 ? `+ ${phi_sum.toFixed(2)}` : `- ${Math.abs(phi_sum).toFixed(2)}`;
+                let f_val = freqA > 0 ? freqA.toFixed(1) : (freqB > 0 ? freqB.toFixed(1) : "0.0");
+                sumLine.innerHTML = `Tổng hợp: <span class="math-symbol">u = ${sum_amp}·cos(2π·${f_val}·t ${phi_sum_str}) &nbsp;(A<sub>tổng</sub> = &radic;(A₁² + A₂² + 2A₁A₂cos&Delta;&phi;))</span>`;
             }
         }
     }
@@ -2684,23 +2689,28 @@
             else if (tsViewMode === 'sum') {
                 let diff = Math.abs(currentCalcFreqA - currentCalcFreqB);
                 let isSameFreq = (diff <= 3.0);
+                const warnEl = document.getElementById('tsWarningText');
 
                 if (currentCalcFreqA > 10 && currentCalcFreqB > 10 && !isSameFreq) {
-                    document.getElementById('tsWarningText').style.display = 'block';
-                    document.getElementById('tsWarningText').innerText = `⚠️ Cảnh báo: Hai nguồn khác tần số (${currentCalcFreqA.toFixed(1)}Hz và ${currentCalcFreqB.toFixed(1)}Hz). Không thể tổng hợp!`;
-                } else {
-                    document.getElementById('tsWarningText').style.display = 'none';
-                    ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
-                    for (let i = 0; i < samplesDraw; i += step) {
-                        let idxA = ((refIdxA - offsetA - samplesDraw + i) % len + len) % len;
-                        let idxB = ((refIdxB - offsetA - samplesDraw + i) % len + len) % len;
-                        let val = refDataA[idxA] + refDataB[idxB];
-
-                        let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
-                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    if (warnEl) {
+                        warnEl.style.display = 'block';
+                        warnEl.style.background = 'linear-gradient(135deg, #7c3aed, #6d28d9)';
+                        warnEl.innerText = `🌊 Hiện tượng Sóng Phách: f_phách = ${diff.toFixed(1)} Hz (f₁ = ${currentCalcFreqA.toFixed(1)} Hz, f₂ = ${currentCalcFreqB.toFixed(1)} Hz)`;
                     }
-                    ctx.stroke();
+                } else {
+                    if (warnEl) warnEl.style.display = 'none';
                 }
+
+                ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
+                for (let i = 0; i < samplesDraw; i += step) {
+                    let idxA = ((refIdxA - offsetA - samplesDraw + i) % len + len) % len;
+                    let idxB = ((refIdxB - offsetA - samplesDraw + i) % len + len) % len;
+                    let val = refDataA[idxA] + refDataB[idxB];
+
+                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
             }
         }
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
