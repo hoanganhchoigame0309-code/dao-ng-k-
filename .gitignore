@@ -1,0 +1,24 @@
+# Hệ điều hành & file tạm
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.bak
+*.swp
+
+# IDE & Trình soạn thảo
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# File môi trường & thông tin nhạy cảm
+.env
+.env.local
+.env.*.local
+*.key
+
+# Lưu ý bảo mật:
+# Tệp CodechatboxFoxlab.txt chứa API key thực tế. 
+# Nếu đẩy lên GitHub Public, bỏ comment dòng dưới để không bị lộ key:
+CodechatboxFoxlab.txt
