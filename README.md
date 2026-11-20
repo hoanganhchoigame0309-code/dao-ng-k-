@@ -32,7 +32,6 @@ Fox_labKHKT/
 ├── backend/                 # Mã nguồn backend cho trợ lý AI
 │   ├── gas-foxlab-ai.js     # Script Google Apps Script chuẩn hóa bảo mật
 │   └── README.md            # Hướng dẫn thiết lập Google Apps Script & Gemini API
-├── CodechatboxFoxlab.txt     # Bản sao lưu mã nguồn backend GAS gốc
 ├── .gitignore               # Tệp cấu hình loại trừ các file rác khi đẩy lên Git
 └── README.md                # Tài liệu hướng dẫn dự án
 ```
@@ -132,9 +131,8 @@ git push -u origin main
 
 ## ⚠️ Lưu ý quan trọng về Bảo mật API Key
 
-- Tệp gốc `CodechatboxFoxlab.txt` có chứa trực tiếp danh sách API Key Google Gemini.
-- Nếu bạn tạo **Public Repository** trên GitHub, các bot quét bảo mật tự động sẽ phát hiện và vô hiệu hóa các API key này.
-- **Khuyến nghị**: Hãy cấu hình Google Apps Script theo tài liệu tại [backend/README.md](backend/README.md) bằng **Script Properties** và thêm `CodechatboxFoxlab.txt` vào `.gitignore`.
+- Tuyệt đối không lưu trực tiếp Gemini API Key vào mã nguồn frontend hoặc đẩy file chứa API key lên GitHub.
+- **Bảo mật Backend**: Hãy cấu hình Google Apps Script theo tài liệu tại [backend/README.md](backend/README.md) bằng **Script Properties** (`GEMINI_API_KEY`).
 
 ---
 

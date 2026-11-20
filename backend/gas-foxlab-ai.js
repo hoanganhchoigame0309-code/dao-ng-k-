@@ -32,9 +32,9 @@ function getApiKeys() {
 }
 
 // ==========================================
-// 2. HÀM GỌI GEMINI AI
+// 2. HÀM GỌI GEMINI AI (HỖ TRỢ ĐA LƯỢT HỘI THOẠI)
 // ==========================================
-function callAI(message, role, imageBase64) {
+function callAI(message, role, imageBase64, history) {
   var apiKeys = getApiKeys();
   if (!apiKeys || apiKeys.length === 0) {
     return "Lỗi cấu hình: Chưa tìm thấy Gemini API Key. Vui lòng thiết lập Script Properties 'GEMINI_API_KEYS' trong Google Apps Script.";
@@ -73,13 +73,29 @@ Quy tắc bắt buộc cho tất cả câu trả lời:
     }
   }
 
+  // Xây dựng mảng contents hỗ trợ ngữ cảnh hội thoại đa lượt
+  var contentsPayload = [];
+  if (Array.isArray(history) && history.length > 0) {
+    for (var h = 0; h < history.length; h++) {
+      var turn = history[h];
+      if (turn && turn.content) {
+        contentsPayload.push({
+          "role": (turn.role === "model" || turn.role === "bot") ? "model" : "user",
+          "parts": [{"text": turn.content}]
+        });
+      }
+    }
+  }
+  contentsPayload.push({
+    "role": "user",
+    "parts": partsArray
+  });
+
   var payload = {
     "system_instruction": {
       "parts": [{"text": systemPrompt}]
     },
-    "contents": [{
-      "parts": partsArray
-    }],
+    "contents": contentsPayload,
     "generationConfig": {
       "maxOutputTokens": 5000, 
       "temperature": 0.2
@@ -187,7 +203,7 @@ function doPost(e) {
     }
 
     var fullPrompt = contextHeader + "\n\nNội dung câu hỏi:\n" + userMessage;
-    var aiResponse = callAI(fullPrompt, role, imageBase64);
+    var aiResponse = callAI(fullPrompt, role, imageBase64, requestData.history);
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",

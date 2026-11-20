@@ -1411,7 +1411,8 @@ async function checkAppVersion() {
             }
         }
 
-        let phaseRad = (trueShift / samplesPerCycle) * 2 * Math.PI;
+        // Đổi dấu để góc pha phản ánh chuẩn xác: khi Kênh B sớm pha hơn Kênh A (B leads A), phaseRad > 0
+        let phaseRad = -(trueShift / samplesPerCycle) * 2 * Math.PI;
         while (phaseRad > Math.PI) phaseRad -= 2 * Math.PI;
         while (phaseRad < -Math.PI) phaseRad += 2 * Math.PI;
         return phaseRad;
@@ -1578,7 +1579,7 @@ async function checkAppVersion() {
                 finalSourceNode = cfg.channelGain;
             }
             cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 45; cfg.filterHP.type = 'highpass';
-            cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
+            cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 5000; cfg.filterLP.type = 'lowpass';
             const handleAudioSamples = (inputChunk) => {
                 if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) {
                     let len = cfg.data.length, currentIdx = cfg.index;
@@ -1651,6 +1652,10 @@ async function checkAppVersion() {
             else clearTimeout(stopTimer);
         } else {
             isPaused = true;
+            if (animFrameId) {
+                cancelAnimationFrame(animFrameId);
+                animFrameId = null;
+            }
             clearTimeout(stopTimer);
             pauseButton.textContent = "Đo / Dừng";
             pauseButton.className = "btn-green";
@@ -1913,8 +1918,19 @@ async function checkAppVersion() {
 
     let animFrameId = null;
     function draw() {
-        if (!isPaused && targetFPS > 0) { let now = performance.now(); if (now - lastDrawTime > (1000 / targetFPS)) { drawFrame(); lastDrawTime = now; } }
-        animFrameId = requestAnimationFrame(draw);
+        if (!isPaused && targetFPS > 0) {
+            let now = performance.now();
+            if (now - lastDrawTime > (1000 / targetFPS)) {
+                drawFrame();
+                lastDrawTime = now;
+            }
+            animFrameId = requestAnimationFrame(draw);
+        } else {
+            if (animFrameId) {
+                cancelAnimationFrame(animFrameId);
+                animFrameId = null;
+            }
+        }
     }
 
     function resetFeaturesAndAdjustments(keepModes = true) {
@@ -3864,9 +3880,14 @@ async function checkAppVersion() {
             .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
             .replace(/<embed\b[^<]*>/gi, '')
             .replace(/<link\b[^<]*>/gi, '')
-            .replace(/<meta\b[^<]*>/gi, '');
+            .replace(/<meta\b[^<]*>/gi, '')
+            .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, '')
+            .replace(/<math\b[^<]*(?:(?!<\/math>)<[^<]*)*<\/math>/gi, '')
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+            .replace(/<base\b[^<]*>/gi, '')
+            .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '');
         sanitized = sanitized.replace(/\s*on\w+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
-        sanitized = sanitized.replace(/(href|src)\s*=\s*(?:'javascript:[^']*'|"javascript:[^"]*"|javascript:[^\s>]+)/gi, '');
+        sanitized = sanitized.replace(/(href|src|xlink:href|formaction|action)\s*=\s*(?:'(?:javascript|vbscript|data):[^']*'|"(?:javascript|vbscript|data):[^"]*"|(?:javascript|vbscript|data):[^\s>]+)/gi, '');
         return sanitized;
     }
 
@@ -4411,7 +4432,7 @@ async function checkAppVersion() {
                 if (prev.nhom) document.getElementById("expGroupName").textContent = prev.nhom;
                 if (prev.lop) document.getElementById("expClassName").textContent = prev.lop;
                 if (prev.thanhVien) document.getElementById("expStudentNames").textContent = prev.thanhVien;
-                if (prev.nhanXet) document.getElementById("expStudentNotes").innerHTML = prev.nhanXet;
+                if (prev.nhanXet) document.getElementById("expStudentNotes").innerHTML = sanitizeChatHtml(prev.nhanXet);
             }
         } catch (e) {}
 

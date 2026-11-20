@@ -1266,6 +1266,25 @@
       };
     } catch (e) {}
 
+    function sanitizeReportHtml(htmlStr) {
+      if (!htmlStr) return '';
+      let sanitized = htmlStr
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+        .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+        .replace(/<embed\b[^<]*>/gi, '')
+        .replace(/<link\b[^<]*>/gi, '')
+        .replace(/<meta\b[^<]*>/gi, '')
+        .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, '')
+        .replace(/<math\b[^<]*(?:(?!<\/math>)<[^<]*)*<\/math>/gi, '')
+        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+        .replace(/<base\b[^<]*>/gi, '')
+        .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '');
+      sanitized = sanitized.replace(/\s*on\w+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
+      sanitized = sanitized.replace(/(href|src|xlink:href|formaction|action)\s*=\s*(?:'(?:javascript|vbscript|data):[^']*'|"(?:javascript|vbscript|data):[^"]*"|(?:javascript|vbscript|data):[^\s>]+)/gi, '');
+      return sanitized;
+    }
+
     function applyIncomingData(data) {
       const banner = document.getElementById("statusBanner");
       const bannerText = document.getElementById("statusBannerText");
@@ -1301,7 +1320,7 @@
         const ff = document.getElementById("filterFreqCell");
         if (ff) ff.textContent = data.filterFreq;
       }
-      if (data.nhanXet) document.getElementById("studentNotes").innerHTML = data.nhanXet;
+      if (data.nhanXet) document.getElementById("studentNotes").innerHTML = sanitizeReportHtml(data.nhanXet);
 
       if (Array.isArray(data.cacLanDo) && data.cacLanDo.length) {
         oscRows = data.cacLanDo.map(r => ({
