@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FOX_LAB - Báo Cáo Thí Nghiệm Sóng Âm</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+  <link rel="apple-touch-icon" href="icon-512.png" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
@@ -1065,6 +1069,10 @@
 
     // Xuất trực tiếp file PDF chỉ riêng 1 phần cụ thể
     function exportSinglePartToPDF(partId, fileTag) {
+      if (typeof html2pdf === "undefined") {
+        showToast("⚠️ Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
+        return;
+      }
       const allParts = ["part1", "part2", "part3", "part4"];
       const prevStates = {};
       const prevTitle = document.getElementById("expTitle").textContent;

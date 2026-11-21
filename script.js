@@ -4758,6 +4758,10 @@ async function checkAppVersion() {
     };
 
     window.exportSingleExpPartToPDF = function (partId, fileTag) {
+        if (typeof html2pdf === "undefined") {
+            showExpToast("⚠️ Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
+            return;
+        }
         const allParts = ["expPart1", "expPart2", "expPart3", "expPart4"];
         const prevStates = {};
         const prevTitle = document.getElementById("expReportTitle").textContent;
