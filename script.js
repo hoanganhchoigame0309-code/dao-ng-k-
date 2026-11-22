@@ -44,7 +44,7 @@ async function checkAppVersion() {
             if (pauseBtn) {
                 pauseBtn.disabled = true;
                 pauseBtn.textContent = "Hết giờ (30 phút)";
-                pauseBtn.className = "btn-gray";
+                pauseBtn.className = "btn-slate";
             }
 
             let modal = document.getElementById('foxlabTrialExpiredModal');
@@ -59,7 +59,7 @@ async function checkAppVersion() {
                             <p style="margin:0 0 20px;color:#475569;font-size:13.5px;line-height:1.6;">
                                 Phiên trải nghiệm thí nghiệm sóng âm FOX-Lab (giới hạn 30 phút) đã kết thúc. Vui lòng tải lại trang để bắt đầu phiên mới!
                             </p>
-                            <button onclick="window.location.reload(true)" style="background:#0284c7;color:#ffffff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 2px 4px rgba(2,132,199,0.3);">
+                            <button onclick="window.location.reload()" style="background:#0284c7;color:#ffffff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 2px 4px rgba(2,132,199,0.3);">
                                 🔄 Tải lại trang
                             </button>
                         </div>
@@ -1670,7 +1670,7 @@ async function checkAppVersion() {
                     pauseButton.textContent = "Đo / Dừng";
                     pauseButton.className = "btn-green";
                     infoMessageText.innerHTML = "Đã khóa sóng &mdash; Sẵn sàng khảo sát";
-                    infoMessageText.style.color = "#dc2626";
+                    infoMessageText.style.color = "#059669";
                     updateAnalysisButtonState();
                     updateManualAnalysisButtonState();
                     drawFrame();
@@ -1719,7 +1719,7 @@ async function checkAppVersion() {
             } else {
                 infoMessageText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ." : "Đã khóa sóng an toàn.";
             }
-            infoMessageText.style.color = "#dc2626";
+            infoMessageText.style.color = "#059669";
             updateAnalysisButtonState();
             updateManualAnalysisButtonState();
             drawFrame();

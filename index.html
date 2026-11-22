@@ -9,6 +9,7 @@
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     <link rel="apple-touch-icon" href="icon-512.png">
     <meta name="theme-color" content="#f97316">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ học</title>
@@ -123,13 +124,13 @@
         <div class="channel-row">
             <div class="channel-card channel-a-indicator">
                 <button id="btnStartA" class="btn-slate" disabled>Kênh A (Khóa)</button>
-                <select id="micSelectA" style="color: #dc2626;">
+                <select id="micSelectA" aria-label="Chọn thiết bị thu Kênh A" style="color: #1e293b;">
                     <option value="">-- Kênh A: Chờ tải thiết bị --</option>
                 </select>
             </div>
             <div class="channel-card channel-b-indicator" id="cardChannelB" style="display:none;">
                 <button id="btnStartB" class="btn-slate" disabled>Kênh B (Khóa)</button>
-                <select id="micSelectB" style="color: #2563eb;">
+                <select id="micSelectB" aria-label="Chọn thiết bị thu Kênh B" style="color: #1e293b;">
                     <option value="">-- Kênh B: Chờ tải thiết bị --</option>
                 </select>
             </div>
