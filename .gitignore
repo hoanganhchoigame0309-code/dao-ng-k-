@@ -22,3 +22,13 @@ desktop.ini
 # Tệp CodechatboxFoxlab.txt chứa API key thực tế. 
 # Nếu đẩy lên GitHub Public, bỏ comment dòng dưới để không bị lộ key:
 CodechatboxFoxlab.txt
+
+# File tài liệu báo cáo & script build (chỉ lưu cục bộ, không đẩy lên repo code)
+*.docx
+*.doc
+BAO_CAO_*
+FOX_LAB_BAO_CAO_*
+build_*.py
+check_pages.ps1
+foxlab_architecture_diagram.png
+
