@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-build_full_khkt_15page_docx.py
-Tạo báo cáo KHKT chuẩn Bộ GD&ĐT cho dự án FOX-Lab:
-- Rút gọn lý thuyết (Phần 3)
-- Giữ nguyên toàn bộ quy trình thực nghiệm và các bảng số liệu để trống (Phần 8 & Phụ lục B)
-- Chèn sơ đồ khối chuẩn theo code v6.4.0 (foxlab_architecture_diagram.png)
-- Nhúng toàn bộ nhật ký chat thực tế từ Bao_Cao_lich_Su_Chat_FoxLab.txt vào Phần 7.2
-- Kiểm soát dung lượng đảm bảo <= 15 trang A4 trong Microsoft Word
+build_faithful_15page_docx.py
+Bám sát 100% nội dung báo cáo gốc của tác giả Võ Bình Minh & nhóm học sinh Ngô Hoàng Anh, Phạm Thanh Bình.
+- Giữ nguyên toàn bộ số liệu thực nghiệm và kết quả Thí nghiệm 1, 2, 3, 4, 5 ở Phần 8.
+- Rút gọn lý thuyết Phần 3 (toán học và DSP cô đọng).
+- Nhúng toàn bộ lịch sử chat thực tế từ file Bao_Cao_lich_Su_Chat_FoxLab.txt vào Phần 7.2.
+- Chèn sơ đồ khối kiến trúc chuẩn theo code v6.4.0 (foxlab_architecture_diagram.png).
+- Đảm bảo tổng số trang <= 15 trang A4 trong Microsoft Word.
 """
 
 import os
@@ -17,7 +17,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import nsdecls, qn
 
-def set_cell_margins(cell, top=50, bottom=50, left=70, right=70):
+def set_cell_margins(cell, top=40, bottom=40, left=60, right=60):
     tcPr = cell._tc.get_or_add_tcPr()
     tcMar = OxmlElement('w:tcMar')
     for m, val in [('w:top', top), ('w:bottom', bottom), ('w:left', left), ('w:right', right)]:
@@ -44,7 +44,7 @@ def set_cell_borders(cell, top="CCCCCC", bottom="CCCCCC", left=None, right=None,
             tcBorders.append(b_elem)
     tcPr.append(tcBorders)
 
-def make_table(doc, headers, data, col_widths=None, header_bg="1B365D", alt_bg="F8F9FA", font_size=9.0):
+def make_table(doc, headers, data, col_widths=None, header_bg="1B365D", alt_bg="F8F9FA", font_size=8.5):
     table = doc.add_table(rows=len(data) + 1, cols=len(headers))
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     table.autofit = False
@@ -56,7 +56,7 @@ def make_table(doc, headers, data, col_widths=None, header_bg="1B365D", alt_bg="
     for col_idx, h_text in enumerate(headers):
         cell = hdr_row.cells[col_idx]
         set_cell_bg(cell, header_bg)
-        set_cell_margins(cell, top=60, bottom=60, left=70, right=70)
+        set_cell_margins(cell, top=50, bottom=50, left=60, right=60)
         set_cell_borders(cell, top="1B365D", bottom="1B365D", sz="6")
         cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
         p = cell.paragraphs[0]
@@ -76,19 +76,22 @@ def make_table(doc, headers, data, col_widths=None, header_bg="1B365D", alt_bg="
         for col_idx, val in enumerate(row_data):
             cell = row.cells[col_idx]
             set_cell_bg(cell, bg)
-            set_cell_margins(cell, top=45, bottom=45, left=65, right=65)
+            set_cell_margins(cell, top=35, bottom=35, left=55, right=55)
             set_cell_borders(cell, top="E2E8F0", bottom="E2E8F0", sz="4")
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
             p = cell.paragraphs[0]
             p.paragraph_format.space_before = Pt(0)
             p.paragraph_format.space_after = Pt(0)
             p.paragraph_format.line_spacing = 1.05
-            if col_idx == 0 and len(row_data) > 3 and not any(h in headers[0] for h in ['Bước', 'Nội dung', 'Hiện tượng', 'Chỉ số', 'Tên']):
+            
+            # Text alignment logic
+            if col_idx == 0 and len(headers) > 3 and not any(h in headers[0] for h in ['Bước', 'Nội dung', 'Hiện tượng', 'Chỉ số', 'Tên', 'Nút', 'Hướng']):
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
             elif col_idx in [1, 2, 3, 4, 5] and len(headers) >= 5:
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
             else:
                 p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                
             run = p.add_run(str(val))
             run.font.name = 'Times New Roman'
             run.font.size = Pt(font_size)
@@ -99,7 +102,7 @@ def make_table(doc, headers, data, col_widths=None, header_bg="1B365D", alt_bg="
             for idx, width in enumerate(col_widths):
                 row.cells[idx].width = width
 
-    doc.add_paragraph().paragraph_format.space_after = Pt(2)
+    doc.add_paragraph().paragraph_format.space_after = Pt(1.5)
     return table
 
 def add_chat_bubble(doc, sender, content, timestamp="", is_ai=False):
@@ -109,28 +112,28 @@ def add_chat_bubble(doc, sender, content, timestamp="", is_ai=False):
     tbl.rows[0].cells[0].width = Inches(6.8)
 
     cell = tbl.rows[0].cells[0]
-    bg_color = "F0F7FF" if is_ai else "F3F4F6"
-    border_color = "006699" if is_ai else "64748B"
+    bg_color = "F0F7FF" if is_ai else "F8FAFC"
+    border_color = "0284C7" if is_ai else "64748B"
     set_cell_bg(cell, bg_color)
-    set_cell_margins(cell, top=60, bottom=60, left=110, right=110)
-    set_cell_borders(cell, top=border_color, bottom=border_color, left=border_color, right=border_color, sz="10")
+    set_cell_margins(cell, top=40, bottom=40, left=80, right=80)
+    set_cell_borders(cell, top=border_color, bottom=border_color, left=border_color, right=border_color, sz="8")
 
     p = cell.paragraphs[0]
     p.paragraph_format.space_before = Pt(1)
-    p.paragraph_format.space_after = Pt(2)
-    p.paragraph_format.line_spacing = 1.1
+    p.paragraph_format.space_after = Pt(1.5)
+    p.paragraph_format.line_spacing = 1.08
 
     r_tag = p.add_run(f"[{sender}]")
     r_tag.bold = True
     r_tag.font.name = 'Times New Roman'
-    r_tag.font.size = Pt(9.5)
-    r_tag.font.color.rgb = RGBColor(0, 102, 153) if is_ai else RGBColor(30, 41, 59)
+    r_tag.font.size = Pt(9.0)
+    r_tag.font.color.rgb = RGBColor(2, 132, 199) if is_ai else RGBColor(30, 41, 59)
 
     if timestamp:
         r_time = p.add_run(f" ({timestamp})")
         r_time.font.italic = True
         r_time.font.name = 'Times New Roman'
-        r_time.font.size = Pt(8.5)
+        r_time.font.size = Pt(8.0)
         r_time.font.color.rgb = RGBColor(100, 116, 139)
 
     r_colon = p.add_run(": ")
@@ -142,69 +145,68 @@ def add_chat_bubble(doc, sender, content, timestamp="", is_ai=False):
             p = cell.add_paragraph()
             p.paragraph_format.space_before = Pt(1)
             p.paragraph_format.space_after = Pt(1)
-            p.paragraph_format.line_spacing = 1.1
+            p.paragraph_format.line_spacing = 1.08
         r_text = p.add_run(line.strip())
         r_text.font.name = 'Times New Roman'
-        r_text.font.size = Pt(9.5)
+        r_text.font.size = Pt(9.0)
         r_text.font.color.rgb = RGBColor(15, 23, 42)
 
     doc.add_paragraph().paragraph_format.space_after = Pt(1)
 
-def build_docx():
+def build_faithful_docx():
     doc = docx.Document()
 
-    # 1. Page Margins (TCVN / Nghị định 30 standard: Left 3cm, Top/Bottom/Right 2cm)
-    sections = doc.sections
-    for s in sections:
-        s.top_margin = Inches(0.79)      # 2.0 cm
-        s.bottom_margin = Inches(0.79)   # 2.0 cm
-        s.left_margin = Inches(1.18)     # 3.0 cm (đóng gáy báo cáo)
-        s.right_margin = Inches(0.79)    # 2.0 cm
+    # Page Margins (Standard A4: Top/Bottom/Right 1.8cm, Left 2.5cm)
+    for s in doc.sections:
+        s.top_margin = Inches(0.71)      # 1.8 cm
+        s.bottom_margin = Inches(0.71)   # 1.8 cm
+        s.left_margin = Inches(0.98)     # 2.5 cm
+        s.right_margin = Inches(0.71)    # 1.8 cm
         s.page_width = Inches(8.27)
         s.page_height = Inches(11.69)
 
-    # 2. Base Style
+    # Base Normal Style
     normal_style = doc.styles['Normal']
     normal_style.font.name = 'Times New Roman'
-    normal_style.font.size = Pt(11.5)
+    normal_style.font.size = Pt(11)
     normal_style.font.color.rgb = RGBColor(15, 23, 42)
-    normal_style.paragraph_format.line_spacing = 1.2
-    normal_style.paragraph_format.space_after = Pt(3.5)
+    normal_style.paragraph_format.line_spacing = 1.15
+    normal_style.paragraph_format.space_after = Pt(2.5)
 
     def add_h1(text):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(7)
-        p.paragraph_format.space_after = Pt(2.5)
+        p.paragraph_format.space_before = Pt(6)
+        p.paragraph_format.space_after = Pt(2)
         p.paragraph_format.keep_with_next = True
         run = p.add_run(text)
         run.bold = True
         run.font.name = 'Times New Roman'
-        run.font.size = Pt(12.5)
+        run.font.size = Pt(12)
         run.font.color.rgb = RGBColor(27, 54, 93)
         return p
 
     def add_h2(text):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(5)
+        p.paragraph_format.space_before = Pt(4)
         p.paragraph_format.space_after = Pt(1.5)
         p.paragraph_format.keep_with_next = True
         run = p.add_run(text)
         run.bold = True
         run.font.name = 'Times New Roman'
-        run.font.size = Pt(11.5)
+        run.font.size = Pt(11)
         run.font.color.rgb = RGBColor(0, 102, 153)
         return p
 
     def add_h3(text):
         p = doc.add_paragraph()
         p.paragraph_format.space_before = Pt(3)
-        p.paragraph_format.space_after = Pt(1.0)
+        p.paragraph_format.space_after = Pt(1)
         p.paragraph_format.keep_with_next = True
         run = p.add_run(text)
         run.bold = True
         run.font.italic = True
         run.font.name = 'Times New Roman'
-        run.font.size = Pt(11)
+        run.font.size = Pt(10.5)
         run.font.color.rgb = RGBColor(30, 41, 59)
         return p
 
@@ -231,354 +233,425 @@ def build_docx():
         p.add_run(text)
         return p
 
-    # ==================== COVER / HEADER ====================
-    p_top = doc.add_paragraph()
-    p_top.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_top.paragraph_format.space_after = Pt(1)
-    r1 = p_top.add_run("BÁO CÁO KẾT QUẢ NGHIÊN CỨU ĐỀ TÀI KHOA HỌC KỸ THUẬT CẤP TỈNH / TOÀN QUỐC")
-    r1.font.size = Pt(11)
-    r1.bold = True
-    r1.font.color.rgb = RGBColor(100, 116, 139)
-
+    # ==================== TIÊU ĐỀ & THÔNG TIN TÁC GIẢ ====================
     p_title = doc.add_paragraph()
     p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_title.paragraph_format.space_before = Pt(2)
-    p_title.paragraph_format.space_after = Pt(3)
-    r_title = p_title.add_run("FOX-LAB: PHÒNG THÍ NGHIỆM SÓNG ÂM DI ĐỘNG TÍCH HỢP TRỢ LÝ AI\nHỖ TRỢ DẠY HỌC THỰC HÀNH VẬT LÍ 11 THEO CHƯƠNG TRÌNH GDPT 2018")
-    r_title.font.size = Pt(14)
+    p_title.paragraph_format.space_after = Pt(2)
+    r_title = p_title.add_run("FOX-Lab: Thiết kế phòng thí nghiệm Sóng âm di động trực quan hóa\nđại lượng vật lý và tự động hóa quy trình báo cáo thực hành trong môi trường lớp học")
+    r_title.font.size = Pt(13)
     r_title.bold = True
     r_title.font.color.rgb = RGBColor(27, 54, 93)
 
-    # Box Metadata
-    meta_data = [
-        ["Lĩnh vực dự thi: Vật lý và Thiên văn / Phần mềm hệ thống (System Software)\nNhóm tác giả: Nhóm Nghiên cứu KHKT THPT – Nền tảng: Web Audio API, PWA, AudioWorklet, Gemini AI"]
-    ]
-    make_table(doc, ["THÔNG TIN ĐỀ TÀI VÀ NHÓM NGHIÊN CỨU"], meta_data, [Inches(6.8)], header_bg="1B365D", font_size=9.5)
+    p_meta = doc.add_paragraph()
+    p_meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_meta.paragraph_format.space_after = Pt(3)
+    r_m1 = p_meta.add_run("Lĩnh vực dự thi: ")
+    r_m1.bold = True
+    p_meta.add_run("Vật lý và Thiên văn / Phần mềm hệ thống\n")
+    r_m2 = p_meta.add_run("Nhóm tác giả: ")
+    r_m2.bold = True
+    p_meta.add_run("Ngô Hoàng Anh – Lớp 11A2, Phạm Thanh Bình – Lớp 11A7, Trường Ngô Quyền\n")
+    r_m3 = p_meta.add_run("Giáo viên hướng dẫn: ")
+    r_m3.bold = True
+    p_meta.add_run("Võ Bình Minh, đơn vị công tác | Ngày hoàn thành: 29/10/2026")
+    p_meta.paragraph_format.line_spacing = 1.1
+
+    # Tóm tắt
+    add_h2("Tóm tắt")
+    add_p("FOX-Lab là một ứng dụng web chạy trực tiếp trên trình duyệt của điện thoại, máy tính bảng hoặc máy tính, biến micro thành một dao động ký (oscilloscope) hai kênh để học sinh quan sát, đo đạc và phân tích sóng âm ngay trong lớp học, không cần thiết bị đo chuyên dụng. Ứng dụng thu tín hiệu âm thanh qua Web Audio API, lọc dải 80–3000 Hz, rồi tự động tìm tần số bằng thuật toán tự tương quan có nội suy parabol. Dựa trên tần số tìm được, hệ thống tự chọn thang thời gian để màn hình luôn hiển thị khoảng 5 chu kỳ và dùng điều kiện kích (trigger) qua điểm không để dạng sóng đứng yên như trên dao động ký thật. Sau khi 'khóa sóng', học sinh có thể phóng to thu nhỏ, đọc biên độ, chu kỳ, tần số trên lưới 10 × 8 ô, lưu ảnh đồ thị một chạm, hoặc mở chế độ phân tích FFT 8192 điểm với cửa sổ Hann để xem năm họa âm đầu tiên (H1–H5) của một nốt nhạc. Ngoài phần đo, dự án tích hợp trợ lý FOX-Lab AI nhận tần số đo thời gian thực làm ngữ cảnh để giải thích hiện tượng, hướng dẫn xử lý số liệu và gợi ý cách viết báo cáo thực hành; khi mất kết nối, một bộ trả lời dự phòng cục bộ vẫn hoạt động. Mã QR trên giao diện giúp cả lớp mở cùng một địa chỉ web bằng điện thoại của mình.")
+    add_p("dao động ký, sóng âm, tần số, họa âm, FFT, Web Audio API, thí nghiệm ảo di động, trợ lý AI, Vật lí 11.", bold_prefix="Từ khóa: ", italic=True)
 
     # ==================== PHẦN 1 ====================
     add_h1("Phần 1. Đặt vấn đề")
     add_h2("1.1. Lý do chọn đề tài")
-    add_p("Trong chương trình Giáo dục phổ thông (GDPT) 2018 môn Vật lí 11 (Chủ đề 2: Sóng âm), bài thực hành đo tần số, chu kỳ và khảo sát âm sắc đóng vai trò cầu nối bản chất giữa toán học giải tích và hiện tượng vật lí tự nhiên. Tuy nhiên, thiết bị dao động ký điện tử truyền thống (Cathode-Ray Oscilloscope hoặc Digital Storage Oscilloscope) có chi phí đầu tư rất lớn (8 – 25 triệu VNĐ/máy), cồng kềnh, số lượng trang bị tại phòng thí nghiệm trường phổ thông cực kỳ hạn chế (thường chỉ 1 – 2 bộ/trường, học sinh chỉ được quan sát giáo viên làm mẫu).")
+    add_p("Sóng âm là nội dung quen thuộc của chương Dao động và Sóng trong chương trình Vật lí 11 (chương trình giáo dục phổ thông 2018). Các đại lượng như biên độ, chu kỳ, tần số, độ cao, âm sắc đều có thể quan sát trực tiếp bằng dao động ký. Tuy vậy, trong thực tế dạy học, các khái niệm này thường chỉ được học qua hình vẽ trong sách hoặc mô phỏng có sẵn, nơi học sinh không tự tạo ra được dữ liệu của riêng mình.")
+    add_p("Dao động ký và máy phát tín hiệu chuyên dụng là thiết bị đắt tiền, cồng kềnh, thường chỉ có số lượng ít trong phòng thí nghiệm. Một lớp học 40–45 em khó có thể để mọi nhóm cùng thao tác. Trong khi đó, gần như mọi học sinh đều có điện thoại với micro chất lượng đủ tốt và trình duyệt hiện đại, nhưng các thiết bị này hiếm khi được khai thác như một dụng cụ đo trong giờ học. Từ quan sát đó, nhóm tác giả đặt câu hỏi: liệu có thể biến chính điện thoại của học sinh thành một phòng thí nghiệm sóng âm di động, vừa đo được, vừa phân tích được, vừa hỗ trợ viết báo cáo? FOX-Lab là câu trả lời của nhóm.")
 
     add_h2("1.2. Thực trạng và hạn chế của các giải pháp hiện có")
-    add_p("Các phần mềm máy tính hiện có bộc lộ nhiều rào cản: (1) Phần mềm chuyên dụng (Audacity, Visual Analyser) có giao diện kỹ thuật âm thanh quá phức tạp, thang đo độ lợi dB khiến học sinh phổ thông khó tiếp cận; (2) Các ứng dụng di động đơn giản trên App Store/Google Play đa phần chỉ đo cường độ âm sơ sài (dB meter), thiếu khả năng hiển thị dạng sóng thời gian thực, thiếu trigger ổn định hình ảnh và thiếu công cụ đo đạc chu kỳ trên lưới chia độ chuẩn chuẩn hóa.")
+    add_p("Nhóm đã xem xét ba nhóm giải pháp học sinh thường gặp:")
+    add_bullet("Cho kết quả chính xác, nhưng thiếu về số lượng, cần kỹ năng vận hành và không mang về nhà được.", "Dao động ký phần cứng: ")
+    add_bullet("Dễ dùng, song dữ liệu là dữ liệu mẫu; học sinh không thể thử với âm thanh thật như tiếng sáo, âm thoa, giọng nói của chính mình.", "Mô phỏng có sẵn (applet, video): ")
+    add_bullet("Nhiều ứng dụng đo mức ồn (dB) hoặc hiển thị phổ, nhưng ít ứng dụng được thiết kế theo cách dạy học: dạng sóng đứng yên như dao động ký, thang thời gian tính bằng ms, ghi chú theo ngôn ngữ của sách giáo khoa, và không gắn với việc viết báo cáo thực hành.", "Ứng dụng đo âm trên điện thoại: ")
+    add_p("Nhìn chung còn thiếu một công cụ thỏa mãn đồng thời bốn yêu cầu: dùng được ngay trên thiết bị sẵn có, hiển thị theo đúng 'ngôn ngữ' của dao động ký, có phân tích họa âm ở mức học sinh hiểu được, và đồng hành với học sinh khi xử lý số liệu.")
 
     add_h2("1.3. Khó khăn trong báo cáo thực hành & 1.4. Tính cấp thiết")
-    add_p("Học sinh mất 70% thời lượng tiết học cho việc chép số liệu thủ công, chụp ảnh màn hình rời rạc, tính toán sai số bằng tay dễ nhầm lẫn. Việc chế tạo một 'Phòng thí nghiệm sóng âm di động' chạy trực tiếp trên trình duyệt mọi thiết bị (Zero-install PWA), tự động hóa phân tích DSP và có Trợ lý AI sư phạm đồng hành là giải pháp cấp thiết nhằm bình đẳng hóa điều kiện thực hành cho mọi học sinh.")
+    add_p("Quy trình thực hành truyền thống gồm: lắp thiết bị, chỉnh máy, đọc số trên màn hình, ghi vào vở, chụp hoặc vẽ lại đồ thị, tính toán rồi viết báo cáo. Ở mỗi bước, học sinh thường mất nhiều thời gian vào thao tác kỹ thuật thay vì suy nghĩ về hiện tượng vật lí. Giáo viên cũng khó theo dõi tiến độ của từng nhóm.")
+    add_p("Chương trình 2018 nhấn mạnh phát triển năng lực thực nghiệm và năng lực sử dụng công nghệ số trong học tập môn Vật lí. Điện thoại thông minh là thiết bị sẵn có, giúp giảm chi phí và mở rộng cơ hội thực hành ra ngoài phòng thí nghiệm. Việc tự động hóa các thao tác kỹ thuật lặp lại giúp học sinh dành thời gian cho phần quan trọng nhất của khoa học: quan sát, nhận xét, giải thích và rút ra kết luận.")
 
     # ==================== PHẦN 2 ====================
     add_h1("Phần 2. Mục tiêu, đối tượng và phương pháp nghiên cứu")
     add_h2("2.1. Mục tiêu và nhiệm vụ nghiên cứu")
-    add_bullet("Xây dựng ứng dụng web dao động ký và phân tích âm học thời gian thực đạt độ chính xác tương đương máy đo chuyên dụng (sai số tần số < 0.5% trong dải 100 Hz – 4000 Hz).", "Mục tiêu 1: ")
-    add_bullet("Tích hợp Trợ lý sư phạm FOX-Lab AI qua mô hình ngôn ngữ lớn (Gemini), tự động gắn ngữ cảnh thí nghiệm trực tiếp (live context injection: tần số đo, dạng sóng, đỉnh họa âm) mà không truyền âm thanh ra máy chủ.", "Mục tiêu 2: ")
-    add_bullet("Tự động hóa 100% quy trình xuất báo cáo thực hành chuẩn học thuật (HTML/PDF A4) hoàn thành ngay trong tiết học 45 phút.", "Mục tiêu 3: ")
+    add_p("Mục tiêu chung: thiết kế và hoàn thiện một phòng thí nghiệm sóng âm di động chạy trên trình duyệt, giúp học sinh trực quan hóa các đại lượng vật lí của sóng âm và giảm thao tác thủ công trong quy trình thực hành – báo cáo.")
+    add_bullet("Thu tín hiệu âm thanh từ micro và hiển thị dạng sóng thời gian thực như một dao động ký có lưới chia độ, trục thời gian (ms) và trục biên độ chuẩn hóa.")
+    add_bullet("Tự động xác định tần số cơ bản và tự điều chỉnh thang thời gian, kích sóng (trigger) để dạng sóng đứng yên, dễ đọc chu kỳ.")
+    add_bullet("Hỗ trợ đo cùng lúc hai nguồn âm (Kênh A và Kênh B) để so sánh biên độ, tần số, độ lệch pha.")
+    add_bullet("Phân tích phổ bằng FFT để học sinh thấy được họa âm tạo nên âm sắc của nhạc cụ, giọng nói.")
+    add_bullet("Tích hợp trợ lý hỏi đáp FOX-Lab AI và các tiện ích (lưu ảnh, toàn màn hình, mã QR) để rút ngắn quy trình báo cáo thực hành.")
 
-    add_h2("2.2. Đối tượng, phạm vi và công nghệ sử dụng")
-    add_p("Đối tượng: Tín hiệu sóng âm cơ học (âm thoa, máy phát tần số, giọng nói, nhạc cụ) và quy trình thực hành Vật lí 11. Công nghệ nền tảng: Web Audio API (AudioWorkletNode đa luồng), HTML5 Canvas 60 FPS, Thuật toán ACF + Parabolic Interpolation, FFT Cooley-Tukey 4096 điểm, Service Worker PWA, Google Apps Script Proxy + Gemini Flash API.")
+    add_h2("2.2. Đối tượng, phạm vi và phương pháp nghiên cứu")
+    add_p("Đối tượng nghiên cứu: sóng âm trong dải tần 100–1500 Hz (dải tự động bám tần số) và phổ họa âm đến bậc 5 của âm có tần số cơ bản từ khoảng 100 Hz đến vài trăm Hz. Đối tượng sử dụng: học sinh và giáo viên Vật lí cấp THPT, ưu tiên lớp 11. Phương pháp nghiên cứu kết hợp nghiên cứu tài liệu, thiết kế – lập trình theo vòng lặp, thực nghiệm đối chứng và khảo sát sư phạm.")
+
+    add_h2("2.3. Công nghệ sử dụng")
+    tech_headers = ["Thành phần", "Công nghệ", "Vai trò trong hệ thống"]
+    tech_data = [
+        ["Thu tín hiệu", "getUserMedia, Web Audio API", "Truy cập micro, tạo bộ lọc, nhận mẫu âm thanh."],
+        ["Xử lí", "JavaScript thuần", "Tự tương quan, trigger, FFT, thu phóng."],
+        ["Hiển thị", "HTML5 Canvas 2D", "Vẽ lưới, nhãn, dạng sóng, biểu đồ phổ."],
+        ["Giao diện", "HTML, CSS, bố cục co giãn", "Chạy trên điện thoại và máy tính."],
+        ["Trợ lý AI", "Google Apps Script (dịch vụ web)", "Cầu nối giữa giao diện và mô hình ngôn ngữ."],
+        ["Triển khai", "Trang web tĩnh, manifest ứng dụng web", "Truy cập bằng đường dẫn hoặc mã QR, thêm vào màn hình chính."]
+    ]
+    make_table(doc, tech_headers, tech_data, [Inches(1.5), Inches(2.3), Inches(3.0)])
 
     # ==================== PHẦN 3 ====================
     add_h1("Phần 3. Cơ sở lí thuyết (Tóm lược toán học & vật lý cốt lõi)")
-    add_p("Nhằm bảo đảm tính cô đọng của báo cáo nghiên cứu, các công thức toán học và nguyên lí xử lí tín hiệu số (DSP) được tóm lược thành các định luật cốt lõi sau:")
-    add_bullet("u(t) = A cos(2π f t + φ). Trong đó: chu kỳ T = 1/f; bước sóng λ = v/f; mức cường độ âm L(dB) = 10 lg(I / I₀) với I₀ = 10⁻¹² W/m².", "3.1. Sóng âm & đại lượng đặc trưng: ")
-    add_bullet("Sóng âm tuần hoàn thực tế là tổng hợp chuỗi Fourier của âm cơ bản f₀ và các họa âm nguyên lần: u(t) = Σ A_k cos(2π k f₀ t + φ_k). Tập hợp biên độ {A_k} quyết định hình dạng đồ thị và âm sắc đặc trưng.", "3.2. Họa âm & âm sắc: ")
-    add_bullet("Tần số lấy mẫu fs phải thỏa mãn định lý Nyquist-Shannon: fs >= 2 f_max. Trong FOX-Lab, fs = 44.1 kHz hoặc 48 kHz, đảm bảo tái tạo hoàn hảo dải nghe người (20 Hz – 20 kHz).", "3.3. Lấy mẫu Nyquist: ")
-    add_bullet("Tần số f₀ được phát hiện qua hàm tự tương quan R(τ) = Σ x[n] x[n+τ]. Cực đại thứ nhất τ_max được tinh chỉnh bằng nội suy Parabolic: δ = (R(τ-1) - R(τ+1)) / [2(R(τ-1) - 2R(τ) + R(τ+1))], f₀ = fs / (τ_max + δ), đạt độ mịn phần thập phân < 0.1 Hz.", "3.4. Tự tương quan (ACF): ")
-    add_bullet("Biến đổi Fourier rời rạc N điểm (N = 4096) phân tách phổ tần số: X[m] = Σ x[n] w[n] e^(-j 2π m n / N). Cửa sổ Hann w[n] = 0.5 [1 - cos(2π n / N)] được nhân trước khi tính FFT để triệt tiêu hiện tượng rò rỉ phổ (spectral leakage).", "3.5. FFT & Cửa sổ Hann: ")
-    add_bullet("Đồ thị dạng sóng được ghim cố định nhờ cơ chế kích hoạt tại điểm không với ngưỡng trễ: x[n-1] < -V_th và x[n] >= 0 với độ dốc dương, loại bỏ hoàn toàn hiện tượng rung giật đồ thị do nhiễu micro.", "3.6. Trigger Zero-crossing: ")
+    add_p("Nhằm bảo đảm tính cô đọng và tập trung vào ứng dụng thực tiễn, các nội dung lý thuyết được tóm lược thành các định luật và công thức toán học cốt lõi sau:")
+    add_bullet("Sóng âm là sóng cơ dọc truyền trong môi trường vật chất. Với âm đơn sắc, tín hiệu có dạng hình sin: u(t) = A sin(2π f t + φ), với chu kỳ T = 1/f, bước sóng λ = v/f. Ba đặc trưng sinh lí gắn với ba đặc trưng vật lí: độ cao gắn với tần số f; độ to gắn với biên độ; âm sắc gắn với dạng đồ thị dao động.", "3.1. Sóng âm & đại lượng đặc trưng: ")
+    add_bullet("Nhạc cụ và giọng nói phát ra tổng hợp sóng cơ bản f₀ và các họa âm nguyên lần: u(t) = Σ A_k sin(2π k f₀ t + φ_k). Tập hợp biên độ {A_k} tạo nên âm sắc đặc trưng. FOX-Lab hiển thị năm họa âm đầu (H1–H5).", "3.2. Họa âm & âm sắc: ")
+    add_bullet("Tần số lấy mẫu fs (44.1 kHz hoặc 48 kHz). Định lí Nyquist–Shannon yêu cầu fs >= 2 f_max. Với fs = 48 kHz, giới hạn Nyquist là 24 kHz, cao hơn nhiều dải 80–3000 Hz nên không xảy ra chồng phổ.", "3.3. Lấy mẫu Nyquist: ")
+    add_bullet("Hàm tự tương quan R(τ) = Σ x[n] x[n+τ] đạt cực đại thứ hai tại τ* ≈ T₀ × fs, từ đó f = fs / τ*. Để giảm sai số bước nhảy mẫu, nội suy parabol qua 3 điểm quanh cực đại: τ*_chính xác = τ* - b / (2a) với a = (R_-1 + R_+1 - 2R_0)/2, b = (R_+1 - R_-1)/2.", "3.4. Tự tương quan (ACF): ")
+    add_bullet("Biến đổi Fourier rời rạc N điểm: X[m] = Σ x[n] e^(-j 2π m n / N). Thuật toán FFT Cooley–Tukey giảm độ phức tạp xuống O(N log₂ N). Với N = 8192 và fs = 48 kHz, độ phân giải tần số Δf = fs/N ≈ 5,86 Hz.", "3.5. Biến đổi Fourier & FFT: ")
+    add_bullet("Cửa sổ Hann w[n] = 0,5 [1 - cos(2π n / (N-1))] được nhân trước khi tính FFT nhằm triệt tiêu hiện tượng rò rỉ phổ tại hai biên.", "3.6. Cửa sổ Hann: ")
+    add_bullet("Mô phỏng cơ chế kích (trigger) của dao động ký thật: tìm điểm cắt không theo chiều tăng kèm dải trễ (hysteresis) 10% biên độ đỉnh để loại trừ nhiễu, ghim dạng sóng đứng yên trên màn hình.", "3.7. Trigger điểm không: ")
 
     # ==================== PHẦN 4 ====================
     add_h1("Phần 4. Thiết kế tổng thể hệ thống")
-    add_h2("4.1. Kiến trúc phần mềm và Sơ đồ khối hệ thống (Cập nhật chuẩn theo v6.4.0)")
-    add_p("Hệ thống FOX-Lab v6.4.0 tuân thủ mô hình kiến trúc phân lớp hoàn toàn hướng máy khách (Full Client-Side DSP Architecture), bảo đảm an toàn dữ liệu học đường tuyệt đối:")
+    add_h2("4.1. Nguyên lí thiết kế & 4.2. Kiến trúc phần mềm")
+    add_p("Hệ thống tuân thủ 5 nguyên lí thiết kế: dùng ngay không cài đặt, trải nghiệm như dao động ký thật, tự động hóa có chủ đích, học sinh là người quan sát và chịu được môi trường lớp học thật. Kiến trúc hệ thống phân tách thành 4 khối chức năng nội bộ chạy trên thiết bị học sinh và 1 dịch vụ web AI:")
 
-    # Insert Image
+    # Sơ đồ khối kiến trúc
     diag_path = os.path.abspath("foxlab_architecture_diagram.png")
     if os.path.exists(diag_path):
         p_img = doc.add_paragraph()
         p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.paragraph_format.space_before = Pt(4)
+        p_img.paragraph_format.space_before = Pt(3)
         p_img.paragraph_format.space_after = Pt(2)
         run_img = p_img.add_run()
         run_img.add_picture(diag_path, width=Inches(6.4))
         p_cap = doc.add_paragraph()
         p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_cap.paragraph_format.space_after = Pt(4)
-        r_cap = p_cap.add_run("Hình 4.1: Sơ đồ khối kiến trúc phần mềm và luồng dữ liệu FOX-Lab v6.4.0")
-        r_cap.font.size = Pt(9.5)
+        p_cap.paragraph_format.space_after = Pt(3)
+        r_cap = p_cap.add_run("Hình 4.1: Sơ đồ khối kiến trúc hệ thống và luồng dữ liệu FOX-Lab (Cập nhật chuẩn theo mã nguồn)")
+        r_cap.font.size = Pt(9.0)
         r_cap.font.italic = True
         r_cap.font.color.rgb = RGBColor(71, 85, 105)
 
-    arch_headers = ["Phân hệ / Thành phần", "Công nghệ thực thi", "Vai trò và cơ chế kỹ thuật"]
-    arch_data = [
-        ["Hardware & Input Layer", "Microphone A/B, Web Audio API", "Thu tín hiệu âm thanh stereo/mono, lấy mẫu 44.1/48 kHz, chống trễ phần cứng."],
-        ["Audio Worklet Thread", "AudioWorkletNode background", "Bộ đệm vòng (Ring Buffer 10s), bộ lọc Biquad thông dải 45 Hz - 5 kHz."],
-        ["Core DSP Engine", "Vanilla JS (Zero-dependency)", "ACF + Parabolic nội suy f0; FFT 4096 điểm + Hann Window; Zero-crossing Trigger."],
-        ["Visualization Engine", "HTML5 Canvas API 60 FPS", "Vẽ lưới chia độ miligiây, render dạng sóng thời gian thực, hủy RAF khi dừng."],
-        ["AI Assistant & Proxy", "Apps Script + Gemini Flash API", "Proxy ẩn API Key, chỉ truyền số liệu text (f, Vpp, H1-H5), bảo mật âm thanh."],
-        ["Report & Export", "report.html, CSS Print PWA", "Đồng bộ LocalStorage, dàn trang A4 chuẩn học thuật, lưu PDF ngoại tuyến."]
+    add_h2("4.3. Giao diện người dùng và Máy trạng thái")
+    add_p("Giao diện chia thành thanh điều khiển phía trên và vùng canvas lưới 10 × 8 ô bên dưới. Bảng thông tin hoạt động như một máy trạng thái, dẫn dắt học sinh từng bước:")
+    state_headers = ["Trạng thái", "Thông báo hướng dẫn trên giao diện", "Nút khả dụng"]
+    state_data = [
+        ["Chưa kết nối micro", "Nhấn vào Kênh A hoặc Kênh B để thu sóng âm", "Kênh A, Kênh B"],
+        ["Đã kết nối, chưa đo", "Bấm Đo / Dừng để khảo sát", "Đo / Dừng, Làm mới, Chụp ảnh"],
+        ["Đang đo", "Đang quét tín hiệu kèm nhãn kênh đang bật", "Đo / Dừng"],
+        ["Đã khóa sóng", "Có thể Phân tích FFT ngay lúc này", "FFT, Chụp ảnh, thu phóng"]
     ]
-    make_table(doc, arch_headers, arch_data, [Inches(1.8), Inches(2.0), Inches(3.0)], font_size=8.5)
+    make_table(doc, state_headers, state_data, [Inches(1.8), Inches(3.2), Inches(1.8)])
 
-    add_h2("4.2. Giao diện người dùng và Máy trạng thái")
-    add_p("Hệ thống vận hành theo máy trạng thái hữu hạn (Finite State Machine) nghiêm ngặt gồm 5 trạng thái: IDLE (chờ quyền micro), RUNNING (thu và hiển thị 60 FPS), PAUSED (tạm dừng quét, giữ đồ thị để chọn điểm đo), FREEZE (giữ khung đo phân tích họa âm FFT), ERROR (xử lí lỗi thiết bị, không chặn giao diện).")
+    add_h2("4.4. Chế độ một và hai nguồn âm & 4.5. Chế độ đo & 4.6. Tương thích")
+    add_p("Ở chế độ 1 nguồn âm, chỉ 1 kênh chạy để tối ưu tài nguyên cho đo tần số và FFT. Ở chế độ 2 nguồn âm, hai luồng micro chạy song song vẽ chồng lên cùng lưới, dùng chung điểm kích từ kênh tham chiếu để so sánh biên độ và hiện tượng phách. Hai chế độ đo: Khảo sát tần số (tự dừng sau 2 giây để khóa sóng) và Khảo sát liên tục (60 hoặc 15 FPS). Canvas co giãn theo devicePixelRatio và hỗ trợ PWA toàn màn hình.")
 
     # ==================== PHẦN 5 ====================
     add_h1("Phần 5. Các giải pháp kỹ thuật cốt lõi")
-    add_bullet("Thu tín hiệu âm thanh đa luồng bằng AudioWorkletNode chạy ngầm, cách ly hoàn toàn khỏi Main UI Thread; ghi liên tục vào Float32Array Ring Buffer 10 giây không rò rỉ bộ nhớ.", "5.1. Bộ đệm vòng AudioWorklet: ")
-    add_bullet("Tự động bám tần số với độ chính xác cao nhờ thuật toán ACF kết hợp lọc thông thấp thích ứng. Khi người dùng bấm Auto, hệ thống tự động tính thang đo thời gian (Timebase) để hiển thị từ 2 đến 4 chu kỳ sóng rõ nét nhất.", "5.2. Auto Timebase & Tần số: ")
-    add_bullet("Thuật toán Zero-crossing với dải trễ Hysteresis kép ghim dạng sóng đứng yên tuyệt đối, giải quyết dứt điểm hiện tượng trôi hình của các ứng dụng web thông thường.", "5.3. Ghim sóng Trigger Hysteresis: ")
-    add_bullet("Tối ưu hóa Canvas: Dùng Path2D vẽ một nét duy nhất (batch stroke), tự động hủy requestAnimationFrame khi Pause để giảm tải CPU từ 35% xuống dưới 3%.", "5.4. Tối ưu Canvas 60 FPS: ")
+    add_bullet("Thu qua getUserMedia, lọc dải thông cao 80 Hz và thông thấp 3000 Hz, đưa vào mảng Float32Array lưu 10 giây dữ liệu dạng đệm vòng, tránh cấp phát bộ nhớ liên tục.", "5.1. Thu tín hiệu & Bộ đệm vòng: ")
+    add_bullet("Cứ 300 ms lấy 2048 mẫu, kiểm tra RMS > 0,02, tính tự tương quan từ 0–1023 mẫu, kiểm tra cực đại >= 30% R(0), nội suy parabol, giới hạn 100–1500 Hz, làm mượt tỉ lệ 0,7 cũ + 0,3 mới và khóa tần số khi lệch > 8%.", "5.2. Tự động bám tần số: ")
+    add_bullet("Tổng thời gian hiển thị mặc định bằng 5 chu kỳ: T_màn hình = 5 / f_khóa (từ 2 ms đến 2,4 s). Nhờ đó màn hình luôn có khoảng 5 chu kỳ dễ đếm và đo.", "5.3. Tự chọn thang thời gian: ")
+    add_bullet("Xác định biên độ đỉnh, đặt hysteresis = 10% đỉnh, quét ngược tìm điểm cắt không đi lên thỏa mãn mẫu trước dưới -hysteresis. Hai kênh dùng chung điểm kích để giữ nguyên độ lệch pha.", "5.4. Trigger điểm không chống trôi: ")
+    add_bullet("Giảm mẫu thông minh (lấy min/max trong nhóm mẫu), giới hạn khung hình qua requestAnimationFrame, cắt vùng vẽ canvas để không tràn biên độ.", "5.5. Vẽ sóng hiệu quả trên canvas: ")
 
-    param_headers = ["Thông số kỹ thuật", "Giá trị chuẩn hóa", "Ý nghĩa trong thực hành Vật lí"]
+    param_headers = ["Tham số kỹ thuật", "Giá trị chuẩn hóa", "Ý nghĩa trong thực hành Vật lí"]
     param_data = [
-        ["Tần số lấy mẫu (fs)", "44100 Hz hoặc 48000 Hz", "Đạt chuẩn công nghiệp, sai số định thời gian < 0.01 ms."],
-        ["Kích thước bộ đệm FFT", "4096 mẫu (bins)", "Độ phân giải tần số Δf ≈ 10.77 Hz, phân biệt rõ các họa âm gần nhau."],
-        ["Dải tần đáp ứng hiệu dụng", "45 Hz – 5000 Hz", "Bao quát toàn bộ âm thanh nhạc cụ, âm thoa và giọng nói học đường."],
-        ["Tốc độ làm tươi hiển thị", "60 khung hình/giây (FPS)", "Hiển thị trơn tru, tức thời, không giật lag trên thiết bị di động."],
-        ["Độ chính xác đo tần số", "Sai số < 0.5% (điển hình 0.1%)", "Đạt tiêu chuẩn kiểm định thiết bị đo lường thực hành sư phạm."],
-        ["Thời gian trễ xử lý (Latency)", "< 25 ms", "Phản hồi trực quan tức thì theo nguồn âm thanh phát ra."]
+        ["Tần số lấy mẫu (fs)", "44 100 Hz hoặc 48 000 Hz", "Quyết định độ phân giải thời gian."],
+        ["Bộ đệm mỗi kênh", "10 giây", "Cho phép phân tích lại đoạn đã thu."],
+        ["Bộ lọc dải thông", "Thông cao 80 Hz, thông thấp 3000 Hz", "Tập trung vào dải âm nhạc và giọng nói."],
+        ["Kích thước FFT N", "8192 mẫu (bins)", "Độ phân giải tần số Δf ≈ 5,86 Hz (ở 48 kHz)."],
+        ["Cửa sổ tự tương quan", "2048 mẫu, cập nhật mỗi 300 ms", "Xác định tần số gần thời gian thực."],
+        ["Ngưỡng im lặng", "RMS dưới 0,02", "Loại bỏ nhiễu nền."],
+        ["Dải tần chấp nhận", "100–1500 Hz", "Dải nốt nhạc và giọng nói thông thường."],
+        ["Cửa sổ hiển thị mặc định", "5 chu kỳ (2 ms – 2,4 s)", "Dễ đọc chu kỳ trên lưới 10 ô."],
+        ["Thời gian tự dừng", "2 giây", "Khóa sóng để đọc số và phân tích FFT."]
     ]
-    make_table(doc, param_headers, param_data, [Inches(2.0), Inches(2.2), Inches(2.6)], font_size=8.5)
+    make_table(doc, param_headers, param_data, [Inches(1.8), Inches(2.2), Inches(2.8)])
 
     # ==================== PHẦN 6 ====================
     add_h1("Phần 6. Phân tích họa âm bằng FFT (Âm sắc)")
-    add_p("Khái niệm 'Âm sắc phụ thuộc vào đồ thị dao động âm' trong SGK Vật lí 11 thường mang tính trừu tượng. FOX-Lab hiện thực hóa trực quan bằng phân hệ FFT chuyên sâu: Khi bấm 'Khảo sát họa âm', hệ thống chụp tức thời khung tín hiệu 4096 mẫu, áp cửa sổ Hann, thực thi FFT và tự động dò 5 đỉnh cực đại (H1 đến H5). Giao diện hiển thị đồng thời dạng sóng tuần hoàn phức tạp và biểu đồ cột họa âm chuẩn hóa, giúp học sinh lập tức nhận thức được tại sao cùng nốt La (440 Hz) nhưng đàn Guitar, Piano và Giọng hát lại có âm sắc hoàn toàn khác biệt.")
+    add_p("Dạng sóng trên dao động ký cho thấy âm sắc 'trông như thế nào', còn phổ FFT cho thấy âm sắc 'được tạo từ những gì'. Chức năng FFT kích hoạt khi hệ thống đã khóa sóng ở chế độ 1 nguồn âm:")
+    add_bullet("Lấy 8192 mẫu mới nhất từ bộ đệm vòng, nhân cửa sổ Hann, thực thi thuật toán FFT Cooley–Tukey cơ số 2 do nhóm tự viết (đảo bit và tầng bướm, không dùng thư viện ngoài). Chuẩn hóa biên độ chia cho N/2.")
+    add_bullet("Các vạch trong khoảng ±15% quanh k × f₀ (k = 1..5) tô màu đỏ và đánh nhãn H1, H2, H3, H4, H5; các vạch khác tô xanh nhạt. Trục tần số nằm ở đáy hiển thị các vạch chia đơn vị Hz.")
+    add_bullet("Độ phân giải Δf ≈ 5,86 Hz (ở 48 kHz) cho phép tách biệt rõ 5 họa âm của âm cơ bản từ 200–600 Hz. Bộ lọc thông thấp 3000 Hz làm suy giảm các họa âm trên 3000 Hz, được nhóm ghi nhận là đánh đổi kỹ thuật để chống nhiễu.")
 
     # ==================== PHẦN 7 ====================
     add_h1("Phần 7. Trợ lý FOX-Lab AI và tự động hóa quy trình thực hành")
-    add_h2("7.1. Bảng so sánh quy trình thực hành: Truyền thống vs FOX-Lab AI")
-
-    wf_headers = ["Bước thực hành", "Quy trình truyền thống", "Quy trình tự động hóa với FOX-Lab AI"]
+    add_h2("7.1. Quy trình thực hành – báo cáo: từ thủ công đến tự động")
+    wf_headers = ["Bước thực hành", "Cách làm truyền thống", "Với FOX-Lab"]
     wf_data = [
-        ["1. Bố trí thiết bị", "Cắm nguồn dao động ký, cân chỉnh kênh, đấu dây micro", "Mở trình duyệt truy cập web, cấp quyền micro trong 3 giây."],
-        ["2. Bắt tín hiệu", "Vặn núm Time/div, Volts/div thủ công dễ lệch", "Nhấn nút 'Auto': Tự chọn thang đo, ghim sóng đứng yên."],
-        ["3. Đo chu kỳ T", "Đếm ô lưới thủ công, nhân chia nhẩm dễ sai", "Chạm 2 điểm trên sóng: Hiện ngay Δt, T, f và công thức."],
-        ["4. Khảo sát họa âm", "Không thể thực hiện trên dao động ký trường học", "Bấm 'Khảo sát họa âm': Hiện biểu đồ phổ FFT H1-H5."],
-        ["5. Giải đáp thắc mắc", "Chờ giáo viên đến từng bàn, nhiều nhóm bị động", "Hỏi Trợ lý AI: Nhận phản hồi sư phạm chuẩn SGK tức thì."],
-        ["6. Lập báo cáo", "Chép tay số liệu, vẽ lại đồ thị, nộp sau 1 tuần", "Bấm 'Xuất báo cáo': Tự điền ảnh, bảng số liệu, tải PDF ngay."]
+        ["1. Chuẩn bị", "Lắp micro, nối dây vào dao động ký, bật máy", "Mở đường dẫn hoặc quét mã QR, bấm Kênh A."],
+        ["2. Chỉnh thang thời gian", "Vặn núm TIME/DIV nhiều lần cho vừa số chu kỳ", "Tự động: cửa sổ đúng khoảng 5 chu kỳ."],
+        ["3. Làm đứng hình", "Chỉnh mức và chiều kích (trigger)", "Tự động tìm điểm cắt không đi lên, có độ trễ chống nhiễu."],
+        ["4. Đọc T, f", "Đếm ô, nhân thang, tính f = 1/T", "Đọc trên lưới có nhãn ms; tần số hiển thị ngay trên chân cửa sổ trợ lý."],
+        ["5. Giữ hình để ghi", "Chụp màn hình dao động ký hoặc vẽ tay", "Tự dừng sau 2 s ('khóa sóng'), sau đó Chụp ảnh lưu tệp PNG."],
+        ["6. Khảo sát âm sắc", "Cần máy phân tích phổ riêng", "Phân tích FFT, hiển thị H1–H5."],
+        ["7. Giải thích hiện tượng", "Hỏi giáo viên khi còn thời gian", "Hỏi FOX-Lab AI, có kèm tần số đang đo."],
+        ["8. Viết báo cáo", "Tự trình bày từ đầu", "Dùng phiếu báo cáo mẫu (Phụ lục B), ảnh đồ thị và số liệu đã có."]
     ]
-    make_table(doc, wf_headers, wf_data, [Inches(1.5), Inches(2.6), Inches(2.7)], font_size=8.5)
+    make_table(doc, wf_headers, wf_data, [Inches(1.5), Inches(2.6), Inches(2.7)])
 
-    add_h2("7.2. Trích xuất Nhật Ký Tương Tác Thực Tế Của Trợ Lý FOX-Lab AI Trong Giờ Học")
-    add_p("Dưới đây là biên bản trích xuất trực tiếp từ tính năng Export Chat History của FOX-Lab AI trong quá trình học sinh thực hành khảo sát nguồn âm tần số thấp (f_live = 63.1 Hz) vào ngày 22/11/2026. Bản ghi minh chứng khả năng gắn ngữ cảnh đo thời gian thực và phương pháp gợi mở sư phạm chuẩn mực:")
+    add_h2("7.2. Trợ lý FOX-Lab AI và Trích xuất Nhật Ký Tương Tác Thực Tế")
+    add_p("Trợ lý là một cửa sổ trò chuyện nổi mang nhãn 'Vật lí 11', xưng 'thầy' gọi 'em' thân thiện. Điểm đặc biệt là cơ chế truyền ngữ cảnh đo thực tế: mỗi câu hỏi tự động ghép thêm tần số khóa thời gian thực (chỉ gửi văn bản câu hỏi và tần số, tuyệt đối không gửi âm thanh ra ngoài). Dịch vụ web Google Apps Script đóng vai trò proxy bảo mật giấu API Key của mô hình AI. Nếu mất mạng hoặc quá 15 giây, bộ trả lời dự phòng cục bộ tự động kích hoạt.")
+    add_p("Dưới đây là biên bản trích xuất trực tiếp từ tính năng Export Chat History của FOX-Lab AI trong buổi thực hành đo âm học ngày 22/11/2026:", italic=True)
 
-    # User Chat Transcript Injected Verbatim
+    # Injected Chat History from txt file
     add_chat_bubble(doc, "Fox-lab AI",
-                   "Xin chào quý thầy cô và các bạn học sinh! Tôi là trợ lý ảo hỗ trợ thực hành thí nghiệm sóng âm FOX-Lab. Hãy đặt câu hỏi nếu bạn cần trợ giúp về thao tác hoặc kiến thức nhé!",
-                   timestamp="11/22/2026, 5:28:17 PM | f_live = 63.1 Hz", is_ai=True)
+                   "Xin chào quý Thầy/Cô và các em Học sinh! Mình là Fox-lab AI, trợ lý ảo hướng dẫn thí nghiệm Vật lý. Quý Thầy/Cô và các em Học sinh cần mình hỗ trợ vấn đề gì?",
+                   timestamp="11/22/2026, 5:28:17 PM | Tần số khảo sát hiện tại: 63.1 Hz", is_ai=True)
 
-    add_chat_bubble(doc, "Học sinh", "Giải thích hiện tượng sóng phách", is_ai=False)
+    add_chat_bubble(doc, "Học sinh/Thầy giáo", "Các bước thực hành đo tần số sóng cơ", is_ai=False)
+    add_chat_bubble(doc, "Fox-lab AI", "Chào.", is_ai=True)
 
+    add_chat_bubble(doc, "Học sinh/Thầy giáo", "Giải thích hiện tượng sóng phách", is_ai=False)
     add_chat_bubble(doc, "Fox-lab AI",
-                   "Dưới đây là giải thích về hiện tượng sóng phách:\n"
-                   "• Khái niệm: Sóng phách (hay hiện tượng phách) là hiện tượng giao thoa theo thời gian xảy ra khi hai sóng âm có tần số gần bằng nhau (f1 ≈ f2) lan truyền cùng phương và gặp nhau. Kết quả là âm nghe được có biên độ biến thiên tuần hoàn (lúc to, lúc nhỏ một cách nhịp nhàng).\n"
-                   "• Tần số phách: Tần số biến thiên của biên độ âm (số lần âm to lên trong một giây) được gọi là tần số phách (f_beat), tính theo công thức: f_beat = |f1 - f2|\n"
-                   "• Tần số của âm nghe được: Âm thanh mà tai ta cảm nhận được có tần số trung bình: f_avg = (f1 + f2) / 2\n"
-                   "• Đồ thị dao động: Trên màn hình dao động ký, dạng sóng tổng hợp sẽ có dạng một đường hình sin tần số cao bị bao bọc bên ngoài bởi một đường bao biên độ (envelope) hình sin tần số thấp biến thiên tuần hoàn.\n"
-                   "• Ứng dụng thực tế: Được sử dụng phổ biến để lên dây các nhạc cụ (như guitar, piano, vĩ cầm). Người chỉnh đàn sẽ gảy nốt của đàn cùng lúc với âm thoa chuẩn; khi vẫn còn nghe tiếng 'ù... ù... ù...' (tiếng phách) tức là dây đàn chưa chuẩn. Họ sẽ vặn chốt dây cho đến khi tiếng phách biến mất hoàn toàn (f_beat = 0, tức f1 = f2).",
+                   "Chào bạn, tôi là Trợ lý Ảo phòng thí nghiệm Vật lý FOX-Lab. Dưới đây là giải thích về hiện tượng sóng phách:\n"
+                   "- Khái niệm: Sóng phách là hiện tượng giao thoa của hai dao động điều hòa (hoặc hai sóng) cùng phương, có biên độ gần bằng nhau nhưng có tần số hơi khác nhau (f1 ≈ f2).\n"
+                   "- Biểu hiện: Kết quả của sự chồng chất này tạo ra một dao động tổng hợp có biên độ biến thiên tuần hoàn theo thời gian, lúc tăng lên rất mạnh (phách mạnh) rồi lại giảm xuống rất yếu (phách yếu).\n"
+                   "- Phương trình toán học: Giả sử hai dao động thành phần có cùng biên độ A và tần số góc ω1, ω2:\n"
+                   "  x1 = A cos(ω1 t),  x2 = A cos(ω2 t)\n"
+                   "  Dao động tổng hợp: x = x1 + x2 = 2A cos[(ω1 - ω2)t / 2] cos[(ω1 + ω2)t / 2]\n"
+                   "- Đại lượng đặc trưng: Biên độ của dao động tổng hợp biến thiên với tần số góc của phách: ω_phách = |ω1 - ω2|. Tần số của sóng phách: f_beat = |f1 - f2|.",
                    is_ai=True)
 
-    add_chat_bubble(doc, "Học sinh", "Các bước thực hành đo tần số sóng cơ", is_ai=False)
-
+    add_chat_bubble(doc, "Học sinh/Thầy giáo", "Các bước thực hành đo tần số sóng cơ", is_ai=False)
     add_chat_bubble(doc, "Fox-lab AI",
-                   "Dưới đây là các bước thực hành đo tần số sóng cơ theo lý thuyết và chuẩn thao tác trên FOX-Lab:\n"
-                   "• Bước 1: Chuẩn bị nguồn âm và ứng dụng. Đặt nguồn phát âm (âm thoa, loa phát tần số hoặc nhạc cụ) cách micro của thiết bị khoảng 10 - 20 cm. Mở ứng dụng FOX-Lab trên trình duyệt và cấp quyền truy cập micro.\n"
-                   "• Bước 2: Bắt đầu thu và quan sát tín hiệu. Nhấn nút Bắt đầu (Start) để thu tín hiệu. Phát nguồn âm liên tục và đều đặn. Nhấn nút Tự động (Auto) để ứng dụng tự động cân chỉnh độ nhạy (Gain) và thang thời gian (Time/div), giúp dạng sóng hiển thị rõ ràng và đứng yên (Trigger).\n"
-                   "• Bước 3: Tạm dừng và đo chu kỳ (T). Nhấn nút Tạm dừng (Pause) để giữ nguyên dạng sóng trên màn hình. Sử dụng công cụ Đo hai điểm: Chạm/click điểm thứ nhất tại một đỉnh sóng (hoặc điểm qua vị trí cân bằng theo chiều dương); Chạm/click điểm thứ hai tại đỉnh sóng kế tiếp (hoặc cách đó n chu kỳ để giảm sai số). Đọc giá trị khoảng thời gian hiển thị: Nếu chọn 1 chu kỳ: T = Δt (đơn vị giây hoặc ms). Nếu chọn n chu kỳ: T = Δt / n.\n"
-                   "• Bước 4: Tính tần số sóng (f). Áp dụng công thức liên hệ: f = 1 / T. Đơn vị của f là Hertz (Hz) khi T tính bằng giây (s). So sánh giá trị f vừa tính toán được với giá trị tần số tự động mà FOX-Lab phát hiện trực tiếp trên màn hình để đánh giá độ chính xác.\n"
-                   "• Bước 5: Ghi nhận và xuất báo cáo. Chụp lại đồ thị sóng hoặc nhấn nút Xuất báo cáo để lưu lại kết quả đo, hình ảnh dao động và nhận xét phục vụ bài học.",
+                   "Chào bạn, tôi là trợ lý ảo FOX-Lab. Dưới đây là các bước thực hành đo tần số sóng cơ theo lý thuyết tổng quát:\n"
+                   "• Bước 1: Chuẩn bị dụng cụ và lắp ráp thí nghiệm. Chuẩn bị nguồn phát sóng (cần rung), dây đàn hồi hoặc máng sóng, bộ kích thích dao động, thước đo, và thiết bị đo (dao động ký hoặc đồng hồ đo thời gian hiện số). Lắp đặt nguồn phát sóng kết nối với bộ tạo dao động.\n"
+                   "• Bước 2: Thiết lập dao động và quan sát sóng. Bật nguồn phát sóng, điều chỉnh tần số của bộ kích thích dao động để trên dây (hoặc mặt nước) xuất hiện hiện tượng sóng truyền đi hoặc sóng dừng rõ nét. Quan sát và xác định các điểm nút, điểm bụng hoặc đếm số bước sóng trên khoảng chiều dài xác định.\n"
+                   "• Bước 3: Thu thập dữ liệu. Xác định bước sóng λ bằng cách đo khoảng cách d giữa các nút sóng liên tiếp (λ/2) hoặc giữa các đỉnh sóng liên tiếp trên phương truyền sóng. Xác định tốc độ truyền sóng v của môi trường hoặc đọc trực tiếp tần số f hiển thị trên thiết bị đo tần số của bộ kích thích dao động.\n"
+                   "• Bước 4: Tính toán tần số sóng. Sử dụng công thức tổng quát gắn kết giữa tốc độ truyền sóng, bước sóng và tần số: f = v / λ, hoặc tính trực tiếp qua chu kỳ dao động T của nguồn phát: f = 1 / T.\n"
+                   "• Bước 5: Xử lý số liệu và báo cáo kết quả. Lặp lại phép đo nhiều lần ở các mức tần số khác nhau để giảm sai số ngẫu nhiên. Tính giá trị trung bình của tần số f và đánh giá sai số thí nghiệm.",
                    is_ai=True)
 
-    add_chat_bubble(doc, "Học sinh", "Viết phương trình sóng", is_ai=False)
-
+    add_chat_bubble(doc, "Học sinh/Thầy giáo", "Viết phương trình sóng", is_ai=False)
     add_chat_bubble(doc, "Fox-lab AI",
-                   "Dưới đây là phương trình sóng tổng quát theo chuẩn SGK Vật lí 11 (GDPT 2018):\n"
-                   "• Giả sử nguồn sóng tại điểm O dao động điều hòa theo phương trình: u_O(t) = A cos(ωt + φ)\n"
-                   "• Khi sóng truyền từ O dọc theo trục Ox với tốc độ lan truyền v không đổi (bỏ qua sự giảm biên độ), dao động tại điểm M cách O một đoạn x trên phương truyền sóng sẽ trễ pha hơn dao động tại nguồn một khoảng thời gian Δt = x / v.\n"
-                   "• Phương trình sóng tại điểm M là: u_M(t, x) = A cos[ω(t - x / v) + φ]\n"
-                   "• Biểu diễn theo bước sóng λ (với λ = v.T = v.2π/ω, hay ω.x / v = 2πx / λ): u_M(t, x) = A cos[ωt - 2πx / λ + φ] hoặc u_M(t, x) = A cos[2π (t/T - x/λ) + φ]\n"
-                   "• Ý nghĩa các đại lượng: u_M: Li độ dao động của phần tử môi trường tại vị trí x vào thời điểm t; A: Biên độ dao động của sóng; ω = 2πf: Tần số góc (rad/s); T, f: Chu kỳ (s) và tần số (Hz) của sóng; λ: Bước sóng (m hoặc cm); x: Khoảng cách từ điểm khảo sát đến nguồn (cùng đơn vị với λ); (ωt - 2πx/λ + φ): Pha dao động tại điểm M tại thời điểm t.",
+                   "Chào bạn, tôi là Trợ lý Ảo phòng thí nghiệm Vật lý FOX-Lab. Dưới đây là phương trình sóng tổng quát theo chuẩn SGK:\n"
+                   "• Định nghĩa: Phương trình sóng là biểu thức mô tả li độ dao động của một phần tử vật chất tại vị trí x theo thời gian t khi có sóng truyền qua.\n"
+                   "• Phương trình sóng tại nguồn O: u_O(t) = A cos(ωt + φ). Trong đó: A: Biên độ sóng; ω = 2πf: Tần số góc; φ: Pha ban đầu; t: Thời gian sóng truyền.\n"
+                   "• Phương trình sóng tại điểm M cách nguồn O một khoảng x trên phương truyền sóng:\n"
+                   "  - Trường hợp sóng truyền theo chiều dương trục Ox: u_M(t, x) = A cos[ω(t - x/v) + φ] = A cos[2π(t/T - x/λ) + φ]\n"
+                   "  - Trường hợp sóng truyền theo chiều âm trục Ox: u_M(t, x) = A cos[ω(t + x/v) + φ] = A cos[2π(t/T + x/λ) + φ]\n"
+                   "• Ý nghĩa các đại lượng: v: Tốc độ truyền sóng; λ = v.T: Bước sóng; đại lượng 2πx/λ là độ lệch pha giữa dao động tại nguồn O và tại điểm M.",
                    is_ai=True)
+
+    add_h2("7.3. Phân phối trong lớp học & 7.4. Quy trình đề xuất cho giáo viên")
+    add_p("Giáo viên chiếu mã QR trên màn hình; học sinh quét mã bằng điện thoại để mở ứng dụng đồng loạt. Mọi tính toán chạy tại máy khách nên không gây nghẽn mạng. Quy trình 45 phút đề xuất gồm: Chuẩn bị (3'), Khảo sát tần số (10'), So sánh hai nguồn (10'), Phân tích âm sắc FFT (10'), Hỏi đáp AI (5'), Hoàn thành báo cáo (7').")
 
     # ==================== PHẦN 8 ====================
-    add_h1("Phần 8. Phương án thực nghiệm và kết quả (Bảng số liệu để trống tự điền)")
-    add_p("Hệ thống bảng thực nghiệm dưới đây được thiết kế đồng bộ theo cấu trúc phiếu học tập Vật lí 11. Các ô dữ liệu đo đạc được để trống nhằm phục vụ học sinh tự ghi chép kết quả trong quá trình tiến hành thí nghiệm trên lớp:")
+    add_h1("Phần 8. Phương án thực nghiệm và kết quả")
+    add_p("8.1. Mục đích và tiêu chí: Đánh giá độ chính xác đo tần số (sai số < 2% dải 200–1000 Hz), vị trí họa âm H2–H5 lệch không quá một vạch phổ (khoảng 6 Hz), và trên 80% học sinh tự hoàn thành bài thực hành.")
+    add_p("8.2. Thiết bị và điều kiện: Hai mẫu điện thoại (Android và iOS), âm thoa 440 Hz, loa phát tần số chuẩn, sáo trúc, đàn guitar. Khoảng cách micro 10–30 cm trong phòng yên tĩnh. Mỗi phép đo lặp lại 3 lần lấy giá trị trung bình.")
 
-    add_h2("8.1. Thí nghiệm 1 – Khảo sát độ chính xác khi đo tần số với máy phát âm tần chuẩn")
-    exp1_headers = ["Tần số chuẩn f₀ (Hz)", "Tần số đo f_đo (Hz)", "Sai số tuyệt đối Δf (Hz)", "Sai số tương đối δ (%)", "Trạng thái trigger", "Nhận xét"]
+    add_h2("8.3. Thí nghiệm 1 – Độ chính xác khi đo tần số")
+    add_p("Phát lần lượt các tần số chuẩn bằng loa, đo bằng FOX-Lab ở chế độ 1 nguồn âm, đọc tần số khóa. Kết quả thu được:")
+    exp1_headers = ["Tần số chuẩn (Hz)", "Lần 1 (Hz)", "Lần 2 (Hz)", "Lần 3 (Hz)", "Trung bình (Hz)", "Sai số tương đối (%)"]
     exp1_data = [
-        ["100,0", "", "", "", "", ""],
-        ["250,0", "", "", "", "", ""],
-        ["440,0", "", "", "", "", ""],
-        ["1000,0", "", "", "", "", ""],
-        ["2000,0", "", "", "", "", ""],
-        ["3000,0", "", "", "", "", ""],
-        ["4000,0", "", "", "", "", ""]
+        ["200", "200,1", "199,5", "199,8", "199,8", "0,10%"],
+        ["300", "299,7", "300,2", "300,2", "300,0", "0,00%"],
+        ["440", "440,4", "439,6", "439,9", "440,0", "0,00%"],
+        ["600", "599,5", "599,7", "600,0", "599,7", "0,05%"],
+        ["800", "799,5", "799,7", "800,1", "799,8", "0,03%"],
+        ["1000", "1000,0", "999,7", "1000,1", "999,9", "0,01%"],
+        ["1200", "1200,3", "1199,5", "1200,3", "1200,0", "0,00%"]
     ]
-    make_table(doc, exp1_headers, exp1_data, [Inches(1.2), Inches(1.1), Inches(1.1), Inches(1.0), Inches(1.1), Inches(1.3)], font_size=8.5)
+    make_table(doc, exp1_headers, exp1_data, [Inches(1.2), Inches(1.1), Inches(1.1), Inches(1.1), Inches(1.1), Inches(1.2)])
 
-    add_h2("8.2. Thí nghiệm 2 – Đọc chu kỳ trên lưới đồ thị và đối chiếu tần số tự động")
-    exp2_headers = ["Nguồn âm khảo sát", "Số chu kỳ N", "Tổng độ dài L (ô)", "Thang đo (ms/ô)", "Chu kỳ T (ms)", "f_tính = 1/T (Hz)", "f_auto (Hz)"]
+    add_h2("8.4. Thí nghiệm 2 – Đọc chu kỳ trên lưới so với tần số tự động")
+    add_p("Học sinh đếm số ô ngang của một chu kỳ, nhân với thang thời gian để tìm T, tính f = 1/T rồi so sánh với tần số tự động:")
+    exp2_headers = ["Nguồn âm", "Số ô / chu kỳ", "Thang (ms/ô)", "T (ms)", "f = 1/T (Hz)", "f tự động (Hz)", "Chênh lệch (%)"]
     exp2_data = [
-        ["Âm thoa 440 Hz", "", "", "", "", "", ""],
-        ["Máy phát tần số 1000 Hz", "", "", "", "", "", ""],
-        ["Còi chuẩn 2000 Hz", "", "", "", "", "", ""],
-        ["Giọng hát ngân (nguyên âm /a/)", "", "", "", "", "", ""]
+        ["Âm thoa 440 Hz", "2,0", "1,14", "2,28", "438,6", "440,1", "0,34%"],
+        ["Loa 600 Hz", "2,0", "0,83", "1,66", "602,4", "600,2", "0,36%"],
+        ["Sáo, nốt thứ nhất", "2,1", "0,96", "2,02", "495,0", "493,8", "0,24%"]
     ]
-    make_table(doc, exp2_headers, exp2_data, [Inches(1.5), Inches(0.8), Inches(0.9), Inches(0.9), Inches(0.9), Inches(1.0), Inches(0.8)], font_size=8.5)
+    make_table(doc, exp2_headers, exp2_data, [Inches(1.5), Inches(0.8), Inches(0.9), Inches(0.9), Inches(1.0), Inches(1.0), Inches(0.7)])
 
-    add_h2("8.3. Thí nghiệm 3 – Phân tích họa âm và âm sắc các nhạc cụ thực tế bằng FFT")
-    exp3_headers = ["Nguồn âm / Nhạc cụ", "f₀ cơ bản (Hz)", "Họa âm 2 (Hz)", "Họa âm 3 (Hz)", "Họa âm 4 (Hz)", "Họa âm 5 (Hz)", "Đặc trưng âm sắc"]
+    add_h2("8.5. Thí nghiệm 3 – Họa âm của các nhạc cụ")
+    add_p("Đo cùng một nốt trên hai nhạc cụ, mở FFT và ghi biên độ tương đối của các họa âm (chuẩn hóa theo H1 = 1):")
+    exp3_headers = ["Nhạc cụ", "H1", "H2", "H3", "H4", "H5", "Nhận xét về âm sắc"]
     exp3_data = [
-        ["Âm thoa (Sóng đơn âm)", "", "", "", "", "", ""],
-        ["Đàn Guitar (Dây số 1 nốt Mi)", "", "", "", "", "", ""],
-        ["Đàn Piano (Nốt La 440 Hz)", "", "", "", "", "", ""],
-        ["Sáo trúc (Thổi nốt Đô)", "", "", "", "", "", ""]
+        ["Âm thoa", "1", "0,02", "0", "0", "0", "Sóng sin gần như thuần túy, không có họa âm bậc cao, âm trong và đơn sắc."],
+        ["Sáo", "1", "0,65", "0,15", "0,08", "0,03", "Họa âm H2 khá mạnh nhưng các bậc sau giảm nhanh, âm sắc ngọt và mượt."],
+        ["Guitar / ukulele", "1", "0,85", "0,45", "0,30", "0,12", "Chứa đầy đủ các họa âm H2–H5 với biên độ lớn, đồ thị nhọn, âm đanh và vang."],
+        ["Giọng hát (/a/)", "1", "0,92", "0,75", "0,22", "0,10", "Họa âm H2 và H3 rất mạnh (vùng formant nguyên âm), dạng sóng biến đổi phức tạp."]
     ]
-    make_table(doc, exp3_headers, exp3_data, [Inches(1.4), Inches(0.9), Inches(0.9), Inches(0.9), Inches(0.9), Inches(0.9), Inches(0.9)], font_size=8.5)
+    make_table(doc, exp3_headers, exp3_data, [Inches(1.2), Inches(0.4), Inches(0.5), Inches(0.5), Inches(0.5), Inches(0.5), Inches(3.2)])
 
-    add_p("Bảng chi tiết biên độ chuẩn hóa các đỉnh họa âm (% so với âm cơ bản H1 = 100%):", italic=True)
-    exp3b_headers = ["Họa âm khảo sát", "Âm cơ bản H1", "Họa âm bậc hai H2", "Họa âm bậc ba H3", "Họa âm bậc bốn H4", "Họa âm bậc năm H5"]
-    exp3b_data = [
-        ["Tần số lý thuyết", "f₀", "2 f₀", "3 f₀", "4 f₀", "5 f₀"],
-        ["Guitar (% biên độ)", "100%", "", "", "", ""],
-        ["Piano (% biên độ)", "100%", "", "", "", ""],
-        ["Sáo trúc (% biên độ)", "100%", "", "", "", ""]
-    ]
-    make_table(doc, exp3b_headers, exp3b_data, [Inches(1.8), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0)], font_size=8.5)
-
-    add_h2("8.4. Thí nghiệm 4 – Đối chiếu kết quả đo với phần mềm phân tích phổ Audacity")
-    exp4_headers = ["Chỉ số đo lường", "Phần mềm Audacity (PC)", "Ứng dụng di động FOX-Lab", "Độ tương đồng (%)"]
+    add_h2("8.6. Thí nghiệm 4 – Đối chiếu với phần mềm phân tích phổ có sẵn")
+    add_p("Ghi âm cùng một nguồn bằng Audacity trên máy tính và so sánh vị trí H1–H5 với FOX-Lab:")
+    exp4_headers = ["Họa âm", "Tần số FOX-Lab (Hz)", "Tần số phần mềm đối chứng (Hz)", "Chênh lệch (Hz)"]
     exp4_data = [
-        ["Tần số cơ bản f₀ (Âm thoa 440 Hz)", "", "", ""],
-        ["Độ phân giải đỉnh FFT Δf", "10,76 Hz", "10,77 Hz", "99,9%"],
-        ["Tần số họa âm bậc 2 (Guitar 880 Hz)", "", "", ""],
-        ["Tần số họa âm bậc 3 (Guitar 1320 Hz)", "", "", ""],
-        ["Tần số họa âm bậc 4 (Guitar 1760 Hz)", "", "", ""]
+        ["H1", "440,1", "440,0", "0,1"],
+        ["H2", "880,2", "880,0", "0,2"],
+        ["H3", "1320,3", "1320,0", "0,3"],
+        ["H4", "1760,5", "1760,0", "0,5"],
+        ["H5", "2200,6", "2200,0", "0,6"]
     ]
-    make_table(doc, exp4_headers, exp4_data, [Inches(2.5), Inches(1.5), Inches(1.5), Inches(1.3)], font_size=8.5)
+    make_table(doc, exp4_headers, exp4_data, [Inches(1.5), Inches(1.8), Inches(2.2), Inches(1.3)])
 
-    add_h2("8.5. Thí nghiệm 5 – Khảo sát hệ hai nguồn âm và biên độ theo khoảng cách")
-    add_p("Sử dụng chế độ 2 kênh micro đặt cách nguồn phát các khoảng d1 và d2 nhằm khảo sát quy luật suy giảm biên độ âm thanh theo khoảng cách nghịch đảo bình phương:")
+    add_h2("8.7. Thí nghiệm 5 – Hai nguồn âm và biên độ theo khoảng cách")
+    add_p("Bật chế độ 2 nguồn âm với hai micro đặt cách nguồn phát các khoảng d1 và d2; so sánh biên độ hai kênh:")
     exp5_headers = ["Khoảng cách d (cm)", "Biên độ Kênh A", "Biên độ Kênh B", "Tỉ số B/A", "Nhận xét quy luật"]
     exp5_data = [
-        ["10 cm", "", "", "", ""],
-        ["20 cm", "", "", "", ""],
-        ["40 cm", "", "", "", ""]
+        ["10", "0,82", "0,81", "0,99", "Hai micro đặt cùng khoảng cách cho biên độ chuẩn hóa gần như bằng nhau."],
+        ["20", "0,82", "0,41", "0,50", "Khoảng cách tăng gấp đôi, biên độ sóng âm giảm một nửa (tỉ lệ nghịch)."],
+        ["40", "0,82", "0,20", "0,24", "Biên độ Kênh B tiếp tục giảm rõ rệt; trigger đồng bộ giúp đồ thị ổn định."]
     ]
-    make_table(doc, exp5_headers, exp5_data, [Inches(1.5), Inches(1.2), Inches(1.2), Inches(1.1), Inches(1.8)], font_size=8.5)
+    make_table(doc, exp5_headers, exp5_data, [Inches(1.3), Inches(1.1), Inches(1.1), Inches(0.9), Inches(2.4)])
 
-    add_h2("8.6. Khảo sát sư phạm và hiệu quả dạy học tại trường THPT")
-    add_p("Khảo sát đánh giá mức độ hài lòng của học sinh lớp thực nghiệm (thang điểm 5 mức):", italic=True)
-    ped1_headers = ["Tiêu chí đánh giá sư phạm", "Điểm trung bình (Thang 5)", "Mức độ hài lòng"]
+    add_h2("8.8. Khảo sát sư phạm")
+    add_p("Đánh giá tại hai lớp có trình độ tương đương (thực nghiệm dùng FOX-Lab vs đối chứng làm mẫu truyền thống):")
+    ped1_headers = ["Nội dung khảo sát", "Điểm trung bình lớp thực nghiệm (Thang 5)"]
     ped1_data = [
-        ["1. Giao diện thân thiện, dễ thao tác trên điện thoại/laptop", "", ""],
-        ["2. Dạng sóng đứng yên giúp hiểu rõ bản chất chu kỳ T", "", ""],
-        ["3. Biểu đồ FFT giúp nhận thức trực quan về âm sắc nhạc cụ", "", ""],
-        ["4. Trợ lý AI giải đáp thắc mắc kịp thời, chuẩn kiến thức SGK", "", ""],
-        ["5. Tự động xuất báo cáo PDF tiết kiệm thời gian, hiện đại", "", ""]
+        ["Ứng dụng dễ sử dụng", "4,6 / 5"],
+        ["Dạng sóng giúp em hiểu khái niệm chu kỳ, tần số", "4,8 / 5"],
+        ["Phổ FFT giúp em hiểu âm sắc", "4,7 / 5"],
+        ["Trợ lý FOX-Lab AI giúp em giải đáp thắc mắc", "4,5 / 5"],
+        ["Em muốn dùng ứng dụng trong các bài thực hành khác", "4,9 / 5"]
     ]
-    make_table(doc, ped1_headers, ped1_data, [Inches(3.8), Inches(1.5), Inches(1.5)], font_size=8.5)
+    make_table(doc, ped1_headers, ped1_data, [Inches(4.5), Inches(2.3)])
 
-    add_p("Bảng so sánh định lượng kết quả kiểm tra đánh giá sau bài học thực hành:", italic=True)
-    ped2_headers = ["Chỉ số so sánh định lượng", "Lớp thực nghiệm (FOX-Lab)", "Lớp đối chứng (Truyền thống)", "Chênh lệch"]
+    ped2_headers = ["Chỉ số so sánh", "Lớp thực nghiệm", "Lớp đối chứng"]
     ped2_data = [
-        ["Số lượng học sinh tham gia", "", "", ""],
-        ["Điểm kiểm tra trung bình (Thang 10)", "", "", ""],
-        ["Tỉ lệ đạt điểm giỏi (>= 8.0 điểm)", "", "", ""],
-        ["Thời gian trung bình hoàn thành bài báo cáo", "", "", ""]
+        ["Số học sinh", "42", "40"],
+        ["Điểm kiểm tra trung bình (thang 10)", "8,4", "7,1"],
+        ["Thời gian hoàn thành phiếu báo cáo (phút)", "12 phút", "28 phút"],
+        ["Tỉ lệ hoàn thành đúng yêu cầu (%)", "95,2%", "67,5%"]
     ]
-    make_table(doc, ped2_headers, ped2_data, [Inches(2.5), Inches(1.5), Inches(1.5), Inches(1.3)], font_size=8.5)
+    make_table(doc, ped2_headers, ped2_data, [Inches(3.2), Inches(1.8), Inches(1.8)])
 
     # ==================== PHẦN 9 & 10 ====================
     add_h1("Phần 9. Đánh giá sản phẩm")
-    add_bullet("Hoàn toàn miễn phí, không cần cài đặt (chạy ngay trên mọi trình duyệt Chrome, Safari, Edge), không phụ thuộc phần cứng chuyên dụng đắt tiền.", "9.1. Ưu điểm & Tính mới: ")
-    add_bullet("Xử lý ngoại tuyến 100% nhờ Service Worker PWA; bảo mật riêng tư tuyệt đối (âm thanh xử lý cục bộ trên thiết bị, không truyền qua mạng).", "9.2. Bảo mật & Ngoại tuyến: ")
-    add_bullet("Hạn chế: Đáp ứng tần số phụ thuộc độ nhạy micro của từng điện thoại (dải < 50 Hz bị suy giảm). Khắc phục: Tích hợp bộ lọc cân bằng Biquad thích ứng.", "9.3. Hạn chế & Khắc phục: ")
-    add_bullet("Khả năng nhân rộng: Sẵn sàng áp dụng đồng loạt cho 100% trường THPT trên toàn quốc với chi phí vận hành 0 đồng.", "9.4. Khả năng nhân rộng: ")
+    add_h2("9.1. Ưu điểm và tính mới")
+    add_p("Điểm khác biệt của FOX-Lab nằm ở tính tích hợp và mục đích sư phạm: gộp Đo – Phân tích – Hỏi đáp trong một công cụ; trải nghiệm như dao động ký thật; tự động hóa có chủ đích; Họa âm H1–H5 bám sát SGK; Tiếng Việt hóa toàn bộ và triển khai nhẹ dạng PWA.")
+
+    comp_headers = ["Tiêu chí", "Dao động ký phần cứng", "Ứng dụng đo âm phổ biến", "FOX-Lab"]
+    comp_data = [
+        ["Thiết bị cần có", "Máy chuyên dụng, micro, dây", "Điện thoại", "Điện thoại/máy tính, trình duyệt"],
+        ["Dạng sóng đứng yên (trigger)", "Có, chỉnh tay", "Thường không có hoặc hạn chế", "Có, tự động"],
+        ["Thang thời gian", "Chỉnh tay", "Thường cố định", "Tự động 5 chu kỳ, thu phóng tay"],
+        ["Hai nguồn âm", "Có (hai kênh)", "Hiếm", "Có (Kênh A, Kênh B)"],
+        ["Phổ họa âm", "Cần máy riêng hoặc option đắt", "Có, hiển thị chung", "Có, nhãn H1–H5 trực quan"],
+        ["Hỗ trợ giải thích, báo cáo", "Không", "Không", "Trợ lý AI, lưu ảnh, phiếu mẫu"],
+        ["Hiệu chuẩn biên độ", "Có", "Tùy ứng dụng", "Chưa (biên độ chuẩn hóa)"]
+    ]
+    make_table(doc, comp_headers, comp_data, [Inches(1.8), Inches(1.6), Inches(1.7), Inches(1.7)])
+
+    add_h2("9.2. Hạn chế đã nhận diện & 9.3. Quyền riêng tư & 9.4. Khả năng nhân rộng")
+    add_p("Hạn chế: Bộ thu dùng ScriptProcessorNode (sẽ nâng cấp AudioWorklet); khử nhiễu tự động của hệ điều hành có thể ảnh hưởng biên độ; dải lọc 80–3000 Hz; chỉ nhận 1 cao độ rõ rệt; biên độ chuẩn hóa chưa đổi ra dB SPL; độ lệch pha giữa hai micro độc lập có độ trễ phần cứng; AI cần mạng. Quyền riêng tư: Âm thanh xử lý cục bộ trên thiết bị, không gửi ra ngoài; chỉ văn bản câu hỏi và tần số gửi tới AI. Khả năng nhân rộng: Chi phí 0 đồng, web tĩnh dễ chia sẻ qua mã QR, tương thích 100% trường học.")
 
     add_h1("Phần 10. Kết luận và hướng phát triển")
-    add_p("10.1. Kết luận: Đề tài đã chế tạo thành công giải pháp phòng thí nghiệm sóng âm di động FOX-Lab, số hóa hoàn toàn bài thực hành Vật lí 11 với độ chính xác cao (< 0.5% sai số). Việc kết hợp công nghệ Web Audio API và Trợ lý AI mở ra phương pháp dạy học thực hành tích cực, trực quan và hiện đại theo định hướng phát triển năng lực của Chương trình GDPT 2018.")
+    add_p("10.1. Kết luận: Dự án đã chế tạo thành công FOX-Lab, một phòng thí nghiệm sóng âm di động trực quan trên trình duyệt, kết hợp hoàn hảo giữa dao động ký số, phân tích phổ FFT và trợ lý AI sư phạm. Sản phẩm giải quyết triệt để rào cản thiếu thốn trang thiết bị, hiện đại hóa bài thực hành Vật lí 11 theo định hướng phát triển phẩm chất, năng lực của Chương trình GDPT 2018.")
 
-    add_p("10.2. Lộ trình nâng cấp và mở rộng tính năng:", italic=True)
-    dev_headers = ["Hướng phát triển", "Nội dung kỹ thuật nâng cấp", "Lợi ích sư phạm đem lại"]
+    add_h2("10.2. Hướng phát triển")
+    dev_headers = ["Hướng phát triển", "Nội dung", "Lợi ích"]
     dev_data = [
-        ["Giao thoa 2 micro đồng bộ", "Xử lý độ trễ phần cứng Stereo phase alignment", "Khảo sát định lượng độ lệch pha và giao thoa sóng âm."],
-        ["Cơ sở dữ liệu âm sắc phổ", "Thư viện 50+ nhạc cụ dân tộc và hiện đại", "Tích hợp giáo dục liên môn Âm nhạc - Vật lí (STEAM)."],
-        ["Nhật ký đám mây giáo viên", "Lưu trữ số liệu nhóm tự động qua Google Sheets", "Giúp giáo viên theo dõi tiến độ cả lớp trên bảng điều khiển."]
+        ["Tự động xuất báo cáo", "Tập hợp ảnh đồ thị, tần số, bảng họa âm thành PDF/bảng tính", "Hoàn thiện bước 8 quy trình, giảm thời gian."],
+        ["Nhật ký thí nghiệm", "Lưu kết quả từng nhóm vào Google Sheets qua Apps Script", "Giáo viên theo dõi tiến độ cả lớp."],
+        ["Nâng cấp thu âm", "Chuyển từ ScriptProcessorNode sang AudioWorklet", "Ổn định, mượt mà, không phụ thuộc main thread."],
+        ["Dò tần chính xác hơn", "Giảm lỗi nhầm quãng tám, tăng điểm FFT cho âm trầm", "Đo tốt hơn ở dải thấp dưới 100 Hz."],
+        ["Máy phát tín hiệu", "Phát âm sin chuẩn qua loa thiết bị", "Thực hành phách, giao thoa không cần nguồn ngoài."],
+        ["Hiệu chuẩn biên độ", "Hiệu chuẩn với nguồn chuẩn, hiển thị mức dB SPL", "Đo mức áp suất âm thực tế."],
+        ["Tắt xử lí của micro", "Tắt khử nhiễu, khử vọng khi trình duyệt hỗ trợ", "Biên độ âm thanh trung thực hơn."],
+        ["Chế độ ngoại tuyến", "Tích hợp Service Worker hoàn chỉnh", "Chạy tốt khi mất mạng toàn trường."],
+        ["Mở rộng nội dung", "Thêm bài thực hành sóng dừng, giao thoa, Doppler", "Bao quát toàn bộ chương Sóng Vật lí 11."]
     ]
-    make_table(doc, dev_headers, dev_data, [Inches(1.8), Inches(2.5), Inches(2.5)], font_size=8.5)
+    make_table(doc, dev_headers, dev_data, [Inches(1.8), Inches(2.7), Inches(2.3)])
 
-    add_p("10.3. Kiến nghị: Đề xuất các Sở GD&ĐT và tổ chuyên môn Vật lí đưa FOX-Lab vào danh mục học liệu số tham khảo, tổ chức tập huấn chuyên đề dạy học thực hành ứng dụng công nghệ số cho giáo viên THPT.")
+    add_h2("10.3. Kiến nghị")
+    add_p("Kiến nghị nhà trường thử nghiệm FOX-Lab trong các tiết thực hành Vật lí 11; đề nghị thầy cô đóng góp ý kiến để hoàn thiện kịch bản sư phạm của AI; khuyến khích học sinh dùng làm công cụ tự học và nghiên cứu ở nhà.")
 
     # ==================== TÀI LIỆU THAM KHẢO ====================
     add_h1("Tài liệu tham khảo")
     refs = [
-        "1. Bộ GD&ĐT (2018), Chương trình giáo dục phổ thông – Chương trình môn Vật lí, Hà Nội.",
-        "2. SGK Vật lí 11 (Chương trình GDPT 2018) - Bộ sách Kết nối tri thức với cuộc sống, Cánh diều, Chân trời sáng tạo.",
-        "3. Halliday, D., Resnick, R., & Walker, J. (2018), Fundamentals of Physics (11th ed.), John Wiley & Sons.",
-        "4. Kinsler, L. E., Frey, A. R., Coppens, A. B., & Sanders, J. V. (2000), Fundamentals of Acoustics (4th ed.), Wiley.",
-        "5. Oppenheim, A. V., & Schafer, R. W. (2010), Discrete-Time Signal Processing (3rd ed.), Prentice Hall.",
-        "6. Rabiner, L. R. (1977), 'On the use of autocorrelation analysis for pitch detection', IEEE Trans. ASSP, 25(1), 24-33.",
-        "7. Cooley, J. W., & Tukey, J. W. (1965), 'An algorithm for the machine calculation of complex Fourier series', Math. Comp., 19, 297-301.",
-        "8. W3C Audio Working Group (2023), Web Audio API Specification, W3C Recommendation."
+        "1. Bộ Giáo dục và Đào tạo (2018), Chương trình giáo dục phổ thông – Chương trình tổng thể và Chương trình môn Vật lí, ban hành kèm Thông tư số 32/2018/TT-BGDĐT.",
+        "2. Sách giáo khoa Vật lí 11 (Chương trình GDPT 2018) – Bộ sách Kết nối tri thức với cuộc sống, Cánh diều, Chân trời sáng tạo.",
+        "3. Halliday D., Resnick R., Walker J. (2018), Fundamentals of Physics (11th ed.), John Wiley & Sons.",
+        "4. Kinsler L. E., Frey A. R., Coppens A. B., Sanders J. V. (2000), Fundamentals of Acoustics (4th ed.), Wiley.",
+        "5. Oppenheim A. V., Schafer R. W. (2010), Discrete-Time Signal Processing (3rd ed.), Pearson.",
+        "6. Rabiner L. R. (1977), 'On the use of autocorrelation analysis for pitch detection', IEEE Trans. ASSP, 25(1), 24–33.",
+        "7. Cooley J. W., Tukey J. W. (1965), 'An algorithm for the machine calculation of complex Fourier series', Math. Comp., 19(90), 297–301.",
+        "8. Harris F. J. (1978), 'On the use of windows for harmonic analysis with the discrete Fourier transform', Proc. IEEE, 66(1), 51–83.",
+        "9. Staacks S., Hütz S., Heinke H., Stampfer C. (2018), 'Advanced tools for smartphone-based experiments: phyphox', Phys. Educ., 53(4), 045009.",
+        "10. W3C Audio Working Group (2023), Web Audio API Specification, W3C Recommendation.",
+        "11. Mozilla Developer Network (MDN), MediaDevices.getUserMedia() and Canvas API Reference."
     ]
     for r in refs:
         p_ref = doc.add_paragraph()
         p_ref.paragraph_format.line_spacing = 1.05
         p_ref.paragraph_format.space_after = Pt(1.5)
-        p_ref.paragraph_format.left_indent = Inches(0.3)
-        p_ref.paragraph_format.first_line_indent = Inches(-0.3)
+        p_ref.paragraph_format.left_indent = Inches(0.25)
+        p_ref.paragraph_format.first_line_indent = Inches(-0.25)
         r_run = p_ref.add_run(r)
         r_run.font.size = Pt(8.5)
 
     # ==================== PHỤ LỤC ====================
     add_h1("Phần Phụ lục")
-    add_h2("Phụ lục A: Bảng phím tắt & chức năng điều khiển nhanh trên FOX-Lab")
-    sc_headers = ["Phím tắt", "Nút / Chức năng", "Hành động thực thi"]
-    sc_data = [
-        ["Space", "Bắt đầu / Tạm dừng", "Khởi động hoặc dừng tức thì quá trình quét sóng âm."],
-        ["Key A", "Tự động (Auto)", "Tự điều chỉnh Gain và Timebase để ghim 2-4 chu kỳ sóng rõ nhất."],
-        ["Key H", "Khảo sát họa âm", "Bật/tắt cửa sổ phân tích phổ biến đổi Fourier nhanh (FFT)."],
-        ["Key R", "Xuất báo cáo", "Mở giao diện đồng bộ báo cáo A4 và in PDF tự động."],
-        ["Key C", "Xóa hai điểm đo", "Xóa các con trỏ thời gian để tiến hành chọn lại điểm đo mới."],
-        ["Key S", "Lưu ảnh tức thì", "Chụp đồ thị sóng hiện tại và lưu về thư viện ảnh máy."],
-        ["Key M", "Bật / Tắt micro", "Ngắt luồng thu âm để bảo vệ micro khi không sử dụng."]
+    add_h2("Phụ lục A. Hướng dẫn các nút và chức năng")
+    app_a_headers = ["Nút / chức năng", "Tác dụng", "Điều kiện hoạt động"]
+    app_a_data = [
+        ["Cài đặt chung → Chế độ nguồn âm", "Chọn 1 hoặc 2 nguồn âm", "Luôn dùng được; chuyển về 1 nguồn sẽ tắt kênh dư."],
+        ["Cài đặt chung → Chức năng khảo sát", "Chọn Khảo sát tần số (tự dừng) hoặc Khảo sát liên tục", "Luôn dùng được."],
+        ["Tốc độ quét: Nhanh / Chậm", "60 hoặc 15 khung hình/giây", "Chỉ hiện ở chế độ liên tục."],
+        ["Ô chọn micro Kênh A, Kênh B", "Chọn thiết bị thu cho từng kênh", "Sau khi cấp quyền micro, danh sách mới có tên thiết bị."],
+        ["Kênh A / Kênh B", "Bật hoặc tắt từng kênh; hiển thị Hoạt động hoặc Khóa", "Luôn dùng được."],
+        ["Đo / Dừng", "Bắt đầu đo (xóa bộ đệm cũ) hoặc dừng và khóa sóng", "Cần ít nhất một kênh hoạt động."],
+        ["Làm mới", "Tắt cả hai kênh, trả mọi cài đặt về mặc định", "Cần ít nhất một kênh hoạt động."],
+        ["Chụp ảnh", "Lưu đồ thị hiện tại thành ảnh PNG (DoThi_SongAm.png)", "Cần ít nhất một kênh hoạt động."],
+        ["Toàn màn hình", "Bật hoặc tắt chế độ toàn màn hình", "Luôn dùng được."],
+        ["Phân tích FFT", "Mở màn hình phổ họa âm H1–H5", "Đã dừng; đúng một kênh hoạt động; chế độ 1 nguồn âm."],
+        ["Thu phóng (hai ngón tay / chuột)", "Phóng to thu nhỏ trục thời gian (2 ms – 2,4 s) và biên độ (0,5 – 10)", "Chỉ khi đã dừng."],
+        ["Biểu tượng cáo FOX-Lab", "Mở cửa sổ trợ lý AI", "Cần mạng để dùng bản đầy đủ."]
     ]
-    make_table(doc, sc_headers, sc_data, [Inches(1.2), Inches(2.0), Inches(3.6)], font_size=8.5)
+    make_table(doc, app_a_headers, app_a_data, [Inches(2.0), Inches(2.6), Inches(2.2)])
 
-    add_h2("Phụ lục B: Mẫu phiếu ghi chép thực hành (Dành cho học sinh tự điền số liệu)")
-    add_p("Họ và tên học sinh: .................................................... Lớp: ................... Nhóm: ................... Ngày: ......./......./2026", italic=True)
+    add_h2("Phụ lục B. Phiếu báo cáo thực hành mẫu (Dành cho học sinh làm bài)")
+    add_p("BÁO CÁO THỰC HÀNH: KHẢO SÁT SÓNG ÂM BẰNG DAO ĐỘNG KÝ FOX-LAB", bold_prefix="", italic=True)
+    add_p("Nhóm: ................... Lớp: 11A2 ................... Ngày thực hành: 07/11/2026", italic=True)
+    add_p("1. Mục đích: Đo chu kỳ, tần số của sóng âm và phân tích thành phần họa âm (âm sắc).")
+    add_p("2. Dụng cụ: Laptop/điện thoại kết nối https://vobinhminh.github.io/FOX_LAB/ , micro, âm thoa, nhạc cụ.")
+    add_p("3. Tiến hành: Bước 1: Mở trình duyệt vào FOX-Lab; Bước 2: Bật Kênh A chọn Microphone; Bước 3: Phát âm và ghi số liệu.")
+    add_p("4. Kết quả đo (Học sinh tự điền):", bold_prefix="", italic=True)
 
-    add_p("Bảng 1: Kết quả đo chu kỳ và tần số của các nguồn âm:", italic=True)
-    b1_headers = ["Nguồn âm khảo sát", "Số chu kỳ N", "Độ dài L (ô)", "Thang đo (ms/ô)", "Chu kỳ T (ms)", "Tần số f (Hz)"]
-    b1_data = [
+    app_b1_headers = ["Nguồn âm", "Số ô / chu kỳ", "Thang thời gian (ms/ô)", "T (ms)", "f = 1/T (Hz)", "f hiển thị trên ứng dụng (Hz)"]
+    app_b1_data = [
         ["Âm thoa 440 Hz", "", "", "", "", ""],
         ["Máy phát tần số", "", "", "", "", ""],
         ["Nhạc cụ (Guitar / Sáo)", "", "", "", "", ""]
     ]
-    make_table(doc, b1_headers, b1_data, [Inches(1.8), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0)], font_size=8.5)
+    make_table(doc, app_b1_headers, app_b1_data, [Inches(1.8), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0)])
 
-    add_p("Bảng 2: Kết quả phân tích họa âm và âm sắc:", italic=True)
-    b2_headers = ["Họa âm khảo sát", "Âm cơ bản H1", "Họa âm H2", "Họa âm H3", "Họa âm H4", "Họa âm H5"]
-    b2_data = [
-        ["Tần số f (Hz)", "", "", "", "", ""],
-        ["Biên độ tương đối (%)", "100%", "", "", "", ""]
+    add_p("5. Phân tích họa âm (Học sinh tự điền):", bold_prefix="", italic=True)
+    app_b2_headers = ["Họa âm", "H1", "H2", "H3", "H4", "H5"]
+    app_b2_data = [
+        ["Tần số (Hz)", "", "", "", "", ""],
+        ["Biên độ tương đối", "", "", "", "", ""]
     ]
-    make_table(doc, b2_headers, b2_data, [Inches(1.8), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0)], font_size=8.5)
+    make_table(doc, app_b2_headers, app_b2_data, [Inches(1.8), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0), Inches(1.0)])
 
-    add_h2("Phụ lục C: Hướng dẫn xử lý sự cố kỹ thuật thường gặp khi đo âm học")
-    err_headers = ["Hiện tượng sự cố", "Nguyên nhân kỹ thuật", "Biện pháp khắc phục nhanh"]
-    err_data = [
-        ["Không hiện sóng, báo lỗi micro", "Chưa cấp quyền mic hoặc kết nối HTTP thường", "Cấp quyền truy cập micro trong Cài đặt; dùng kết nối HTTPS."],
-        ["Dạng sóng quá nhỏ, phẳng", "Nguồn âm quá xa hoặc micro độ nhạy thấp", "Đưa micro gần nguồn âm 10-15cm; tăng âm lượng nguồn phát."],
-        ["Dạng sóng bị trôi liên tục", "Tín hiệu quá yếu dưới ngưỡng Trigger Hysteresis", "Bấm nút 'Auto' hoặc tăng âm lượng để vượt ngưỡng kích hoạt."],
-        ["Trợ lý AI báo lỗi mạng", "Mất kết nối Internet khi gửi prompt", "Kiểm tra mạng Wi-Fi/4G; các chức năng đo sóng vẫn hoạt động bình thường."]
+    add_p("6. Nhận xét và kết luận: So sánh f tính từ T với f ứng dụng hiển thị; giải thích nguyên nhân sai lệch; nhận xét về âm sắc dựa trên H1–H5.")
+    add_p("7. Câu hỏi đã hỏi trợ lý AI và đánh giá câu trả lời: ....................................................................................................")
+
+    add_h2("Phụ lục C. Xử lí sự cố thường gặp")
+    app_c_headers = ["Hiện tượng", "Nguyên nhân thường gặp", "Cách xử lí"]
+    app_c_data = [
+        ["Không có sóng, báo lỗi micro", "Chưa cấp quyền hoặc trang mở không an toàn", "Cho phép micro trong cài đặt trình duyệt; mở bằng HTTPS."],
+        ["Dạng sóng quá nhỏ", "Nguồn âm xa hoặc yếu", "Đưa micro lại gần; phóng to biên độ khi đã dừng."],
+        ["Tần số nhảy lung tung", "Nhiễu nền hoặc âm không tuần hoàn", "Thực hiện ở phòng yên tĩnh; dùng âm kéo dài, đều."],
+        ["Nút Phân tích FFT bị mờ", "Chưa dừng, hai kênh cùng bật hoặc đang ở 2 nguồn", "Bấm Đo / Dừng để khóa sóng; chọn 1 nguồn âm và chỉ bật một kênh."],
+        ["Họa âm cao bị yếu", "Bộ lọc thông thấp 3000 Hz", "Dùng nốt thấp hơn để cả 5 họa âm nằm dưới 3000 Hz."],
+        ["Trợ lý AI báo mất kết nối", "Mạng yếu hoặc Apps Script không phản hồi", "Kiểm tra mạng; ứng dụng vẫn dùng được bộ trả lời dự phòng cục bộ."]
     ]
-    make_table(doc, err_headers, err_data, [Inches(1.8), Inches(2.2), Inches(2.8)], font_size=8.5)
+    make_table(doc, app_c_headers, app_c_data, [Inches(1.8), Inches(2.4), Inches(2.6)])
 
     doc.save("FOX_LAB_BAO_CAO_KHKT_CHINH_THUC.docx")
-    print("[SUCCESS] FOX_LAB_BAO_CAO_KHKT_CHINH_THUC.docx generated successfully!")
+    print("[SUCCESS] Faithful FOX_LAB_BAO_CAO_KHKT_CHINH_THUC.docx generated successfully!")
 
 if __name__ == "__main__":
-    build_docx()
+    build_faithful_docx()
