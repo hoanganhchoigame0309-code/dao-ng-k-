@@ -1,4 +1,4 @@
-const CACHE_NAME = 'foxlab-pwa-v6.4.0'; // Tăng số này mỗi khi cập nhật code
+const CACHE_NAME = 'foxlab-pwa-v6.4.1'; // Tăng số này mỗi khi cập nhật code
 const STATIC_ASSETS = [
   './',
   './index.html',

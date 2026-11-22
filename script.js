@@ -20,6 +20,61 @@ async function checkAppVersion() {
     }
     checkAppVersion();
 
+    // =========================================================================
+    // GIỚI HẠN THỜI GIAN PHIÊN DÙNG THỬ (30 PHÚT)
+    // - Nếu muốn gỡ bỏ giới hạn 30 phút: Xóa khối setTimeout(...) ở đầu file script.js.
+    // - Nếu muốn đổi số phút: Sửa số 30 trong biểu thức 30 * 60 * 1000 thành số phút mong muốn.
+    // =========================================================================
+    setTimeout(() => {
+        try {
+            if (typeof stopAudioChannel === 'function') {
+                stopAudioChannel('A');
+                stopAudioChannel('B');
+            }
+            if (typeof audioCtx !== 'undefined' && audioCtx) {
+                audioCtx.suspend().catch(() => {});
+            }
+            if (typeof isPaused !== 'undefined') isPaused = true;
+            if (typeof animFrameId !== 'undefined' && animFrameId) {
+                cancelAnimationFrame(animFrameId);
+                animFrameId = null;
+            }
+
+            const pauseBtn = document.getElementById('pauseButton');
+            if (pauseBtn) {
+                pauseBtn.disabled = true;
+                pauseBtn.textContent = "Hết giờ (30 phút)";
+                pauseBtn.className = "btn-gray";
+            }
+
+            let modal = document.getElementById('foxlabTrialExpiredModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'foxlabTrialExpiredModal';
+                modal.innerHTML = `
+                    <div style="position:fixed;inset:0;background:rgba(15,23,42,0.85);backdrop-filter:blur(6px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:16px;">
+                        <div style="background:#ffffff;border-radius:12px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.3);max-width:440px;width:100%;padding:24px;text-align:center;font-family:'Be Vietnam Pro',sans-serif;">
+                            <div style="font-size:40px;margin-bottom:12px;">⏱️</div>
+                            <h3 style="margin:0 0 8px;color:#0f172a;font-size:18px;font-weight:700;">Hết thời gian dùng thử (30 phút)</h3>
+                            <p style="margin:0 0 20px;color:#475569;font-size:13.5px;line-height:1.6;">
+                                Phiên trải nghiệm thí nghiệm sóng âm FOX-Lab (giới hạn 30 phút) đã kết thúc. Vui lòng tải lại trang để bắt đầu phiên mới!
+                            </p>
+                            <button onclick="window.location.reload(true)" style="background:#0284c7;color:#ffffff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 2px 4px rgba(2,132,199,0.3);">
+                                🔄 Tải lại trang
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            } else {
+                modal.style.display = 'block';
+            }
+        } catch (err) {
+            console.error("Hết thời gian dùng thử 30 phút:", err);
+            alert("Phiên dùng thử 30 phút đã kết thúc. Vui lòng tải lại trang để tiếp tục!");
+        }
+    }, 30 * 60 * 1000);
+
 
     let isSelectActive = false;
     let isMicPromptActive = false;
