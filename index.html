@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-512.png">
     <link rel="apple-touch-icon" href="icon-512.png">
     <meta name="theme-color" content="#f97316">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>FOX_LAB - Phòng thí nghiệm Vật lý về sóng cơ học</title>
@@ -19,7 +17,7 @@
 
     <!-- QRCode.js library for reliable QR code generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- MathJax v3 Configuration & CDN -->
     <script>
         window.MathJax = {
@@ -43,10 +41,114 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Bổ sung style cho lưới đồ thị từng lần đo & badge tự động nhận dữ liệu trong Modal Báo cáo */
+        .exp-live-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #064e3b;
+            color: #a7f3d0;
+            border: 1px solid #10b981;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .exp-live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 6px #34d399;
+        }
+        .exp-row-counter-badge {
+            font-family: system-ui, sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: #334155;
+            background: #e2e8f0;
+            padding: 2px 7px;
+            border-radius: 999px;
+            margin-left: 6px;
+        }
+        /* Lưới đồ thị từng lần đo (mỗi dòng 1 hình tương ứng, đồng bộ 100% với report.html) */
+        .exp-per-row-graphs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .exp-per-row-graphs-grid.single-item {
+            grid-template-columns: 1fr;
+        }
+        .exp-graph-card {
+            border: 1px solid #334155;
+            padding: 6px;
+            text-align: center;
+            background: #ffffff;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            position: relative;
+        }
+        .exp-graph-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10.2pt;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 4px;
+            padding-bottom: 3px;
+            border-bottom: 1px dashed #cbd5e1;
+        }
+        .exp-graph-card canvas {
+            width: 100%;
+            max-height: 46mm;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .exp-per-row-graphs-grid.single-item .exp-graph-card canvas {
+            max-height: 60mm;
+        }
+        .exp-graph-caption {
+            font-size: 10pt;
+            font-style: italic;
+            margin-top: 4px;
+            color: #1e293b;
+        }
+        /* Khung đồ thị đơn (Phần IV) */
+        .exp-graph-box {
+            border: 1px solid #334155;
+            padding: 7px;
+            text-align: center;
+            background: #ffffff;
+            margin-bottom: 10px;
+            position: relative;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .exp-graph-box canvas {
+            max-width: 100%;
+            max-height: 58mm;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .exp-inline-btn:disabled {
+            opacity: 0.48;
+            cursor: not-allowed;
+        }
+        @media (max-width: 768px) {
+            .exp-per-row-graphs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-
-
 
 <div class="top-bar">
     <div class="controls-wrapper">
@@ -101,8 +203,6 @@
                             <div class="settings-item" data-target="speedSelect" data-value="slow">Chậm</div>
                         </div>
                     </div>
-
-                    
                 </div>
             </div>
 
@@ -117,20 +217,20 @@
             <button id="resetButton" class="btn-orange">Làm mới</button>
             <button id="btnCalib" class="btn-orange" style="display: none;">🎯 Hiệu chuẩn</button>
             <button id="btnAnalysis" class="btn-slate" disabled>Xử lý nguồn âm</button>
-            <button id="btnExportReport" class="btn-blue" onclick="openExpReportModal()" title="Xuất phiếu báo cáo thí nghiệm A4 theo từng phần (PDF, Ảnh PNG, Excel CSV)">📄 Xuất báo cáo</button>
+            <button id="btnExportReport" class="btn-blue" onclick="navigateToStandaloneReport()" title="Mở trang phiếu báo cáo thí nghiệm A4 (report_4.html)">📄 Xuất báo cáo</button>
             <button id="fullscreenButton" class="btn-slate" onclick="toggleFullScreen()">Mở rộng</button>
         </div>
 
         <div class="channel-row">
             <div class="channel-card channel-a-indicator">
                 <button id="btnStartA" class="btn-slate" disabled>Kênh A (Khóa)</button>
-                <select id="micSelectA" aria-label="Chọn thiết bị thu Kênh A" style="color: #1e293b;">
+                <select id="micSelectA" style="color: #dc2626;">
                     <option value="">-- Kênh A: Chờ tải thiết bị --</option>
                 </select>
             </div>
             <div class="channel-card channel-b-indicator" id="cardChannelB" style="display:none;">
                 <button id="btnStartB" class="btn-slate" disabled>Kênh B (Khóa)</button>
-                <select id="micSelectB" aria-label="Chọn thiết bị thu Kênh B" style="color: #1e293b;">
+                <select id="micSelectB" style="color: #2563eb;">
                     <option value="">-- Kênh B: Chờ tải thiết bị --</option>
                 </select>
             </div>
@@ -138,7 +238,6 @@
 
         <div class="info-panel" id="infoText">
             <span id="infoMessageText">Đang tải hệ thống phân tích...</span>
-            
         </div>
     </div>
 
@@ -175,6 +274,7 @@
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
                 <button id="btnToggleFftTable" class="btn-blue" style="display:none;" onclick="toggleFftHarmonicTable()">📊 Bảng tần số &amp; họa âm</button>
+                <button type="button" id="btnSyncFftReport" class="btn-green" onclick="syncFeatureToReport('fft')" title="Đồng bộ kết quả &amp; đồ thị phổ FFT sang Phần II báo cáo">🔄 Đồng bộ báo cáo</button>
             </div>
         </div>
         <div class="fft-canvas-container" id="fftCanvasContainer">
@@ -223,6 +323,7 @@
                 <button id="tsPlayBtn" onclick="toggleTsPlay()" class="btn-orange" style="margin-left: 4px;">⏸ Dừng</button>
                 <button id="tsResultBtn" onclick="showTsResultModal()" style="display: none !important; margin-left: 4px;" class="btn-blue">📊 Kết quả</button>
                 <button id="tsEquationBtn" onclick="showTsEquationModal()" style="display: none !important; margin-left: 4px;" class="btn-slate">📐 Phương trình</button>
+                <button type="button" id="btnSyncTwoSourceReport" class="btn-green" style="margin-left: 4px;" title="Đồng bộ kết quả 2 nguồn âm sang báo cáo">🔄 Đồng bộ báo cáo</button>
             </div>
         </div>
         <div class="fft-canvas-container" id="tsContainer">
@@ -270,6 +371,7 @@
             </div>
             <div style="display: flex; align-items: center; gap: 6px;">
                 <button id="kinResultBtn" onclick="toggleKinematicsResultHud()" class="btn-blue">📊 Kết quả</button>
+                <button type="button" id="btnSyncKinematicsReport" onclick="syncFeatureToReport('kinematics')" class="btn-green" title="Đồng bộ đồ thị &amp; thông số dao động sang Phần I báo cáo">🔄 Đồng bộ báo cáo</button>
             </div>
         </div>
         <div class="fft-canvas-container" id="kinContainer">
@@ -313,9 +415,12 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> Quay lại
                 </button>
             </div>
-            <button class="btn-blue" onclick="calculateAvgDistance()" style="display:inline-flex; align-items:center; gap:4px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg> 📏 Tính khoảng cách nguồn âm ($r_A, r_B$)
-            </button>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button class="btn-blue" onclick="calculateAvgDistance()" style="display:inline-flex; align-items:center; gap:4px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg> 📏 Tính khoảng cách nguồn âm
+                </button>
+                <button type="button" id="btnSyncDbReport" class="btn-green" onclick="syncFeatureToReport('db')" title="Đồng bộ số liệu &amp; biểu đồ mức cường độ âm sang Phần III báo cáo">🔄 Đồng bộ báo cáo</button>
+            </div>
         </div>
 
         <div style="padding: 20px; overflow-y: auto; flex-grow: 1;">
@@ -453,7 +558,7 @@
 <div id="fox-chat-widget">
     <div class="fox-trigger-wrapper">
         <div class="fox-ping-ring"></div>
-        <button id="fox-chat-trigger" onclick="toggleChat()" aria-label="Mở/Đóng trợ lý ảo Fox-Lab AI">
+        <button id="fox-chat-trigger" onclick="toggleChat()">
             <span class="fox-trigger-icon fox-trigger-fox-icon" id="trigger-fox-icon-container"></span>
             <span class="fox-trigger-icon fox-trigger-close-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
         </button>
@@ -464,7 +569,7 @@
                 <div class="fox-avatar-container" id="header-fox-icon-container"></div>
                 <div class="fox-header-info">
                     <div class="fox-header-title">Fox-lab AI</div>
-                    <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến</span><span id="foxLiveFreqTag" class="fox-live-freq-tag" style="margin-left:6px; font-size:11px; padding:2px 6px; border-radius:4px; background:rgba(2,132,199,0.12); color:#0284c7; font-weight:600;"></span></div>
+                    <div class="fox-header-status"><span class="fox-status-dot"></span><span id="foxStatusText">Trực tuyến</span></div>
                 </div>
             </div>
             <div class="fox-header-actions">
@@ -501,20 +606,20 @@
         <div id="imagePreviewContainer">
             <img id="imagePreviewThumb" src="" alt="Preview">
             <span id="imagePreviewName">image.jpg</span>
-            <button class="fox-remove-img" onclick="clearImageUpload()" title="Xóa ảnh đính kèm" aria-label="Xóa ảnh đính kèm">✕</button>
+            <button class="fox-remove-img" onclick="clearImageUpload()">✕</button>
         </div>
 
         <div class="fox-input-container">
             <div class="fox-input-box">
                 <input type="file" id="foxImageUpload" accept="image/*" style="display: none;" onchange="handleImageSelected(event)">
-                <button class="fox-action-icon-btn" onclick="document.getElementById('foxImageUpload').click()" title="Tải lên hình ảnh đề bài" aria-label="Tải lên hình ảnh đề bài">
+                <button class="fox-action-icon-btn" onclick="document.getElementById('foxImageUpload').click()" title="Tải lên hình ảnh đề bài">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
                         <polyline points="21 15 16 10 5 21"></polyline>
                     </svg>
                 </button>
-                <button class="fox-action-icon-btn fox-mic-btn" id="foxMicBtn" title="Nói để nhập tin nhắn" aria-label="Nói để nhập tin nhắn">
+                <button class="fox-action-icon-btn fox-mic-btn" id="foxMicBtn" title="Nói để nhập tin nhắn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                         <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
@@ -523,7 +628,7 @@
                     </svg>
                 </button>
                 <input type="text" id="fox-chat-input" placeholder="Hỏi AI, nói hoặc tải ảnh..." autocomplete="off">
-                <button class="fox-send-btn" id="foxSendBtn" disabled aria-label="Gửi tin nhắn">
+                <button class="fox-send-btn" id="foxSendBtn" disabled>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -535,25 +640,22 @@
     </div>
 </div>
 
-
-
-
-
 <!-- ========================================================================= -->
-<!-- MODAL BÁO CÁO THÍ NGHIỆM A4 XUẤT TỪNG PHẦN (TÍCH HỢP TRONG FOX_LAB)       -->
+<!-- MODAL BÁO CÁO THÍ NGHIỆM A4 XUẤT TỪNG PHẦN (TỰ ĐỘNG NHẬN DỮ LIỆU ĐO)      -->
 <!-- ========================================================================= -->
 <div id="expReportModalOverlay" onclick="if(event.target===this) closeExpReportModal()">
-  <!-- Thanh công cụ cấu hình & xuất file (Tự dàn ngang trên PC, thu gọn Dropdown trên Điện thoại/Tablet) -->
+  <!-- Thanh công cụ gọn nhẹ: dữ liệu đo và xử lý chuyển qua tự động -->
   <div class="exp-rep-toolbar no-print">
     <div class="exp-rep-toolbar-compact">
       <div class="exp-rep-tb-left">
         <button type="button" class="exp-rep-btn exp-rep-btn-danger" onclick="closeExpReportModal()" title="Quay lại màn hình đo chính FOX_LAB">⬅ Quay lại</button>
-        <button type="button" class="exp-rep-btn exp-rep-btn-info" onclick="syncFoxLabToReport(true)" title="Đồng bộ số liệu và đồ thị mới nhất từ máy đo FOX_LAB">🔄 Đồng bộ dữ liệu</button>
-        <button type="button" class="exp-rep-btn exp-rep-btn-secondary" onclick="navigateToStandaloneReport()" title="Mở sang trang báo cáo riêng (report.html) ở tab mới">↗ Trang riêng</button>
+        <span class="exp-live-pill" title="Số liệu và đồ thị từ máy đo FOX_LAB được chuyển tự động sang báo cáo">
+          <span class="exp-live-dot"></span> Tự động nhận dữ liệu đo
+        </span>
+        <button type="button" class="exp-rep-btn exp-rep-btn-secondary" onclick="navigateToStandaloneReport()" title="Mở sang trang báo cáo riêng (report.html)">↗ Trang riêng</button>
       </div>
 
       <div class="exp-rep-tb-right">
-        <!-- Tùy chỉnh ghép phần: Tự dàn ngang hết các ô vuông trên PC, thu gọn Dropdown trên Điện thoại/Tablet -->
         <div class="exp-tb-dropdown" id="expDdCustomParts">
           <button type="button" class="exp-rep-btn exp-rep-btn-secondary exp-dd-toggle-btn" onclick="toggleExpTbDropdown('expDdCustomParts', event)">
             ☑️ Tùy chỉnh <span id="expSelectedCountBadge">(5)</span> ▼
@@ -588,7 +690,6 @@
           </div>
         </div>
 
-        <!-- Nút Dropdown Xuất file (PDF & Excel trực tiếp, bỏ in ấn) -->
         <div class="exp-tb-dropdown" id="expDdExportFile">
           <button type="button" class="exp-rep-btn exp-rep-btn-success" onclick="toggleExpTbDropdown('expDdExportFile', event)">
             📥 Xuất file ▼
@@ -607,17 +708,12 @@
     </div>
   </div>
 
-  <!-- Banner trạng thái dữ liệu -->
-  <div class="exp-rep-banner no-print" id="expReportStatusBanner">
-    <span id="expReportStatusText"><strong>Chế độ dữ liệu mẫu:</strong> Hãy bấm nút <strong>In/PDF phần này</strong> hoặc <strong>Xuất ảnh phần này</strong> trên thanh tiêu đề từng Phần để xuất riêng phần đó.</span>
-  </div>
-
   <!-- Trang giấy A4 -->
   <div class="exp-a4-sheet" id="expReportSheet">
     <div class="exp-header-top">
       <div>
-        <div class="exp-header-school" contenteditable="true" id="expSchoolName">TRƯỜNG THPT ........................................</div>
-        <div>Tổ chuyên môn: <span contenteditable="true" id="expDeptName">Vật lí - Công nghệ</span></div>
+        <div class="exp-header-school" contenteditable="true" id="expSchoolName" oninput="saveExpReportToStorage(true)">TRƯỜNG THPT ........................................</div>
+        <div>Tổ chuyên môn: <span contenteditable="true" id="expDeptName" oninput="saveExpReportToStorage(true)">Vật lí - Công nghệ</span></div>
       </div>
       <div class="exp-header-meta-right">
         <div><strong>PHIẾU BÁO CÁO THÍ NGHIỆM SÓNG ÂM</strong></div>
@@ -625,25 +721,25 @@
       </div>
     </div>
 
-    <div class="exp-report-title" contenteditable="true" id="expReportTitle">
+    <div class="exp-report-title" contenteditable="true" id="expReportTitle" oninput="saveExpReportToStorage(true)">
       BÁO CÁO KẾT QUẢ THỰC HÀNH KHẢO SÁT SÓNG ÂM
     </div>
-    <div class="exp-report-subtitle" contenteditable="true" id="expReportSubtitle">
+    <div class="exp-report-subtitle" contenteditable="true" id="expReportSubtitle" oninput="saveExpReportToStorage(true)">
       (Chương trình Vật lí 11 – Kết nối tri thức với cuộc sống)
     </div>
 
     <div class="exp-info-grid">
-      <div><strong>Nhóm thực hiện:</strong> <span contenteditable="true" id="expGroupName">Nhóm 01</span></div>
-      <div><strong>Lớp:</strong> <span contenteditable="true" id="expClassName">11A1</span></div>
-      <div><strong>Thành viên nhóm:</strong> <span contenteditable="true" id="expStudentNames">..........................................................</span></div>
-      <div><strong>Đối tượng / Nguồn âm:</strong> <span contenteditable="true" id="expSoundSource">Âm thoa chuẩn 440 Hz &amp; Nhạc cụ</span></div>
+      <div><strong>Nhóm thực hiện:</strong> <span contenteditable="true" id="expGroupName" oninput="saveExpReportToStorage(true)">Nhóm 01</span></div>
+      <div><strong>Lớp:</strong> <span contenteditable="true" id="expClassName" oninput="saveExpReportToStorage(true)">11A1</span></div>
+      <div><strong>Thành viên nhóm:</strong> <span contenteditable="true" id="expStudentNames" oninput="saveExpReportToStorage(true)">..........................................................</span></div>
+      <div><strong>Đối tượng / Nguồn âm:</strong> <span contenteditable="true" id="expSoundSource" oninput="saveExpReportToStorage(true)">Âm thoa chuẩn 440 Hz &amp; Nhạc cụ</span></div>
     </div>
 
     <div class="exp-tech-bar">
-      <span><strong>Trục thời gian:</strong> <span contenteditable="true" id="expScaleX">2,00 ms/ô</span></span>
-      <span><strong>Trục biên độ:</strong> <span contenteditable="true" id="expScaleY">0,20 V/ô</span></span>
-      <span><strong>Lấy mẫu:</strong> <span contenteditable="true" id="expSampleRate">48000 Hz</span></span>
-      <span><strong>Chế độ bộ lọc số:</strong> <span contenteditable="true" id="expFilterStatus">Thông dải (45 – 3000 Hz)</span></span>
+      <span><strong>Trục thời gian:</strong> <span contenteditable="true" id="expScaleX" oninput="saveExpReportToStorage(true)">2,00 ms/ô</span></span>
+      <span><strong>Trục biên độ:</strong> <span contenteditable="true" id="expScaleY" oninput="saveExpReportToStorage(true)">0,20 V/ô</span></span>
+      <span><strong>Lấy mẫu:</strong> <span contenteditable="true" id="expSampleRate" oninput="saveExpReportToStorage(true)">48000 Hz</span></span>
+      <span><strong>Chế độ bộ lọc số:</strong> <span contenteditable="true" id="expFilterStatus" oninput="saveExpReportToStorage(true)">Thông dải (45 – 3000 Hz)</span></span>
     </div>
 
     <!-- PHẦN I: DAO ĐỘNG KÍ -->
@@ -651,26 +747,18 @@
       <div class="exp-part-title">
         <span>PHẦN I. KHẢO SÁT DẠNG SÓNG VÀ ĐO CHU KÌ, TẦN SỐ (DAO ĐỘNG KÍ)</span>
         <div class="exp-part-actions no-print">
-          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart1', 'Phan1_DaoDongKi')" title="Tải trực tiếp file PDF riêng Phần I kèm thông tin nhóm và chữ ký">📄 PDF phần này</button>
-          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart1', 'Phan1_DaoDongKi')" title="Xuất toàn bộ Phần I (đồ thị + bảng số liệu) thành 1 file ảnh PNG">🖼️ Xuất ảnh phần này</button>
-          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart1')" title="Xuất bảng số liệu Phần I ra file Excel CSV">📊 CSV</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-pdf" onclick="exportSingleExpPartToPDF('expPart1', 'Phan1_DaoDongKi')">📄 PDF phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-img" onclick="exportExpPartAsImage('expPart1', 'Phan1_DaoDongKi')">🖼️ Xuất ảnh phần này</button>
+          <button type="button" class="exp-inline-btn exp-inline-btn-csv" onclick="exportSingleExpPartCSV('expPart1')">📊 CSV</button>
         </div>
       </div>
 
       <div class="exp-sub-heading">
-        <span>1.1. Đồ thị dao động điều hòa và xác định khoảng thời gian qua 2 điểm mốc (<i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>)</span>
-        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasOsc', 'Phan1_ChiDoThi')">📷 Chỉ xuất đồ thị</button>
-      </div>
-      <div class="exp-graph-box">
-        <canvas id="expCanvasOsc" data-no-export="true" width="820" height="235"></canvas>
-        <div class="exp-graph-caption" contenteditable="true">
-          Hình 1.1. Đồ thị li độ sóng âm theo thời gian ghi nhận trên chế độ dừng hình (Pause) với hai con trỏ đo chu kì.
-        </div>
-      </div>
-
-      <div class="exp-sub-heading">
-        <span>1.2. Bảng số liệu đo chu kì (<i>T</i>), tần số (<i>f</i>) và tính toán sai số</span>
-        <button type="button" class="exp-inline-btn no-print" onclick="addExpOscRow()">+ Thêm lần đo</button>
+        <span>
+          1.1. Bảng số liệu đo chu kì (<i>T</i>), tần số (<i>f</i>) và tính toán sai số
+          <span class="exp-row-counter-badge no-print" id="expOscCountBadge">1 / 10 dòng</span>
+        </span>
+        <button type="button" class="exp-inline-btn no-print" id="btnAddExpOsc" onclick="addExpOscRow()">+ Thêm lần đo (Tối đa 10)</button>
       </div>
       <table class="exp-data-table">
         <thead>
@@ -706,6 +794,11 @@
           <span id="expResF"><i>f</i> = (— ± —) Hz</span> &nbsp;(Sai số tỉ đối: <span id="expRelF">—</span>)
         </p>
       </div>
+
+      <div class="exp-sub-heading">
+        <span>1.2. Đồ thị dao động điều hòa tương ứng với từng lần đo (<i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>)</span>
+      </div>
+      <div class="exp-per-row-graphs-grid single-item" id="expOscGraphsGrid"></div>
     </section>
 
     <!-- PHẦN II: PHỔ TẦN SỐ FFT -->
@@ -720,32 +813,30 @@
       </div>
 
       <div class="exp-sub-heading">
-        <span>2.1. Biểu đồ phổ biên độ – tần số của nguồn âm</span>
-        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasFFT', 'Phan2_ChiPhoFFT')">📷 Chỉ xuất đồ thị</button>
-      </div>
-      <div class="exp-graph-box">
-        <canvas id="expCanvasFFT" data-no-export="true" width="820" height="220"></canvas>
-        <div class="exp-graph-caption" contenteditable="true">
-          Hình 2.1. Phổ tần số FFT thể hiện đỉnh tần số cơ bản <i>f</i><sub>0</sub> và các họa âm bậc cao (2<i>f</i><sub>0</sub>, 3<i>f</i><sub>0</sub>...).
-        </div>
-      </div>
-
-      <div class="exp-sub-heading">
-        <span>2.2. Bảng phân tích tần số cơ bản và đặc trưng họa âm giữa các nguồn âm</span>
-        <button type="button" class="exp-inline-btn no-print" onclick="addExpFftRow()">+ Thêm nguồn âm</button>
+        <span>
+          2.1. Bảng phân tích tần số cơ bản và đặc trưng họa âm giữa các nguồn âm
+          <span class="exp-row-counter-badge no-print" id="expFftCountBadge">1 / 10 dòng</span>
+        </span>
+        <button type="button" class="exp-inline-btn no-print" id="btnAddExpFft" onclick="addExpFftRow()">+ Thêm nguồn âm (Tối đa 10)</button>
       </div>
       <table class="exp-data-table">
         <thead>
           <tr>
-            <th style="width: 24%;">Nguồn âm khảo sát</th>
-            <th style="width: 18%;">Tần số cơ bản <i>f</i><sub>0</sub> (Hz)</th>
-            <th style="width: 26%;">Các họa âm ghi nhận được</th>
-            <th style="width: 26%;">Đặc điểm dạng sóng &amp; Âm sắc</th>
+            <th style="width: 8%;">STT</th>
+            <th style="width: 22%;">Nguồn âm khảo sát</th>
+            <th style="width: 16%;">Tần số cơ bản <i>f</i><sub>0</sub> (Hz)</th>
+            <th style="width: 24%;">Các họa âm ghi nhận được</th>
+            <th style="width: 24%;">Đặc điểm dạng sóng &amp; Âm sắc</th>
             <th class="no-print" style="width: 6%;">Xóa</th>
           </tr>
         </thead>
         <tbody id="expFftBody"></tbody>
       </table>
+
+      <div class="exp-sub-heading">
+        <span>2.2. Biểu đồ phổ biên độ – tần số tương ứng từng nguồn âm</span>
+      </div>
+      <div class="exp-per-row-graphs-grid single-item" id="expFftGraphsGrid"></div>
     </section>
 
     <!-- PHẦN III: MỨC CƯỜNG ĐỘ ÂM (dB) -->
@@ -760,34 +851,31 @@
       </div>
 
       <div class="exp-sub-heading">
-        <span>3.1. Đồ thị biến thiên mức cường độ âm <i>L</i>(<i>t</i>) theo thời gian</span>
-        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasDb', 'Phan3_ChiDoThiDB')">📷 Chỉ xuất đồ thị</button>
-      </div>
-      <div class="exp-graph-box">
-        <canvas id="expCanvasDb" data-no-export="true" width="820" height="205"></canvas>
-        <div class="exp-graph-caption" contenteditable="true">
-          Hình 3.1. Sự biến thiên mức cường độ âm <i>L</i> (dB) ghi nhận theo thời gian thực khi thay đổi khoảng cách tới nguồn âm.
-        </div>
-      </div>
-
-      <div class="exp-sub-heading">
-        <span>3.2. Bảng số liệu mức cường độ âm theo vị trí / khoảng cách</span>
-        <button type="button" class="exp-inline-btn no-print" onclick="addExpDbRow()">+ Thêm vị trí đo</button>
+        <span>
+          3.1. Bảng số liệu mức cường độ âm theo vị trí / khoảng cách
+          <span class="exp-row-counter-badge no-print" id="expDbCountBadge">1 / 10 dòng</span>
+        </span>
+        <button type="button" class="exp-inline-btn no-print" id="btnAddExpDb" onclick="addExpDbRow()">+ Thêm vị trí đo (Tối đa 10)</button>
       </div>
       <table class="exp-data-table">
         <thead>
           <tr>
             <th style="width: 14%;">Vị trí đo</th>
-            <th style="width: 20%;">Khoảng cách <i>r</i> (m)</th>
+            <th style="width: 18%;">Khoảng cách <i>r</i> (m)</th>
             <th style="width: 16%;"><i>L</i><sub>min</sub> (dB)</th>
             <th style="width: 16%;"><i>L</i><sub>max</sub> (dB)</th>
             <th style="width: 16%;"><i>L</i><sub>TB</sub> (dB)</th>
-            <th style="width: 12%;">Độ giảm Δ<i>L</i></th>
+            <th style="width: 14%;">Độ giảm Δ<i>L</i></th>
             <th class="no-print" style="width: 6%;">Xóa</th>
           </tr>
         </thead>
         <tbody id="expDbBody"></tbody>
       </table>
+
+      <div class="exp-sub-heading">
+        <span>3.2. Đồ thị biến thiên mức cường độ âm <i>L</i>(<i>t</i>) theo từng vị trí đo</span>
+      </div>
+      <div class="exp-per-row-graphs-grid single-item" id="expDbGraphsGrid"></div>
     </section>
 
     <!-- PHẦN IV: BỘ LỌC SỐ VÀ XỬ LÝ TÍN HIỆU -->
@@ -802,11 +890,11 @@
 
       <div class="exp-sub-heading">
         <span>4.1. So sánh dạng sóng trước và sau khi áp dụng bộ lọc số</span>
-        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasFilter', 'Phan4_ChiDoThiLoc')">📷 Chỉ xuất đồ thị</button>
+        <button type="button" class="exp-inline-btn exp-inline-btn-img no-print" onclick="exportSingleExpCanvas('expCanvasFilter', 'Phan4_ChiDoThiLoc')">📷 Xuất ảnh đồ thị</button>
       </div>
       <div class="exp-graph-box">
         <canvas id="expCanvasFilter" data-no-export="true" width="820" height="200"></canvas>
-        <div class="exp-graph-caption" contenteditable="true">
+        <div class="exp-graph-caption" contenteditable="true" oninput="saveExpReportToStorage(true)">
           Hình 4.1. Tín hiệu thu trực tiếp lẫn tạp âm môi trường (trái) và tín hiệu hình sin sạch sau khi qua bộ lọc thông dải (phải).
         </div>
       </div>
@@ -825,16 +913,16 @@
         </thead>
         <tbody id="expFilterBody">
           <tr>
-            <td contenteditable="true">Tắt bộ lọc (Tín hiệu thô)</td>
-            <td contenteditable="true">Toàn dải (20 – 20000 Hz)</td>
-            <td contenteditable="true">Có gợn nhiễu tần số cao/thấp</td>
-            <td contenteditable="true">436,5 – 445,2 Hz (dao động)</td>
+            <td contenteditable="true" oninput="saveExpReportToStorage(true)">Tắt bộ lọc (Tín hiệu thô)</td>
+            <td contenteditable="true" oninput="saveExpReportToStorage(true)">Toàn dải (20 – 20000 Hz)</td>
+            <td contenteditable="true" oninput="saveExpReportToStorage(true)">Có gợn nhiễu tần số cao/thấp</td>
+            <td contenteditable="true" id="expFilterRawFreqCell" oninput="saveExpReportToStorage(true)">Dao động theo nhiễu nền</td>
           </tr>
           <tr>
-            <td contenteditable="true">Bật lọc thông dải (Band-pass)</td>
-            <td contenteditable="true" id="expFilterBandCell">45 – 3000 Hz</td>
-            <td contenteditable="true">Đường sin mượt, đỉnh rõ nét</td>
-            <td contenteditable="true" id="expFilterFreqCell">440,1 Hz (ổn định)</td>
+            <td contenteditable="true" oninput="saveExpReportToStorage(true)">Bật lọc thông dải (Band-pass)</td>
+            <td contenteditable="true" id="expFilterBandCell" oninput="saveExpReportToStorage(true)">45 – 3000 Hz</td>
+            <td contenteditable="true" oninput="saveExpReportToStorage(true)">Đường sin mượt, đỉnh rõ nét</td>
+            <td contenteditable="true" id="expFilterFreqCell" oninput="saveExpReportToStorage(true)">Ổn định tại tần số cơ bản</td>
           </tr>
         </tbody>
       </table>
@@ -845,9 +933,9 @@
       <div class="exp-part-title">
         <span>PHẦN V. NHẬN XÉT CHUNG VÀ ĐÁNH GIÁ KẾT QUẢ THÍ NGHIỆM</span>
       </div>
-      <div class="exp-notes-box" contenteditable="true" id="expStudentNotes">
+      <div class="exp-notes-box" contenteditable="true" id="expStudentNotes" oninput="saveExpReportToStorage(true)">
         1. Kết luận về các đại lượng đặc trưng của sóng âm khảo sát (tần số, chu kì, mức cường độ âm, âm sắc): ........................................................................................................................................<br>
-        2. Phân tích nguyên nhân gây ra sai số trong quá trình thu âm bằng micro và hướng khắc phục (sử dụng bộ lọc số, chọn số chu kì <i>N</i> đủ lớn...): ........................................................................................................................................
+        2. Phân tích nguyên nhân gây ra sai số trong quá trình thu âm bằng micro và hướng khắc phục (sử dụng bộ lọc số, chọn số chu kì <i>N</i> phù hợp...): ........................................................................................................................................
       </div>
 
       <div class="exp-footer-sign">
@@ -868,9 +956,37 @@
   <div class="exp-toast-msg no-print" id="expToastMsg"></div>
 </div>
 
-
-
-    
-    <script src="script.js"></script>
+    <script src="index.js"></script>
+    <script>
+      window.FOX_REPORT_PAGE = "report.html";
+      (function () {
+        const REPORT_KEY = "daodongki_report_data";
+        window.navigateToStandaloneReport = function () {
+          try {
+            const isDual = (typeof window.getActiveChannelMode === "function") && (window.getActiveChannelMode() === "2");
+            const raw = localStorage.getItem(REPORT_KEY);
+            const parsed = raw ? JSON.parse(raw) : {};
+            parsed.isDualChannel = isDual;
+            parsed.dualSource = isDual;
+            parsed._source = "main_app";
+            parsed._updatedAt = Date.now();
+            parsed.syncFeature = "mode_only";
+            delete parsed.cacLanDo;
+            delete parsed.phoTanSo;
+            delete parsed.mucCuongDoAm;
+            const cleanStr = JSON.stringify(parsed);
+            localStorage.setItem(REPORT_KEY, cleanStr);
+            window.name = "FOXLAB_DATA:" + cleanStr;
+            const bc = new BroadcastChannel("foxlab_report_sync");
+            bc.postMessage({ type: "SYNC_REPORT_DATA", payload: parsed });
+            bc.close();
+          } catch (e) {}
+          const reportWin = window.open("report.html", "FoxLabReportWindow");
+          if (!reportWin) {
+            window.location.href = "report.html";
+          }
+        };
+      })();
+    </script>
 </body>
 </html>

@@ -1,14 +1,9 @@
-const CACHE_NAME = 'foxlab-pwa-v6.4.2'; // Tăng số này mỗi khi cập nhật code
+const CACHE_NAME = 'app-cache-v1.0.10'; // Tăng số này mỗi khi cập nhật code
 const STATIC_ASSETS = [
   './',
   './index.html',
-  './report.html',
-  './style.css',
-  './script.js',
   './manifest.json',
-  './version.json',
-  './icon-192.png',
-  './icon-512.png'
+  './icon-192.png'
 ];
 
 // 1. Cài đặt và ép kích hoạt ngay lập tức không chờ đóng tab

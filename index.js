@@ -1,3 +1,4 @@
+// Fox-lab - Acoustic Oscilloscope & SPL Meter (Full Build)
 async function checkAppVersion() {
         try {
             const res = await fetch('./version.json?t=' + Date.now(), { cache: 'no-store' });
@@ -19,61 +20,6 @@ async function checkAppVersion() {
         } catch (e) { console.log('Chưa thể kiểm tra phiên bản:', e); }
     }
     checkAppVersion();
-
-    // =========================================================================
-    // GIỚI HẠN THỜI GIAN PHIÊN DÙNG THỬ (30 PHÚT)
-    // - Nếu muốn gỡ bỏ giới hạn 30 phút: Xóa khối setTimeout(...) ở đầu file script.js.
-    // - Nếu muốn đổi số phút: Sửa số 30 trong biểu thức 30 * 60 * 1000 thành số phút mong muốn.
-    // =========================================================================
-    setTimeout(() => {
-        try {
-            if (typeof stopAudioChannel === 'function') {
-                stopAudioChannel('A');
-                stopAudioChannel('B');
-            }
-            if (typeof audioCtx !== 'undefined' && audioCtx) {
-                audioCtx.suspend().catch(() => {});
-            }
-            if (typeof isPaused !== 'undefined') isPaused = true;
-            if (typeof animFrameId !== 'undefined' && animFrameId) {
-                cancelAnimationFrame(animFrameId);
-                animFrameId = null;
-            }
-
-            const pauseBtn = document.getElementById('pauseButton');
-            if (pauseBtn) {
-                pauseBtn.disabled = true;
-                pauseBtn.textContent = "Hết giờ (30 phút)";
-                pauseBtn.className = "btn-slate";
-            }
-
-            let modal = document.getElementById('foxlabTrialExpiredModal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'foxlabTrialExpiredModal';
-                modal.innerHTML = `
-                    <div style="position:fixed;inset:0;background:rgba(15,23,42,0.85);backdrop-filter:blur(6px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:16px;">
-                        <div style="background:#ffffff;border-radius:12px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.3);max-width:440px;width:100%;padding:24px;text-align:center;font-family:'Be Vietnam Pro',sans-serif;">
-                            <div style="font-size:40px;margin-bottom:12px;">⏱️</div>
-                            <h3 style="margin:0 0 8px;color:#0f172a;font-size:18px;font-weight:700;">Hết thời gian dùng thử (30 phút)</h3>
-                            <p style="margin:0 0 20px;color:#475569;font-size:13.5px;line-height:1.6;">
-                                Phiên trải nghiệm thí nghiệm sóng âm FOX-Lab (giới hạn 30 phút) đã kết thúc. Vui lòng tải lại trang để bắt đầu phiên mới!
-                            </p>
-                            <button onclick="window.location.reload()" style="background:#0284c7;color:#ffffff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 2px 4px rgba(2,132,199,0.3);">
-                                🔄 Tải lại trang
-                            </button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-            } else {
-                modal.style.display = 'block';
-            }
-        } catch (err) {
-            console.error("Hết thời gian dùng thử 30 phút:", err);
-            alert("Phiên dùng thử 30 phút đã kết thúc. Vui lòng tải lại trang để tiếp tục!");
-        }
-    }, 30 * 60 * 1000);
 
 
     let isSelectActive = false;
@@ -141,6 +87,103 @@ async function checkAppVersion() {
     const FOX_AVATAR_SVG = `<svg viewBox="0 0 100 100" fill="none"><polygon points="22,12 10,48 36,40" fill="#ff7a30"/><polygon points="23,19 16,44 32,38" fill="#1e293b"/><path d="M 19 36 Q 23 32 28 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="78,12 64,40 90,48" fill="#ff7a30"/><polygon points="77,19 68,38 84,44" fill="#1e293b"/><path d="M 81 36 Q 77 32 72 34" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round"/><polygon points="50,22 36,40 50,46" fill="#ff8f4a"/><polygon points="50,22 50,46 64,40" fill="#ff7a30"/><polygon points="36,40 10,48 20,68 38,58" fill="#d4380d"/><polygon points="64,40 38,58 50,46" fill="#e04006"/><polygon points="64,40 50,46 62,58" fill="#d4380d"/><polygon points="64,40 90,48 80,68 62,58" fill="#d4380d"/><polygon points="20,68 12,74 26,76 34,68" fill="#e2e8f0"/><polygon points="80,68 88,74 74,76 66,68" fill="#cbd5e1"/><polygon points="38,58 50,46 50,78 36,68" fill="#ff7a30"/><polygon points="62,58 50,46 50,78 64,68" fill="#e04006"/><polygon points="50,78 36,68 44,88 50,88" fill="#f8fafc"/><polygon points="50,78 64,68 56,88 50,88" fill="#e2e8f0"/><polygon points="50,88 45,82 55,82" fill="#0f172a"/><polygon points="25,48 50,54 75,48 71,59 50,65 29,59" fill="#090d16" stroke="rgba(56,189,248,0.5)" stroke-width="0.9"/><circle cx="34.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="44.5" cy="60" r="1.5" fill="#ffffff"/><circle cx="54.5" cy="48" r="1.5" fill="#ffffff"/><circle cx="64.5" cy="60" r="1.5" fill="#ffffff"/></svg>`;
     const CHAT_GAS_ID = "AKfycbwllsi_eXt98JRwTDyHPtD8qtgx6nnyhnDD8sSk5mIgEeB0EGLHkIwydpATOWohKJLuEg";
 
+    // =========================================================================
+    // GIỚI HẠN THỜI GIAN PHIÊN CHẠY 30 PHÚT (CHẠY NGẦM, TỰ THOÁT KHI HẾT GIỜ)
+    // =========================================================================
+    const SESSION_DURATION_MS = 30 * 60 * 1000; // 30 phút
+    const SESSION_START_KEY = "foxlab_session_start_ts";
+    const SESSION_EXPIRED_KEY = "foxlab_session_expired";
+    let sessionMonitorTimer = null;
+    let isSessionTerminated = false;
+
+    function getSessionStartTimestamp() {
+        let startTs = 0;
+        try {
+            startTs = parseInt(sessionStorage.getItem(SESSION_START_KEY) || localStorage.getItem(SESSION_START_KEY) || "0", 10);
+        } catch (e) {}
+        if (!startTs || isNaN(startTs) || startTs <= 0) {
+            startTs = Date.now();
+            try { sessionStorage.setItem(SESSION_START_KEY, String(startTs)); } catch (e) {}
+            try { localStorage.setItem(SESSION_START_KEY, String(startTs)); } catch (e) {}
+        }
+        return startTs;
+    }
+
+    function terminateSessionOnTimeout() {
+        if (isSessionTerminated) return;
+        isSessionTerminated = true;
+
+        try { localStorage.setItem(SESSION_EXPIRED_KEY, "1"); } catch (e) {}
+        try { sessionStorage.setItem(SESSION_EXPIRED_KEY, "1"); } catch (e) {}
+
+        if (sessionMonitorTimer) {
+            clearInterval(sessionMonitorTimer);
+            sessionMonitorTimer = null;
+        }
+        try { if (typeof stopTimer !== "undefined" && stopTimer) clearTimeout(stopTimer); } catch (e) {}
+        try { isPaused = true; } catch (e) {}
+
+        // Dừng toàn bộ luồng âm thanh & đóng AudioContext
+        try { if (typeof stopAudioChannel === "function") { stopAudioChannel("A"); stopAudioChannel("B"); } } catch (e) {}
+        try { if (typeof audioCtx !== "undefined" && audioCtx && audioCtx.state !== "closed") audioCtx.close(); } catch (e) {}
+
+        // Đóng các modal/popup đang mở và tắt giọng nói/mic chatbox nếu có
+        try { if (typeof closeFFTModal === "function") closeFFTModal(); } catch (e) {}
+        try { if (typeof closeTwoSourceModal === "function") closeTwoSourceModal(); } catch (e) {}
+        try { if (typeof closeMcdModal === "function") closeMcdModal(); } catch (e) {}
+        try { if (typeof closeKinematicsModal === "function") closeKinematicsModal(); } catch (e) {}
+        try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+
+        // Đồng bộ tín hiệu thoát sang cửa sổ báo cáo (report.html) nếu đang mở
+        try {
+            const bc = new BroadcastChannel("foxlab_report_sync");
+            bc.postMessage({ type: "SESSION_TIMEOUT_EXIT" });
+            bc.close();
+        } catch (e) {}
+
+        // Khóa hoàn toàn giao diện khi hết 30 phút
+        document.body.innerHTML = `
+            <div style="position:fixed;inset:0;background:#0f172a;color:#f8fafc;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:system-ui,-apple-system,sans-serif;z-index:999999;">
+                <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:32px 28px;max-width:440px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,0.45);">
+                    <div style="font-size:44px;margin-bottom:12px;">⏱️</div>
+                    <h2 style="margin:0 0 10px 0;font-size:20px;color:#38bdf8;">Phiên sử dụng đã kết thúc</h2>
+                    <p style="margin:0 0 20px 0;font-size:14px;line-height:1.6;color:#cbd5e1;">
+                        Thời gian trải nghiệm 30 phút của phiên làm việc đã hết. Hệ thống đã tự động ngắt kết nối thiết bị đo và đóng toàn bộ chức năng.
+                    </p>
+                    <button onclick="try{window.close();}catch(e){} window.location.href='about:blank';" style="background:#ef4444;color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;width:100%;">
+                        Thoát ứng dụng
+                    </button>
+                </div>
+            </div>
+        `;
+        try { window.close(); } catch (e) {}
+    }
+
+    function initHiddenSessionTimer() {
+        try {
+            if (localStorage.getItem(SESSION_EXPIRED_KEY) === "1" || sessionStorage.getItem(SESSION_EXPIRED_KEY) === "1") {
+                // Nếu người dùng tải lại trang sau khi đã hết giờ hoặc mở tab mới: kiểm tra mốc thời gian phiên
+                const savedStart = parseInt(sessionStorage.getItem(SESSION_START_KEY) || localStorage.getItem(SESSION_START_KEY) || "0", 10);
+                if (savedStart && (Date.now() - savedStart >= SESSION_DURATION_MS)) {
+                    terminateSessionOnTimeout();
+                    return;
+                }
+            }
+        } catch (e) {}
+
+        const startTs = getSessionStartTimestamp();
+        const checkElapsed = () => {
+            if (Date.now() - startTs >= SESSION_DURATION_MS) {
+                terminateSessionOnTimeout();
+            }
+        };
+        checkElapsed();
+        sessionMonitorTimer = setInterval(checkElapsed, 1000);
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) checkElapsed();
+        });
+    }
+
     const btnStartA = document.getElementById('btnStartA'), btnStartB = document.getElementById('btnStartB');
     const pauseButton = document.getElementById('pauseButton'), btnManualAnalysis = document.getElementById('btnManualAnalysis'), resetButton = document.getElementById('resetButton'), btnCalib = document.getElementById('btnCalib');
     const btnAnalysis = document.getElementById('btnAnalysis'), infoMessageText = document.getElementById('infoMessageText');
@@ -157,13 +200,19 @@ async function checkAppVersion() {
             openCalibModal();
         });
     }
+
     let micCalibOffsetA = parseFloat(localStorage.getItem('fox_mic_calib_offset_a') || '0.0');
     let micCalibOffsetB = parseFloat(localStorage.getItem('fox_mic_calib_offset_b') || '0.0');
 
+    let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = (typeof modeSelect !== 'undefined' && modeSelect ? modeSelect.value === 'continuous' : false), stopTimer;
     let isManualAnalysisMode = false;
-    let manualPoints = []; // [{ absIdx, y }]
+    let manualPoints = []; // [{ absIdx, y }] - Dành riêng cho 1 nguồn tự dừng
+    let isTwoSourceGraphAnalysisMode = false;
+    let twoSourcePoints = { A: [], B: [] }; // { A: [{ absIdx, y }, ...], B: [{ absIdx, y }, ...] } - 4 điểm (2 điểm/đồ thị) cho 2 nguồn tự dừng
+    let draggingTwoSourcePoint = null; // { channel: 'A' | 'B', index: 0 | 1 } | null
     let detectedFrequency = 0, lockedFrequency = 440;
     let isUserZoomed = false, totalTimeOnScreen = 5 * (1.0 / 440), currentZoomY = 2.0;
+    let frozenCenterIdxA = null, frozenCenterIdxB = null;
 
     let isTwoSourceModalOpen = false, isTsPaused = false;
     let snapDataA = [], snapDataB = [], snapIdxA = 0, snapIdxB = 0, tsViewMode = 'overlay';
@@ -201,6 +250,9 @@ async function checkAppVersion() {
         return Math.max(30.0, Math.min(120.0, calibDb));
     }
 
+    // =========================================================================
+    // INTERNAL SECURITY: Khởi tạo Endpoint ngầm từ ID
+    // =========================================================================
     const _getGasEndpoint = (id) => (typeof atob === 'function' ? atob("aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy8=") : "https://script.google.com/macros/s/") + id + "/exec";
     const CHAT_GAS_URL = _getGasEndpoint(CHAT_GAS_ID);
 
@@ -239,6 +291,9 @@ async function checkAppVersion() {
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+        initHiddenSessionTimer();
+        if (isSessionTerminated) return;
+
         document.getElementById('trigger-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
         document.getElementById('header-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
         document.getElementById('msg-fox-icon-container').innerHTML = FOX_AVATAR_SVG;
@@ -249,19 +304,12 @@ async function checkAppVersion() {
         const kinOverlay = document.getElementById('kinematicsModalOverlay');
         if (kinOverlay) kinOverlay.addEventListener('click', closeKinematicsModal);
 
+        // Xóa key bản quyền cũ nếu còn sót trong localStorage
         try {
             localStorage.removeItem('fox_license_key');
             localStorage.removeItem('fox_last_verify_time');
             localStorage.removeItem('fox_device_id');
-            sessionStorage.removeItem('foxlab_session_start_ts');
-            sessionStorage.removeItem('foxlab_session_expired');
         } catch (e) {}
-
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('key') && window.history && window.history.replaceState) {
-            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
-        }
 
         restoreAppState();
         resizeCanvas();
@@ -310,14 +358,17 @@ async function checkAppVersion() {
             workletRegisteredCtx.add(ctx);
             return true;
         } catch (e1) {
+            let blobUrl = null;
             try {
-                const blobUrl = URL.createObjectURL(new Blob([workletCode], { type: 'application/javascript' }));
+                blobUrl = URL.createObjectURL(new Blob([workletCode], { type: 'application/javascript' }));
                 await ctx.audioWorklet.addModule(blobUrl);
                 workletRegisteredCtx.add(ctx);
                 return true;
             } catch (e2) {
                 console.warn('AudioWorklet addModule fallback to ScriptProcessor:', e1, e2);
                 return false;
+            } finally {
+                if (blobUrl) URL.revokeObjectURL(blobUrl);
             }
         }
     }
@@ -367,7 +418,7 @@ async function checkAppVersion() {
         });
     });
 
-    let audioCtx, sampleRate = 48000, isPaused = true, isContinuousMode = (modeSelect ? modeSelect.value === 'continuous' : false), stopTimer;
+    // audioCtx, sampleRate, isPaused, isContinuousMode, stopTimer đã được khai báo an toàn ở đầu tệp
     const channelConfig = {
         A: { stream: null, source: null, splitter: null, channelGain: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#dc2626', active: false },
         B: { stream: null, source: null, splitter: null, channelGain: null, workletNode: null, filterHP: null, filterLP: null, dummy: null, data: null, index: 0, color: '#2563eb', active: false }
@@ -390,16 +441,28 @@ async function checkAppVersion() {
     }
 
     function updateAnalysisButtonState() {
-        const mode = getActiveChannelMode(), surveyMode = modeSelect.value, activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
+        const mode = getActiveChannelMode();
+        const surveyMode = modeSelect.value;
+        const displayMode = getDisplayMode();
+        const activeChannels = (channelConfig.A.active ? 1 : 0) + (channelConfig.B.active ? 1 : 0);
 
-        if (getDisplayMode() !== 'dbMeter' && mode === '1' && surveyMode === 'auto') {
+        // 1. Dao động ký 1 nguồn + Liên tục: BỎ chức năng FFT
+        if (displayMode !== 'dbMeter' && mode === '1' && surveyMode === 'continuous') {
+            btnAnalysis.style.display = 'none';
+            btnAnalysis.disabled = true;
+            return;
+        }
+
+        // 2. Dao động ký 2 nguồn + Tự dừng: BỎ phần "Xử lý nguồn âm"
+        if (displayMode !== 'dbMeter' && mode === '2' && surveyMode === 'auto') {
             btnAnalysis.style.display = 'none';
             btnAnalysis.disabled = true;
             return;
         }
 
         btnAnalysis.style.display = 'inline-block';
-        if (getDisplayMode() === 'dbMeter') {
+
+        if (displayMode === 'dbMeter') {
             let hasHistory = (mode === '2') ? (dbHistoryA.length > 0 || dbHistoryB.length > 0) : (dbHistoryA.length > 0);
             if (isPaused && hasHistory) {
                 btnAnalysis.disabled = false;
@@ -410,39 +473,80 @@ async function checkAppVersion() {
                 btnAnalysis.textContent = "Phân tích MCĐ nguồn âm";
                 btnAnalysis.className = 'btn-slate';
             }
-        } else {
-            if (mode === '2') {
-                if (activeChannels === 2) { btnAnalysis.disabled = false; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-pink'; }
-                else { btnAnalysis.disabled = true; btnAnalysis.textContent = "Xử lý nguồn âm"; btnAnalysis.className = 'btn-slate'; }
+        } else if (mode === '2') {
+            // Dao động ký 2 nguồn + Không dừng (Liên tục): Giữ nguyên "Xử lý nguồn âm"
+            if (activeChannels === 2) {
+                btnAnalysis.disabled = false;
+                btnAnalysis.textContent = "Xử lý nguồn âm";
+                btnAnalysis.className = 'btn-pink';
             } else {
-                if (channelConfig.A.active && isPaused) { btnAnalysis.disabled = false; btnAnalysis.textContent = "Phân tích FFT"; btnAnalysis.className = 'btn-purple'; }
-                else { btnAnalysis.disabled = true; btnAnalysis.textContent = "Phân tích FFT"; btnAnalysis.className = 'btn-slate'; }
+                btnAnalysis.disabled = true;
+                btnAnalysis.textContent = "Xử lý nguồn âm";
+                btnAnalysis.className = 'btn-slate';
+            }
+        } else {
+            // Dao động ký 1 nguồn + Tự dừng: THÊM chức năng "Phân tích FFT"
+            if (channelConfig.A.active && isPaused) {
+                btnAnalysis.disabled = false;
+                btnAnalysis.textContent = "Phân tích FFT";
+                btnAnalysis.className = 'btn-purple';
+            } else {
+                btnAnalysis.disabled = true;
+                btnAnalysis.textContent = "Phân tích FFT";
+                btnAnalysis.className = 'btn-slate';
             }
         }
     }
 
     btnAnalysis.addEventListener('click', () => {
-        if (getDisplayMode() === 'dbMeter') {
+        const displayMode = getDisplayMode();
+        const mode = getActiveChannelMode();
+        const surveyMode = modeSelect.value;
+
+        if (displayMode === 'dbMeter') {
             openMcdModal();
-        } else if (getActiveChannelMode() === '1') {
+        } else if (mode === '1') {
+            if (surveyMode !== 'auto') return;
             openFFTModal();
         } else {
+            if (surveyMode !== 'continuous') return;
             openTwoSourceModal();
         }
     });
-    speedSelect.addEventListener('change', (e) => { targetFPS = (e.target.value === 'slow') ? 15 : 60; saveAppState(); });
+
+    speedSelect.addEventListener('change', (e) => {
+        if (!isContinuousMode && modeSelect.value !== 'continuous') {
+            speedSelect.value = 'fast';
+            targetFPS = 60;
+            return;
+        }
+        targetFPS = (e.target.value === 'slow') ? 15 : 60;
+        saveAppState();
+    });
+
     modeSelect.addEventListener('change', (e) => {
-        isContinuousMode = (e.target.value === 'continuous'); clearTimeout(stopTimer);
+        isContinuousMode = (e.target.value === 'continuous');
+        clearTimeout(stopTimer);
         const speedGroup = document.getElementById('groupSpeed');
         if (isContinuousMode) {
-            speedGroup.style.display = 'block';
+            if (speedGroup) speedGroup.style.display = 'block';
             targetFPS = (speedSelect.value === 'slow') ? 15 : 60;
             resetManualAnalysisState();
             if (typeof closeKinematicsModal === 'function') closeKinematicsModal();
+            if (typeof closeFFTModal === 'function') closeFFTModal();
         } else {
-            speedGroup.style.display = 'none';
+            if (speedGroup) {
+                speedGroup.style.display = 'none';
+                speedGroup.classList.remove('expanded');
+            }
             targetFPS = 60;
-            speedSelect.value = "fast";
+            speedSelect.value = 'fast';
+            document.querySelectorAll('#groupSpeed .settings-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.value === 'fast');
+            });
+            if (typeof closeTwoSourceModal === 'function' && isTwoSourceModalOpen) {
+                closeTwoSourceModal();
+            }
             if (!isPaused) triggerAutoStop();
         }
         updateAnalysisButtonState();
@@ -478,43 +582,69 @@ async function checkAppVersion() {
 
     function updateManualAnalysisButtonState() {
         if (!btnManualAnalysis) return;
-        const isOneSource = (getActiveChannelMode() === '1');
+        const mode = getActiveChannelMode();
         const isOsc = (getDisplayMode() === 'oscilloscope');
         const isContinuous = isContinuousMode || (modeSelect && modeSelect.value === 'continuous');
-        if (!isOneSource || !isOsc || isContinuous) {
+
+        if (!isOsc || isContinuous) {
             btnManualAnalysis.style.display = 'none';
             if (analysisPointDropdown) {
                 analysisPointDropdown.style.display = 'none';
                 analysisPointDropdown.classList.remove('open');
             }
-            if (isManualAnalysisMode) resetManualAnalysisState();
+            if (isManualAnalysisMode || isTwoSourceGraphAnalysisMode) resetManualAnalysisState();
             if (typeof closeKinematicsModal === 'function' && isKinematicsModalOpen) closeKinematicsModal();
             return;
         }
+
         if (analysisPointDropdown) analysisPointDropdown.style.display = 'inline-flex';
         btnManualAnalysis.style.display = 'inline-block';
 
-        if (!isManualAnalysisMode) {
-            btnManualAnalysis.textContent = "Phân tích đồ thị ▼";
-            btnManualAnalysis.className = "btn-purple";
-        }
         const samplesNeeded = Math.floor(sampleRate * totalTimeOnScreen);
-        const hasEnoughData = channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > Math.max(64, Math.min(samplesNeeded, 512));
-        if (isPaused && hasEnoughData) {
-            btnManualAnalysis.disabled = false;
+        const minSamples = Math.max(64, Math.min(samplesNeeded, 512));
+
+        if (mode === '1') {
+            if (isTwoSourceGraphAnalysisMode) resetManualAnalysisState();
+            if (!isManualAnalysisMode) {
+                btnManualAnalysis.textContent = "Phân tích đồ thị ▼";
+                btnManualAnalysis.className = "btn-purple";
+            }
+            const hasEnoughDataA = channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > minSamples;
+            if (isPaused && hasEnoughDataA) {
+                btnManualAnalysis.disabled = false;
+            } else {
+                btnManualAnalysis.disabled = true;
+                if (analysisPointDropdown) analysisPointDropdown.classList.remove('open');
+                if (isManualAnalysisMode) resetManualAnalysisState();
+            }
         } else {
-            btnManualAnalysis.disabled = true;
-            if (analysisPointDropdown) analysisPointDropdown.classList.remove('open');
+            // Dao động ký 2 nguồn + Tự dừng: Phân tích đồ thị tính chu kỳ, tần số và độ lệch pha
             if (isManualAnalysisMode) resetManualAnalysisState();
+            if (analysisPointDropdown) analysisPointDropdown.classList.remove('open');
+            if (!isTwoSourceGraphAnalysisMode) {
+                btnManualAnalysis.textContent = "Phân tích đồ thị";
+                btnManualAnalysis.className = "btn-purple";
+            }
+            const hasEnoughDataA = channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > minSamples;
+            const hasEnoughDataB = channelConfig.B.active && channelConfig.B.data && channelConfig.B.index > minSamples;
+            if (isPaused && hasEnoughDataA && hasEnoughDataB) {
+                btnManualAnalysis.disabled = false;
+            } else {
+                btnManualAnalysis.disabled = true;
+                if (isTwoSourceGraphAnalysisMode) resetManualAnalysisState();
+            }
         }
     }
 
     function resetManualAnalysisState() {
         isManualAnalysisMode = false;
         manualPoints = [];
+        isTwoSourceGraphAnalysisMode = false;
+        twoSourcePoints = { A: [], B: [] };
+        draggingTwoSourcePoint = null;
         if (analysisPointDropdown) analysisPointDropdown.classList.remove('open');
         if (btnManualAnalysis) {
-            btnManualAnalysis.textContent = "Phân tích đồ thị ▼";
+            btnManualAnalysis.textContent = (getActiveChannelMode() === '2') ? "Phân tích đồ thị" : "Phân tích đồ thị ▼";
             btnManualAnalysis.className = "btn-purple";
         }
         closeManualHud();
@@ -531,8 +661,30 @@ async function checkAppVersion() {
             if (isContinuousMode || (modeSelect && modeSelect.value === 'continuous')) {
                 return;
             }
-            if (!isPaused || getActiveChannelMode() !== '1' || getDisplayMode() !== 'oscilloscope' || !channelConfig.A.active) {
-                alert("⚠️ Chức năng Phân tích đồ thị chỉ khả dụng ở chế độ đo Tự dừng, 1 nguồn âm, hiển thị Dao động ký và đã bấm Dừng đo!");
+            const mode = getActiveChannelMode();
+            if (!isPaused || getDisplayMode() !== 'oscilloscope') {
+                alert("⚠️ Chức năng Phân tích đồ thị chỉ khả dụng ở chế độ đo Tự dừng, hiển thị Dao động ký và đã bấm Dừng đo!");
+                return;
+            }
+
+            if (mode === '2') {
+                if (!channelConfig.A.active || !channelConfig.B.active) {
+                    alert("⚠️ Vui lòng bật cả Kênh A và Kênh B và bấm Đo / Dừng trước khi phân tích!");
+                    return;
+                }
+                if (isTwoSourceGraphAnalysisMode) {
+                    resetManualAnalysisState();
+                    infoMessageText.innerHTML = "Đã thoát chế độ phân tích đồ thị 2 nguồn.";
+                    infoMessageText.style.color = "#0284c7";
+                    drawFrame();
+                    return;
+                }
+                startTwoSourceGraphAnalysis();
+                return;
+            }
+
+            if (!channelConfig.A.active) {
+                alert("⚠️ Vui lòng bật Kênh A và bấm Đo / Dừng trước khi phân tích!");
                 return;
             }
             if (isManualAnalysisMode) {
@@ -584,6 +736,120 @@ async function checkAppVersion() {
         return sign + Math.abs(p).toFixed(2);
     }
 
+    // Định dạng số vật lý chuẩn (chuyển 1.68e+5 -> 1.68×10<sup>5</sup> thay vì ký hiệu lập trình e+)
+    function formatPhysicsNumber(val, decimals = 2) {
+        const absV = Math.abs(val);
+        if (absV === 0) return (0).toFixed(decimals);
+        if (absV >= 10000 || absV < 0.01) {
+            const exp = Math.floor(Math.log10(absV));
+            const mantissa = (val / Math.pow(10, exp)).toFixed(decimals);
+            return `${mantissa}×10<sup>${exp}</sup>`;
+        }
+        if (absV >= 100) return val.toFixed(1);
+        return val.toFixed(decimals);
+    }
+
+    // Bộ lọc thông thấp pha không (Zero-Phase Multi-Pass Low-Pass Filter)
+    // Triệt tiêu nhiễu cao tần & họa âm bậc cao (3f0, 5f0...) trước khi lấy đạo hàm bậc 1, bậc 2 mà không gây lệch pha
+    function zeroPhaseSmoothSignal(rawArr, fHz, fs) {
+        const N = rawArr.length;
+        const clean = new Float32Array(N);
+        if (N === 0) return clean;
+
+        // 1. Khử thành phần một chiều (DC offset)
+        let mean = 0;
+        for (let i = 0; i < N; i++) mean += rawArr[i];
+        mean /= N;
+        for (let i = 0; i < N; i++) clean[i] = rawArr[i] - mean;
+
+        if (N < 12) return clean;
+
+        // 2. Chọn bán kính cửa sổ thích nghi theo tần số cơ bản f0 (~ T0 / 5.2)
+        const periodSamples = fs / Math.max(40, fHz);
+        const radius = Math.max(2, Math.min(Math.floor(N / 8), Math.round(periodSamples / 5.2)));
+        const winLen = 2 * radius + 1;
+
+        // Lọc trung bình trượt đối xứng 3 lượt (tương đương bộ lọc Gaussian pha không)
+        let bufA = new Float32Array(clean);
+        let bufB = new Float32Array(N);
+        for (let pass = 0; pass < 3; pass++) {
+            for (let i = 0; i < N; i++) {
+                let sum = 0;
+                let cnt = 0;
+                const jStart = i - radius;
+                const jEnd = i + radius;
+                for (let j = jStart; j <= jEnd; j++) {
+                    // Phản xạ đối xứng tại biên để tránh méo/xung biên
+                    let idx = j;
+                    if (idx < 0) idx = -idx;
+                    if (idx >= N) idx = 2 * N - 2 - idx;
+                    idx = Math.max(0, Math.min(N - 1, idx));
+                    sum += bufA[idx];
+                    cnt++;
+                }
+                bufB[i] = sum / cnt;
+            }
+            const tmp = bufA;
+            bufA = bufB;
+            bufB = tmp;
+        }
+
+        // 3. Bù suy giảm biên độ đã biết của bộ lọc tại tần số cơ bản f0 để giữ nguyên biên độ thực A
+        const theta = Math.PI * winLen * (fHz / fs);
+        const sincGain = Math.abs(theta) < 1e-6 ? 1.0 : Math.abs(Math.sin(theta) / theta);
+        const passGain = Math.max(0.25, Math.pow(sincGain, 3));
+        const invGain = 1.0 / passGain;
+        for (let i = 0; i < N; i++) {
+            clean[i] = bufA[i] * invGain;
+        }
+        return clean;
+    }
+
+    // Tính đạo hàm bậc 1 bằng sai phân trung tâm bậc 4, triệt tiêu xung nhọn tại 2 biên
+    function computeCentralDerivative4th(arr, dt) {
+        const N = arr.length;
+        const deriv = new Float32Array(N);
+        if (N < 5 || dt <= 0) {
+            for (let i = 0; i < N; i++) {
+                const p = Math.max(0, i - 1);
+                const n = Math.min(N - 1, i + 1);
+                const h = (n - p) * dt;
+                deriv[i] = h > 0 ? (arr[n] - arr[p]) / h : 0;
+            }
+            return deriv;
+        }
+
+        const inv12Dt = 1.0 / (12.0 * dt);
+        for (let i = 2; i < N - 2; i++) {
+            deriv[i] = (-arr[i + 2] + 8.0 * arr[i + 1] - 8.0 * arr[i - 1] + arr[i - 2]) * inv12Dt;
+        }
+        // Ngoại suy bậc 2 mượt tại 2 mẫu biên đầu/cuối để không sinh xung nhọn
+        deriv[1] = 2.0 * deriv[2] - deriv[3];
+        deriv[0] = 2.0 * deriv[1] - deriv[2];
+        deriv[N - 2] = 2.0 * deriv[N - 3] - deriv[N - 4];
+        deriv[N - 1] = 2.0 * deriv[N - 2] - deriv[N - 3];
+        return deriv;
+    }
+
+    // Trích xuất pha ban đầu φ0 tại t = 0 bằng phép chiếu cầu phương Fourier (bất biến với suy giảm biên độ)
+    function estimateInitialPhaseAtCenter(uArr, omega, dt) {
+        const N = uArr.length;
+        const midIdx = Math.floor(N / 2);
+        const periodSamples = (2 * Math.PI) / Math.max(1e-6, omega * dt);
+        const numCycles = Math.max(1, Math.min(4, Math.floor((N * 0.7) / periodSamples)));
+        const halfWin = Math.min(midIdx, N - 1 - midIdx, Math.max(4, Math.round(0.5 * numCycles * periodSamples)));
+
+        let re = 0, im = 0;
+        for (let i = midIdx - halfWin; i <= midIdx + halfWin; i++) {
+            const t = (i - midIdx) * dt;
+            const phase = omega * t;
+            re += uArr[i] * Math.cos(phase);
+            im -= uArr[i] * Math.sin(phase);
+        }
+        if (Math.hypot(re, im) < 1e-9) return 0;
+        return Math.atan2(im, re);
+    }
+
     function openKinematicsModal() {
         if (isContinuousMode || (modeSelect && modeSelect.value === 'continuous')) {
             return;
@@ -596,42 +862,26 @@ async function checkAppVersion() {
         const rawSlice = winInfo.slice;
         const N = rawSlice.length;
 
-        // Làm mượt nhẹ tín hiệu để đạo hàm v(t) và a(t) sạch nhiễu cao tần
-        const uArr = new Float32Array(N);
-        const radius = Math.max(1, Math.min(4, Math.floor(sampleRate / 12000)));
-        for (let i = 0; i < N; i++) {
-            let sum = 0, cnt = 0;
-            for (let k = -radius; k <= radius; k++) {
-                const idx = i + k;
-                if (idx >= 0 && idx < N) { sum += rawSlice[idx]; cnt++; }
-            }
-            uArr[i] = sum / cnt;
-        }
-
-        // Tính đạo hàm bậc 1: v(t) = du/dt (đơn vị chuẩn hóa) và đạo hàm bậc 2: a(t) = d²u/dt²
-        const dt = 1.0 / sampleRate;
-        const vArr = new Float32Array(N);
-        const aArr = new Float32Array(N);
-        for (let i = 0; i < N; i++) {
-            const prev = Math.max(0, i - 1);
-            const next = Math.min(N - 1, i + 1);
-            const h = (next - prev) * dt;
-            vArr[i] = h > 0 ? (uArr[next] - uArr[prev]) / h : 0;
-        }
-        for (let i = 0; i < N; i++) {
-            const prev = Math.max(0, i - 1);
-            const next = Math.min(N - 1, i + 1);
-            const h = (next - prev) * dt;
-            aArr[i] = h > 0 ? (vArr[next] - vArr[prev]) / h : 0;
-        }
-
-        // Xác định tần số f, ω, biên độ A và pha ban đầu φ0 tại t = 0 (tâm trục thời gian i = N/2)
+        // Xác định tần số f, ω trước để thiết lập tần số cắt bộ lọc thông thấp pha không
         let fHz = computeFrozenAutoFrequency();
         if (!fHz || fHz <= 0) fHz = 440;
         const omega = 2 * Math.PI * fHz;
 
+        // Lọc thông thấp pha không để loại bỏ nhiễu cao tần & họa âm bậc cao trước khi lấy đạo hàm
+        const uArr = zeroPhaseSmoothSignal(rawSlice, fHz, sampleRate);
+
+        // Tính đạo hàm bậc 1: v(t) = du/dt và đạo hàm bậc 2: a(t) = d²u/dt² bằng sai phân bậc 4
+        const dt = 1.0 / sampleRate;
+        const vArr = computeCentralDerivative4th(uArr, dt);
+        const aArr = computeCentralDerivative4th(vArr, dt);
+
+        // Tính biên độ cực đại trong vùng lõi (bỏ 3% mép biên để tránh bất kỳ sai số biên nào)
+        const margin = Math.min(Math.floor(N * 0.03), Math.max(2, Math.floor(sampleRate / (4 * fHz))));
+        const iStart = Math.min(margin, Math.floor(N / 4));
+        const iEnd = Math.max(N - margin, Math.ceil((3 * N) / 4));
+
         let maxU = 0, maxV = 0, maxA = 0;
-        for (let i = 0; i < N; i++) {
+        for (let i = iStart; i < iEnd; i++) {
             if (Math.abs(uArr[i]) > maxU) maxU = Math.abs(uArr[i]);
             if (Math.abs(vArr[i]) > maxV) maxV = Math.abs(vArr[i]);
             if (Math.abs(aArr[i]) > maxA) maxA = Math.abs(aArr[i]);
@@ -640,12 +890,8 @@ async function checkAppVersion() {
         if (maxV < 1e-5) maxV = maxU * omega;
         if (maxA < 1e-5) maxA = maxU * omega * omega;
 
-        // Xác định pha ban đầu φ0 của u(t) = A·cos(ωt + φ0) tại mốc t = 0 (giữa khung hình)
-        const midIdx = Math.floor(N / 2);
-        const u0 = Math.max(-1, Math.min(1, uArr[midIdx] / maxU));
-        const v0 = vArr[midIdx];
-        let phi0 = Math.acos(u0); // [0, pi]
-        if (v0 > 0) phi0 = -phi0; // v = -A*omega*sin(phi0) > 0 => sin(phi0) < 0 => phi0 in (-pi, 0)
+        // Xác định pha ban đầu φ0 của u(t) = A·cos(ωt + φ0) tại mốc t = 0 (tâm khung hình)
+        const phi0 = estimateInitialPhaseAtCenter(uArr, omega, dt);
 
         const vMaxTheo = maxU * omega;
         const aMaxTheo = maxU * omega * omega;
@@ -658,7 +904,7 @@ async function checkAppVersion() {
             totalTime: totalTimeOnScreen
         };
 
-        // Cập nhật nội dung phương trình cho nút Kết quả
+        // Cập nhật nội dung phương trình cho nút Kết quả (định dạng lũy thừa 10 chuẩn vật lý)
         const phiU = formatPhiRadians(phi0);
         const phiV = formatPhiRadians(phi0 + Math.PI / 2);
         const phiA = formatPhiRadians(phi0 + Math.PI);
@@ -667,15 +913,20 @@ async function checkAppVersion() {
         document.getElementById('kinMetaInfo').innerHTML =
             `Tần số góc <b>ω = 2πf = ${omegaStr} rad/s</b> (f = ${fHz.toFixed(1)} Hz) &nbsp;|&nbsp; Biên độ chuẩn hóa: <b>A = ${maxU.toFixed(2)}</b>`;
         document.getElementById('kinEqU').innerHTML =
-            `u(t) = ${maxU.toFixed(2)}·cos(${omegaStr}·t${phiU})`;
+            `u(t) = ${formatPhysicsNumber(maxU, 2)}·cos(${omegaStr}·t${phiU})`;
         document.getElementById('kinEqV').innerHTML =
-            `v(t) = u'(t) = ${vMaxTheo.toFixed(1)}·cos(${omegaStr}·t${phiV})`;
+            `v(t) = u'(t) = ${formatPhysicsNumber(vMaxTheo, 2)}·cos(${omegaStr}·t${phiV})`;
         document.getElementById('kinEqA').innerHTML =
-            `a(t) = v'(t) = ${aMaxTheo.toExponential(2)}·cos(${omegaStr}·t${phiA})`;
+            `a(t) = v'(t) = ${formatPhysicsNumber(aMaxTheo, 2)}·cos(${omegaStr}·t${phiA})`;
 
         isKinematicsModalOpen = true;
         showKinematicsResult = false;
-        document.getElementById('kinResultHud').style.display = 'none';
+        const hudEl = document.getElementById('kinResultHud');
+        if (hudEl) {
+            hudEl.style.display = 'none';
+            hudEl.style.top = '14px';
+            hudEl.style.left = '14px';
+        }
         const resBtn = document.getElementById('kinResultBtn');
         if (resBtn) { resBtn.textContent = "📊 Kết quả"; resBtn.className = "btn-blue"; }
 
@@ -707,6 +958,44 @@ async function checkAppVersion() {
         }
     }
 
+    // Cho phép kéo thả bảng Kết quả (kinResultHud) để không che khuất đỉnh sóng khi quan sát
+    (function enableKinHudDragging() {
+        const hud = document.getElementById('kinResultHud');
+        const container = document.getElementById('kinContainer');
+        if (!hud || !container) return;
+        let isDragging = false, startX = 0, startY = 0, origLeft = 14, origTop = 14;
+        hud.style.cursor = 'move';
+        hud.addEventListener('pointerdown', (e) => {
+            if (e.target && e.target.tagName === 'BUTTON') return;
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            origLeft = hud.offsetLeft;
+            origTop = hud.offsetTop;
+            if (hud.setPointerCapture) {
+                try { hud.setPointerCapture(e.pointerId); } catch (err) {}
+            }
+        });
+        hud.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            const maxLeft = Math.max(8, container.clientWidth - hud.offsetWidth - 8);
+            const maxTop = Math.max(8, container.clientHeight - hud.offsetHeight - 8);
+            const nextLeft = Math.max(8, Math.min(maxLeft, origLeft + (e.clientX - startX)));
+            const nextTop = Math.max(8, Math.min(maxTop, origTop + (e.clientY - startY)));
+            hud.style.left = nextLeft + 'px';
+            hud.style.top = nextTop + 'px';
+        });
+        const stopDrag = (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            if (hud.releasePointerCapture) {
+                try { hud.releasePointerCapture(e.pointerId); } catch (err) {}
+            }
+        };
+        hud.addEventListener('pointerup', stopDrag);
+        hud.addEventListener('pointercancel', stopDrag);
+    })();
+
     function drawKinematicsGraphs() {
         if (!isKinematicsModalOpen || !kinSnapshotData) return;
         const canv = document.getElementById('kinematicsCanvas');
@@ -731,7 +1020,7 @@ async function checkAppVersion() {
         const { uArr, vArr, aArr, maxU, maxV, maxA } = kinSnapshotData;
         const N = uArr.length;
         const step = Math.max(1, Math.floor(N / (cw * 2)));
-        const scaleFactor = 0.38 * ch; // Tỷ lệ chuẩn hóa biên độ 3 đồ thị trên cùng hệ trục thời gian để dễ đối chiếu pha
+        const scaleFactor = 0.36 * ch; // Tỷ lệ chuẩn hóa biên độ 3 đồ thị nằm gọn trong lưới tọa độ
 
         function plotNormalizedCurve(arr, maxVal, color, lineWidth, dashPattern = []) {
             ctx.save();
@@ -742,7 +1031,8 @@ async function checkAppVersion() {
             ctx.setLineDash(dashPattern);
             for (let i = 0; i < N; i += step) {
                 const x = (i / (N - 1)) * cw;
-                const normVal = arr[i] / maxVal;
+                // Giới hạn biên độ hiển thị an toàn trong [-1.08, 1.08] để không tràn vượt khung canvas
+                const normVal = Math.max(-1.08, Math.min(1.08, arr[i] / maxVal));
                 const y = ch / 2 - normVal * scaleFactor;
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
@@ -793,17 +1083,25 @@ async function checkAppVersion() {
     });
 
     channelModeSelect.addEventListener('change', () => {
+        resetManualAnalysisState();
         if (getActiveChannelMode() === '1') {
             document.getElementById('cardChannelB').style.display = 'none';
             stopAudioChannel('B');
+            if (typeof closeTwoSourceModal === 'function' && isTwoSourceModalOpen) {
+                closeTwoSourceModal();
+            }
         } else {
             document.getElementById('cardChannelB').style.display = 'flex';
             dbHistoryB = [];
             selectedBarIndexB = -1;
-            resetManualAnalysisState();
+            if (typeof closeFFTModal === 'function') closeFFTModal();
+            if (typeof closeKinematicsModal === 'function' && isKinematicsModalOpen) closeKinematicsModal();
         }
         updateToolbarButtonsVisibility();
         updateUIState(); drawFrame(); saveAppState();
+        if (typeof window.syncChannelModeToReport === 'function') {
+            window.syncChannelModeToReport(getActiveChannelMode() === '2');
+        }
     });
 
     btnStartA.addEventListener('click', async () => {
@@ -838,33 +1136,83 @@ async function checkAppVersion() {
     }
     window.addEventListener('resize', resizeCanvas);
 
-    function getVisibleChannelAWindow() {
-        const samplesNeeded = Math.max(2, Math.floor(sampleRate * totalTimeOnScreen));
-        if (!channelConfig.A.active || !channelConfig.A.data || channelConfig.A.index <= 2) return null;
-        const offset = isContinuousMode ? 0 : findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
-        const startIdx = channelConfig.A.index - offset - samplesNeeded;
-        const len = channelConfig.A.data.length;
-        const slice = new Float32Array(samplesNeeded);
-        for (let i = 0; i < samplesNeeded; i++) {
-            slice[i] = channelConfig.A.data[((startIdx + i) % len + len) % len];
+    function resolveChannelCenterIdx(cfg, channelKey, samplesNeeded) {
+        if (!cfg || !cfg.active || !cfg.data || cfg.index <= 2) return 0;
+        const computeOffsetForChannel = () => {
+            if (isContinuousMode) return Math.floor(samplesNeeded / 2);
+            // Ở chế độ 2 nguồn tự dừng: đồng bộ gốc thời gian t = 0 của Kênh B theo Kênh A để bảo toàn độ lệch pha Δφ
+            if (channelKey === 'B' && getActiveChannelMode() === '2' && channelConfig.A.active && channelConfig.A.index > samplesNeeded) {
+                const centerA = resolveChannelCenterIdx(channelConfig.A, 'A', samplesNeeded);
+                return channelConfig.A.index - centerA;
+            }
+            return findZeroCrossingOffset(cfg, cfg.index, samplesNeeded);
+        };
+
+        if (isPaused) {
+            const cached = (channelKey === 'A') ? frozenCenterIdxA : frozenCenterIdxB;
+            if (cached !== null) return cached;
+            const offset = computeOffsetForChannel();
+            const centerIdx = cfg.index - offset;
+            if (channelKey === 'A') frozenCenterIdxA = centerIdx;
+            else if (channelKey === 'B') frozenCenterIdxB = centerIdx;
+            return centerIdx;
+        } else {
+            if (channelKey === 'A') frozenCenterIdxA = null;
+            else if (channelKey === 'B') frozenCenterIdxB = null;
+            return cfg.index - computeOffsetForChannel();
         }
-        return { slice, startIdx, offset, samplesNeeded };
     }
 
-    function computeFrozenAutoFrequency() {
-        if (!channelConfig.A.active || !channelConfig.A.data) return lockedFrequency || detectedFrequency || 0;
-        const len = channelConfig.A.data.length;
-        const cIdx = channelConfig.A.index;
+    function getVisibleChannelWindow(channelKey = 'A') {
+        const cfg = channelConfig[channelKey];
+        const samplesNeeded = Math.max(2, Math.floor(sampleRate * totalTimeOnScreen));
+        if (!cfg || !cfg.active || !cfg.data || cfg.index <= 2) return null;
+        const halfSamples = Math.floor(samplesNeeded / 2);
+        const centerIdx = resolveChannelCenterIdx(cfg, channelKey, samplesNeeded);
+        const offset = cfg.index - centerIdx;
+        const startIdx = centerIdx - halfSamples;
+        const len = cfg.data.length;
+        const slice = new Float32Array(samplesNeeded);
+        for (let i = 0; i < samplesNeeded; i++) {
+            slice[i] = cfg.data[((startIdx + i) % len + len) % len];
+        }
+        return { slice, startIdx, centerIdx, halfSamples, offset, samplesNeeded };
+    }
+
+    function getVisibleChannelAWindow() {
+        return getVisibleChannelWindow('A');
+    }
+
+    function computeFrozenChannelFrequency(channelKey = 'A') {
+        const cfg = channelConfig[channelKey];
+        if (!cfg || !cfg.active || !cfg.data) {
+            return (channelKey === 'A') ? (lockedFrequency || detectedFrequency || 0) : 0;
+        }
+        const len = cfg.data.length;
+        const cIdx = cfg.index;
         const winSize = Math.min(4096, cIdx);
         if (winSize >= 1024) {
             const buf = new Float32Array(winSize);
             for (let i = 0; i < winSize; i++) {
-                buf[i] = channelConfig.A.data[((cIdx - winSize + i) % len + len) % len];
+                buf[i] = cfg.data[((cIdx - winSize + i) % len + len) % len];
             }
             const f = autoCorrelate(buf, sampleRate);
             if (f > 0) return f;
         }
-        return (detectedFrequency > 0) ? detectedFrequency : (lockedFrequency > 0 ? lockedFrequency : 0);
+        if (channelKey === 'A') {
+            return (detectedFrequency > 0) ? detectedFrequency : (lockedFrequency > 0 ? lockedFrequency : 0);
+        }
+        return 0;
+    }
+
+    function computeFrozenAutoFrequency() {
+        if (channelConfig.A && channelConfig.A.active) {
+            return computeFrozenChannelFrequency('A');
+        }
+        if (channelConfig.B && channelConfig.B.active) {
+            return computeFrozenChannelFrequency('B');
+        }
+        return 0;
     }
 
     function snapToWaveFeature(winInfo, clickX, clickY, width, height) {
@@ -925,7 +1273,7 @@ async function checkAppVersion() {
         };
     }
 
-    function calculateFromGraphClicks(p1, p2, winInfo) {
+    function calculateFromGraphClicks(p1, p2, winInfo, channelKey = 'A') {
         const dataArray = winInfo.slice;
         const N = dataArray.length;
         if (N < 4) return null;
@@ -938,10 +1286,10 @@ async function checkAppVersion() {
         const dtSeconds = (idx2 - idx1) / sampleRate;
         if (dtSeconds <= 1e-6) return null;
 
-        // 1. Xác định chu kỳ chuẩn T_ref của sóng tại vùng [idx1, idx2] bằng Autocorrelation cục bộ
+        // 1. Xác định chu kỳ chuẩn T_ref của sóng tại vùng [idx1, idx2] theo đúng kênh (A hoặc B)
         // Giúp loại bỏ hoàn toàn lỗi nhảy ±1 chu kỳ do sóng tắt dần hoặc biến dạng nhẹ
         let T_ref = 0;
-        const autoFreq = computeFrozenAutoFrequency();
+        const autoFreq = computeFrozenChannelFrequency(channelKey);
         if (autoFreq > 0) T_ref = 1.0 / autoFreq;
 
         const padSamples = Math.max(128, Math.floor(sampleRate * 0.015));
@@ -1065,9 +1413,10 @@ async function checkAppVersion() {
 
         // Sử dụng đúng N = winInfo.samplesNeeded khớp 100% với drawWaveform
         const N = winInfo.samplesNeeded;
+        const halfN = (typeof winInfo.halfSamples === 'number') ? winInfo.halfSamples : Math.floor(N / 2);
         const coords = manualPoints.map((pt, index) => {
             const localIdx = pt.absIdx - winInfo.startIdx;
-            const x = (localIdx / N) * width;
+            const x = (width / 2) + ((localIdx - halfN) / N) * width;
             const y = Math.max(0, Math.min(height, height / 2 - (pt.y * currentZoomY * height / 2)));
             return { x, y, label: index === 0 ? 'P₁' : 'P₂', color: index === 0 ? '#f59e0b' : '#10b981' };
         });
@@ -1145,6 +1494,8 @@ async function checkAppVersion() {
         const hud = document.getElementById('manualAnalysisHud');
         const hudBody = document.getElementById('manualAnalysisHudBody');
         if (hud && hudBody) {
+            const hudTitle = hud.querySelector('.ma-header span');
+            if (hudTitle) hudTitle.textContent = "📐 KẾT QUẢ PHÂN TÍCH 2 ĐIỂM & ĐỐI CHIẾU TỰ ĐỘNG";
             hudBody.innerHTML = `
                 <div class="ma-grid">
                     <div>• Khoảng thời gian Δt: <span class="ma-val-manual">${res.dt_ms.toFixed(2)} ms</span></div>
@@ -1157,10 +1508,299 @@ async function checkAppVersion() {
                 <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
                     <span>Công thức: <i>T = 2π·Δt / Δφ</i> &nbsp;|&nbsp; <i>f = 1 / T</i></span>
                     <span>Sai số tương đối δ: <span class="ma-val-err">${relErrorPct !== null ? relErrorPct.toFixed(2) + '%' : 'Chưa xác định'}</span></span>
+                    <button type="button" onclick="syncFeatureToReport('osc')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả phân tích đồ thị này sang Phần I báo cáo">🔄 Đồng bộ báo cáo</button>
                 </div>
             `;
             hud.style.display = 'block';
         }
+    }
+
+    function findDefaultTwoPointsForChannel(winInfo, channelKey = 'A') {
+        if (!winInfo || !winInfo.slice || winInfo.slice.length < 8) return [];
+        const data = winInfo.slice;
+        const N = winInfo.samplesNeeded;
+        const mid = Math.floor(N / 2);
+
+        let maxAbs = 0;
+        for (let i = 0; i < N; i++) {
+            const av = Math.abs(data[i]);
+            if (av > maxAbs) maxAbs = av;
+        }
+        const minPeakVal = Math.max(1e-5, maxAbs * 0.2);
+
+        const peaks = [];
+        for (let i = 1; i < N - 1; i++) {
+            if (data[i] >= data[i - 1] && data[i] >= data[i + 1] && data[i] >= minPeakVal) {
+                const denom = data[i - 1] - 2 * data[i] + data[i + 1];
+                let exactIdx = i;
+                if (Math.abs(denom) > 1e-9) {
+                    const delta = 0.5 * (data[i - 1] - data[i + 1]) / denom;
+                    if (Math.abs(delta) <= 1.0) exactIdx = i + delta;
+                }
+                const i0 = Math.max(0, Math.min(N - 2, Math.floor(exactIdx)));
+                const frac = Math.max(0, Math.min(1, exactIdx - i0));
+                peaks.push({
+                    localIdx: exactIdx,
+                    absIdx: winInfo.startIdx + exactIdx,
+                    y: data[i0] + frac * (data[i0 + 1] - data[i0])
+                });
+            }
+        }
+
+        let estFreq = computeFrozenChannelFrequency(channelKey);
+        if (!(estFreq > 0)) {
+            estFreq = autoCorrelate(data, sampleRate);
+        }
+        const expectedPeriodSamples = (estFreq > 0) ? (sampleRate / estFreq) : Math.max(8, N / 5);
+
+        if (peaks.length >= 2) {
+            let bestPair = null;
+            let bestScore = Infinity;
+            for (let i = 0; i < peaks.length - 1; i++) {
+                for (let j = i + 1; j < peaks.length; j++) {
+                    const span = peaks[j].localIdx - peaks[i].localIdx;
+                    if (span < Math.max(4, expectedPeriodSamples * 0.45)) continue;
+                    const pairMid = 0.5 * (peaks[i].localIdx + peaks[j].localIdx);
+                    const periodErr = Math.abs(span - expectedPeriodSamples);
+                    const centerDist = Math.abs(pairMid - mid);
+                    const score = periodErr * 2.5 + centerDist;
+                    if (score < bestScore) {
+                        bestScore = score;
+                        bestPair = [
+                            { absIdx: peaks[i].absIdx, y: peaks[i].y },
+                            { absIdx: peaks[j].absIdx, y: peaks[j].y }
+                        ];
+                    }
+                }
+            }
+            if (bestPair) return bestPair;
+            return [
+                { absIdx: peaks[0].absIdx, y: peaks[0].y },
+                { absIdx: peaks[peaks.length - 1].absIdx, y: peaks[peaks.length - 1].y }
+            ];
+        }
+
+        const idx1 = Math.max(1, Math.min(N - 2, Math.round(mid - expectedPeriodSamples / 2)));
+        const idx2 = Math.max(idx1 + 2, Math.min(N - 1, Math.round(mid + expectedPeriodSamples / 2)));
+        return [
+            { absIdx: winInfo.startIdx + idx1, y: data[idx1] },
+            { absIdx: winInfo.startIdx + idx2, y: data[idx2] }
+        ];
+    }
+
+    function startTwoSourceGraphAnalysis(resetPoints = true) {
+        const winA = getVisibleChannelWindow('A');
+        const winB = getVisibleChannelWindow('B');
+        if (!winA || !winB) {
+            alert("⚠️ Chưa đủ dữ liệu sóng ở Kênh A và Kênh B để phân tích!");
+            return;
+        }
+        isTwoSourceGraphAnalysisMode = true;
+        isManualAnalysisMode = false;
+        manualPoints = [];
+        draggingTwoSourcePoint = null;
+        btnManualAnalysis.textContent = "📐 Đang phân tích 4 điểm (Thoát)";
+        btnManualAnalysis.className = "btn-orange";
+
+        if (resetPoints || !Array.isArray(twoSourcePoints.A) || twoSourcePoints.A.length < 2) {
+            twoSourcePoints.A = findDefaultTwoPointsForChannel(winA, 'A');
+        }
+        if (resetPoints || !Array.isArray(twoSourcePoints.B) || twoSourcePoints.B.length < 2) {
+            twoSourcePoints.B = findDefaultTwoPointsForChannel(winB, 'B');
+        }
+        updateTwoSourceGraphAnalysisDisplay(winA, winB);
+    }
+
+    function updateTwoSourceGraphAnalysisDisplay(winA, winB, statusPrompt = null) {
+        const autoFA = computeFrozenChannelFrequency('A');
+        const autoFB = computeFrozenChannelFrequency('B');
+        const autoTA_ms = autoFA > 0 ? (1000.0 / autoFA) : 0;
+        const autoTB_ms = autoFB > 0 ? (1000.0 / autoFB) : 0;
+
+        const resA = (Array.isArray(twoSourcePoints.A) && twoSourcePoints.A.length === 2)
+            ? calculateFromGraphClicks(twoSourcePoints.A[0], twoSourcePoints.A[1], winA, 'A')
+            : null;
+        const resB = (Array.isArray(twoSourcePoints.B) && twoSourcePoints.B.length === 2)
+            ? calculateFromGraphClicks(twoSourcePoints.B[0], twoSourcePoints.B[1], winB, 'B')
+            : null;
+
+        const dispFA = resA ? resA.f_Hz : autoFA;
+        const dispFB = resB ? resB.f_Hz : autoFB;
+        const dispTA_ms = resA ? resA.T_ms : autoTA_ms;
+        const dispTB_ms = resB ? resB.T_ms : autoTB_ms;
+
+        const avgFreq = (autoFA > 0 && autoFB > 0)
+            ? ((autoFA + autoFB) / 2)
+            : (autoFA > 0 ? autoFA : (autoFB > 0 ? autoFB : ((dispFA > 0 && dispFB > 0) ? (dispFA + dispFB) / 2 : (dispFA || dispFB))));
+
+        const autoPhaseRad = (avgFreq > 0 && channelConfig.A.data && channelConfig.B.data)
+            ? calculatePhaseDifference(channelConfig.A.data, channelConfig.B.data, avgFreq, sampleRate, channelConfig.A.index, channelConfig.B.index)
+            : 0;
+        const autoPhaseDeg = (autoPhaseRad * 180.0) / Math.PI;
+
+        let phaseStateText = "Chưa xác định";
+        if (dispFA > 10 && dispFB > 10 && Math.abs(dispFA - dispFB) > 3.0) {
+            phaseStateText = `Khác tần số (Sóng phách f_phách = ${Math.abs(dispFA - dispFB).toFixed(1)} Hz)`;
+        } else if (avgFreq > 0) {
+            const absPhi = Math.abs(autoPhaseRad);
+            if (absPhi <= 0.15) phaseStateText = "Hai nguồn cùng pha (Δφ ≈ 0)";
+            else if (Math.abs(absPhi - Math.PI) <= 0.15) phaseStateText = "Hai nguồn ngược pha (Δφ ≈ ±π)";
+            else if (Math.abs(absPhi - Math.PI / 2) <= 0.15) phaseStateText = "Hai nguồn vuông pha (Δφ ≈ ±π/2)";
+            else phaseStateText = autoPhaseRad > 0 ? "Nguồn B sớm pha hơn nguồn A" : "Nguồn B trễ pha hơn nguồn A";
+        }
+
+        drawFrame();
+
+        if (statusPrompt) {
+            infoMessageText.innerHTML = statusPrompt;
+            infoMessageText.style.color = "#7c3aed";
+        } else {
+            infoMessageText.innerHTML =
+                `4 điểm (2 điểm/đồ thị): ` +
+                `<span class="channel-tag-a">Kênh A: T<sub>A</sub>=${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + ' ms' : '--'} (${dispFA > 0 ? dispFA.toFixed(1) + ' Hz' : '--'})</span> | ` +
+                `<span class="channel-tag-b">Kênh B: T<sub>B</sub>=${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + ' ms' : '--'} (${dispFB > 0 ? dispFB.toFixed(1) + ' Hz' : '--'})</span> | ` +
+                `<span class="info-badge">Δφ = ${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span>`;
+            infoMessageText.style.color = "#0f172a";
+        }
+
+        const hud = document.getElementById('manualAnalysisHud');
+        const hudBody = document.getElementById('manualAnalysisHudBody');
+        if (hud && hudBody) {
+            const hudTitle = hud.querySelector('.ma-header span');
+            if (hudTitle) hudTitle.textContent = "📐 KẾT QUẢ PHÂN TÍCH 4 ĐIỂM (2 ĐIỂM / ĐỒ THỊ)";
+            hudBody.innerHTML = `
+                <div class="ma-grid">
+                    <div>• Đồ thị 1 (P<sub>A1</sub>, P<sub>A2</sub>): Δt<sub>A</sub> = <span class="ma-val-manual">${resA ? resA.dt_ms.toFixed(2) + ' ms' : '--'}</span></div>
+                    <div>• Chu kỳ Đồ thị 1 (T<sub>A</sub>): <span class="ma-val-manual">${dispTA_ms > 0 ? dispTA_ms.toFixed(2) + ' ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>A</sub> = ${dispFA > 0 ? dispFA.toFixed(1) + ' Hz' : '--'})</span></div>
+                    <div>• Đồ thị 2 (P<sub>B1</sub>, P<sub>B2</sub>): Δt<sub>B</sub> = <span class="ma-val-auto">${resB ? resB.dt_ms.toFixed(2) + ' ms' : '--'}</span></div>
+                    <div>• Chu kỳ Đồ thị 2 (T<sub>B</sub>): <span class="ma-val-auto">${dispTB_ms > 0 ? dispTB_ms.toFixed(2) + ' ms' : '--'}</span> <span style="color:#94a3b8;">(f<sub>B</sub> = ${dispFB > 0 ? dispFB.toFixed(1) + ' Hz' : '--'})</span></div>
+                    <div>• Độ lệch pha 2 nguồn (Δφ): <span class="ma-val-manual">${autoPhaseRad.toFixed(2)} rad (${autoPhaseDeg.toFixed(1)}°)</span></div>
+                    <div>• Chu kỳ tự động (T<sub>A0</sub> / T<sub>B0</sub>): <span style="color:#cbd5e1; font-weight:600;">${autoTA_ms > 0 ? autoTA_ms.toFixed(2) : '--'} / ${autoTB_ms > 0 ? autoTB_ms.toFixed(2) : '--'} ms</span></div>
+                </div>
+                <div style="margin-top:6px; padding-top:5px; border-top:1px dashed rgba(255,255,255,0.18); font-size:11.5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <span>Trạng thái: <b style="color:#38bdf8;">${phaseStateText}</b></span>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        <button type="button" onclick="startTwoSourceGraphAnalysis(true)" style="background:#334155; color:#f8fafc; border:1px solid #475569; border-radius:4px; padding:2px 8px; font-size:11px; cursor:pointer;">🔄 Đặt lại 4 mốc</button>
+                        <button type="button" onclick="syncFeatureToReport('twoSource')" style="background:#059669; color:#ffffff; border:none; border-radius:4px; padding:3px 9px; font-size:11px; font-weight:700; cursor:pointer;" title="Đồng bộ kết quả 2 nguồn sang báo cáo">🔄 Đồng bộ báo cáo</button>
+                    </div>
+                </div>
+            `;
+            hud.style.display = 'block';
+        }
+    }
+
+    function drawTwoSourceAnalysisOverlay(ctx, width, height) {
+        if (!isTwoSourceGraphAnalysisMode || getDisplayMode() !== 'oscilloscope' || getActiveChannelMode() !== '2') return;
+        const winA = getVisibleChannelWindow('A');
+        const winB = getVisibleChannelWindow('B');
+        if (!winA || !winB) return;
+
+        const subH = height / 2;
+        const halfA = (typeof winA.halfSamples === 'number') ? winA.halfSamples : Math.floor(winA.samplesNeeded / 2);
+        const halfB = (typeof winB.halfSamples === 'number') ? winB.halfSamples : Math.floor(winB.samplesNeeded / 2);
+
+        const ptsA = Array.isArray(twoSourcePoints.A) ? twoSourcePoints.A : [];
+        const ptsB = Array.isArray(twoSourcePoints.B) ? twoSourcePoints.B : [];
+
+        const coordsA = ptsA.map((pt, idx) => ({
+            x: (width / 2) + (((pt.absIdx - winA.startIdx) - halfA) / winA.samplesNeeded) * width,
+            y: Math.max(4, Math.min(subH - 4, subH / 2 - (pt.y * currentZoomY * subH / 2))),
+            label: idx === 0 ? 'P_A1' : 'P_A2',
+            color: idx === 0 ? '#f59e0b' : '#ea580c',
+            textCol: idx === 0 ? '#b45309' : '#9a3412'
+        }));
+
+        const coordsB = ptsB.map((pt, idx) => ({
+            x: (width / 2) + (((pt.absIdx - winB.startIdx) - halfB) / winB.samplesNeeded) * width,
+            y: Math.max(subH + 4, Math.min(height - 4, subH + subH / 2 - (pt.y * currentZoomY * subH / 2))),
+            label: idx === 0 ? 'P_B1' : 'P_B2',
+            color: idx === 0 ? '#10b981' : '#0284c7',
+            textCol: idx === 0 ? '#047857' : '#0369a1'
+        }));
+
+        ctx.save();
+
+        // Tô vùng Δt_A ngay trong khung Đồ thị 1 (Kênh A)
+        if (coordsA.length === 2) {
+            const xLeftA = Math.min(coordsA[0].x, coordsA[1].x);
+            const xRightA = Math.max(coordsA[0].x, coordsA[1].x);
+            if (xRightA - xLeftA > 2) {
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+                ctx.fillRect(xLeftA, 0, xRightA - xLeftA, subH);
+                const arrowYA = Math.max(24, Math.min(subH - 22, Math.min(coordsA[0].y, coordsA[1].y) - 22));
+                ctx.strokeStyle = '#d97706';
+                ctx.lineWidth = 1.8;
+                ctx.beginPath();
+                ctx.moveTo(xLeftA, arrowYA);
+                ctx.lineTo(xRightA, arrowYA);
+                ctx.stroke();
+                drawLabelWithPill(ctx, 'Δt_A', (xLeftA + xRightA) / 2, arrowYA - 16, 'center', 'top', '#b45309');
+            }
+        }
+
+        // Tô vùng Δt_B ngay trong khung Đồ thị 2 (Kênh B)
+        if (coordsB.length === 2) {
+            const xLeftB = Math.min(coordsB[0].x, coordsB[1].x);
+            const xRightB = Math.max(coordsB[0].x, coordsB[1].x);
+            if (xRightB - xLeftB > 2) {
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+                ctx.fillRect(xLeftB, subH, xRightB - xLeftB, subH);
+                const arrowYB = Math.max(subH + 24, Math.min(height - 22, Math.min(coordsB[0].y, coordsB[1].y) - 22));
+                ctx.strokeStyle = '#059669';
+                ctx.lineWidth = 1.8;
+                ctx.beginPath();
+                ctx.moveTo(xLeftB, arrowYB);
+                ctx.lineTo(xRightB, arrowYB);
+                ctx.stroke();
+                drawLabelWithPill(ctx, 'Δt_B', (xLeftB + xRightB) / 2, arrowYB - 16, 'center', 'top', '#047857');
+            }
+        }
+
+        // Vẽ 2 mốc trên Đồ thị 1 (Kênh A: 0 -> subH)
+        coordsA.forEach(pt => {
+            ctx.strokeStyle = pt.color;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 4]);
+            ctx.beginPath();
+            ctx.moveTo(pt.x, 0);
+            ctx.lineTo(pt.x, subH);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = pt.color;
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 5.5, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            drawLabelWithPill(ctx, pt.label, pt.x, Math.max(6, pt.y - 22), 'center', 'top', pt.textCol);
+        });
+
+        // Vẽ 2 mốc trên Đồ thị 2 (Kênh B: subH -> height)
+        coordsB.forEach(pt => {
+            ctx.strokeStyle = pt.color;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 4]);
+            ctx.beginPath();
+            ctx.moveTo(pt.x, subH);
+            ctx.lineTo(pt.x, height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = pt.color;
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 5.5, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            drawLabelWithPill(ctx, pt.label, pt.x, Math.max(subH + 6, pt.y - 22), 'center', 'top', pt.textCol);
+        });
+
+        ctx.restore();
     }
 
     let draggingPointIndex = -1;
@@ -1168,27 +1808,103 @@ async function checkAppVersion() {
 
     canvas.addEventListener('pointerdown', (e) => {
         wasDraggingPoint = false;
-        if (getDisplayMode() !== 'oscilloscope' || !isManualAnalysisMode || !isPaused || getActiveChannelMode() !== '1') return;
-        const winInfo = getVisibleChannelAWindow();
-        if (!winInfo || manualPoints.length === 0) return;
+        if (getDisplayMode() !== 'oscilloscope' || !isPaused) return;
 
         const rect = canvas.getBoundingClientRect();
         const px = e.clientX - rect.left;
+        const py = e.clientY - rect.top;
         const width = canvas.clientWidth;
-        const N = winInfo.samplesNeeded;
+        const height = canvas.clientHeight;
+        const mode = getActiveChannelMode();
 
-        // Cho phép kéo thả tinh chỉnh trực tiếp P1 hoặc P2 nếu chạm gần (<= 18px)
-        for (let i = 0; i < manualPoints.length; i++) {
-            const ptX = ((manualPoints[i].absIdx - winInfo.startIdx) / N) * width;
-            if (Math.abs(px - ptX) <= 18) {
-                draggingPointIndex = i;
-                if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
-                return;
+        if (mode === '2' && isTwoSourceGraphAnalysisMode) {
+            const winA = getVisibleChannelWindow('A');
+            const winB = getVisibleChannelWindow('B');
+            if (!winA || !winB) return;
+            const targetCh = (py < height / 2) ? 'A' : 'B';
+            const winTarget = (targetCh === 'A') ? winA : winB;
+            const pts = Array.isArray(twoSourcePoints[targetCh]) ? twoSourcePoints[targetCh] : [];
+            const halfT = (typeof winTarget.halfSamples === 'number') ? winTarget.halfSamples : Math.floor(winTarget.samplesNeeded / 2);
+
+            let bestIdx = -1;
+            let bestDist = (e.pointerType === 'touch' || e.pointerType === 'pen') ? 32 : 22;
+            for (let i = 0; i < pts.length; i++) {
+                const ptX = (width / 2) + (((pts[i].absIdx - winTarget.startIdx) - halfT) / winTarget.samplesNeeded) * width;
+                const d = Math.abs(px - ptX);
+                if (d <= bestDist) {
+                    bestDist = d;
+                    bestIdx = i;
+                }
             }
+            if (bestIdx >= 0) {
+                draggingTwoSourcePoint = { channel: targetCh, index: bestIdx };
+                if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+            }
+            return;
+        }
+
+        if (!isManualAnalysisMode || mode !== '1') return;
+        const winInfo = getVisibleChannelAWindow();
+        if (!winInfo || manualPoints.length === 0) return;
+
+        const N = winInfo.samplesNeeded;
+        const halfN = (typeof winInfo.halfSamples === 'number') ? winInfo.halfSamples : Math.floor(N / 2);
+
+        // Cho phép kéo thả tinh chỉnh trực tiếp P1 hoặc P2 nếu chạm gần (tự mở rộng vùng chạm trên màn hình cảm ứng)
+        const hitRadius = (e.pointerType === 'touch' || e.pointerType === 'pen') ? 28 : 18;
+        let bestManualIdx = -1;
+        let bestManualDist = hitRadius;
+        for (let i = 0; i < manualPoints.length; i++) {
+            const ptX = (width / 2) + (((manualPoints[i].absIdx - winInfo.startIdx) - halfN) / N) * width;
+            const d = Math.abs(px - ptX);
+            if (d <= bestManualDist) {
+                bestManualDist = d;
+                bestManualIdx = i;
+            }
+        }
+        if (bestManualIdx >= 0) {
+            draggingPointIndex = bestManualIdx;
+            if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+            return;
         }
     });
 
     canvas.addEventListener('pointermove', (e) => {
+        if (draggingTwoSourcePoint && isTwoSourceGraphAnalysisMode && isPaused && getActiveChannelMode() === '2') {
+            wasDraggingPoint = true;
+            const winA = getVisibleChannelWindow('A');
+            const winB = getVisibleChannelWindow('B');
+            if (!winA || !winB) return;
+            const rect = canvas.getBoundingClientRect();
+            const width = canvas.clientWidth;
+            const subH = canvas.clientHeight / 2;
+            const moveX = Math.max(0, Math.min(width, e.clientX - rect.left));
+            const ch = draggingTwoSourcePoint.channel;
+            const idx = draggingTwoSourcePoint.index;
+
+            if (ch === 'A' && Array.isArray(twoSourcePoints.A) && twoSourcePoints.A[idx]) {
+                const moveYA = Math.max(0, Math.min(subH, e.clientY - rect.top));
+                twoSourcePoints.A[idx] = snapToWaveFeature(winA, moveX, moveYA, width, subH);
+                if (twoSourcePoints.A.length === 2 && twoSourcePoints.A[0].absIdx > twoSourcePoints.A[1].absIdx) {
+                    const tmp = twoSourcePoints.A[0];
+                    twoSourcePoints.A[0] = twoSourcePoints.A[1];
+                    twoSourcePoints.A[1] = tmp;
+                    draggingTwoSourcePoint.index = 1 - idx;
+                }
+            } else if (ch === 'B' && Array.isArray(twoSourcePoints.B) && twoSourcePoints.B[idx]) {
+                const moveYB = Math.max(0, Math.min(subH, (e.clientY - rect.top) - subH));
+                twoSourcePoints.B[idx] = snapToWaveFeature(winB, moveX, moveYB, width, subH);
+                if (twoSourcePoints.B.length === 2 && twoSourcePoints.B[0].absIdx > twoSourcePoints.B[1].absIdx) {
+                    const tmp = twoSourcePoints.B[0];
+                    twoSourcePoints.B[0] = twoSourcePoints.B[1];
+                    twoSourcePoints.B[1] = tmp;
+                    draggingTwoSourcePoint.index = 1 - idx;
+                }
+            }
+            updateTwoSourceGraphAnalysisDisplay(winA, winB);
+            return;
+        }
+
         if (draggingPointIndex < 0 || !isManualAnalysisMode || !isPaused) return;
         wasDraggingPoint = true;
         const winInfo = getVisibleChannelAWindow();
@@ -1213,6 +1929,12 @@ async function checkAppVersion() {
     });
 
     canvas.addEventListener('pointerup', (e) => {
+        if (draggingTwoSourcePoint) {
+            draggingTwoSourcePoint = null;
+            if (canvas.releasePointerCapture) {
+                try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+            }
+        }
         if (draggingPointIndex >= 0) {
             draggingPointIndex = -1;
             if (canvas.releasePointerCapture) {
@@ -1221,13 +1943,74 @@ async function checkAppVersion() {
         }
     });
 
+    canvas.addEventListener('pointercancel', () => {
+        draggingTwoSourcePoint = null;
+        draggingPointIndex = -1;
+        wasDraggingPoint = false;
+    });
+
     canvas.addEventListener('click', (e) => {
         if (wasDraggingPoint) {
             wasDraggingPoint = false;
             return;
         }
         if (getDisplayMode() === 'oscilloscope') {
-            if (!isManualAnalysisMode || !isPaused || getActiveChannelMode() !== '1') return;
+            const mode = getActiveChannelMode();
+            if (mode === '2' && isTwoSourceGraphAnalysisMode && isPaused) {
+                const winA = getVisibleChannelWindow('A');
+                const winB = getVisibleChannelWindow('B');
+                if (!winA || !winB) return;
+                const rect = canvas.getBoundingClientRect();
+                const clickX = Math.max(0, Math.min(canvas.clientWidth, e.clientX - rect.left));
+                const clickY = Math.max(0, Math.min(canvas.clientHeight, e.clientY - rect.top));
+                const width = canvas.clientWidth;
+                const subH = canvas.clientHeight / 2;
+
+                const targetCh = (clickY < subH) ? 'A' : 'B';
+                const winTarget = (targetCh === 'A') ? winA : winB;
+                const localY = (targetCh === 'A') ? clickY : (clickY - subH);
+                const halfT = (typeof winTarget.halfSamples === 'number') ? winTarget.halfSamples : Math.floor(winTarget.samplesNeeded / 2);
+
+                if (!Array.isArray(twoSourcePoints[targetCh])) twoSourcePoints[targetCh] = [];
+                for (let i = 0; i < twoSourcePoints[targetCh].length; i++) {
+                    const ptX = (width / 2) + (((twoSourcePoints[targetCh][i].absIdx - winTarget.startIdx) - halfT) / winTarget.samplesNeeded) * width;
+                    if (Math.abs(clickX - ptX) < 3) return;
+                }
+
+                const pickedPoint = snapToWaveFeature(winTarget, clickX, localY, width, subH);
+                const chLabel = (targetCh === 'A') ? 'Kênh A' : 'Kênh B';
+                const p1Name = (targetCh === 'A') ? 'P<sub>A1</sub>' : 'P<sub>B1</sub>';
+                const p2Name = (targetCh === 'A') ? 'P<sub>A2</sub>' : 'P<sub>B2</sub>';
+
+                if (twoSourcePoints[targetCh].length >= 2) {
+                    twoSourcePoints[targetCh] = [pickedPoint];
+                    updateTwoSourceGraphAnalysisDisplay(
+                        winA,
+                        winB,
+                        `Đã chọn lại <span class='info-badge'>${p1Name}</span> trên ${chLabel}. Hãy chọn tiếp <span class='info-badge'>${p2Name}</span> trên ${chLabel} (hoặc kéo thả điểm).`
+                    );
+                    return;
+                }
+
+                twoSourcePoints[targetCh].push(pickedPoint);
+                if (twoSourcePoints[targetCh].length === 1) {
+                    updateTwoSourceGraphAnalysisDisplay(
+                        winA,
+                        winB,
+                        `Đã chọn <span class='info-badge'>${p1Name}</span> trên ${chLabel}. Hãy chọn tiếp <span class='info-badge'>${p2Name}</span> trên ${chLabel}.`
+                    );
+                } else {
+                    if (twoSourcePoints[targetCh][0].absIdx > twoSourcePoints[targetCh][1].absIdx) {
+                        const tmp = twoSourcePoints[targetCh][0];
+                        twoSourcePoints[targetCh][0] = twoSourcePoints[targetCh][1];
+                        twoSourcePoints[targetCh][1] = tmp;
+                    }
+                    updateTwoSourceGraphAnalysisDisplay(winA, winB);
+                }
+                return;
+            }
+
+            if (!isManualAnalysisMode || !isPaused || mode !== '1') return;
             const winInfo = getVisibleChannelAWindow();
             if (!winInfo) return;
 
@@ -1238,8 +2021,9 @@ async function checkAppVersion() {
             const height = canvas.clientHeight;
 
             // Bỏ qua sự kiện click ngay sau khi kéo thả xong điểm
+            const halfN = (typeof winInfo.halfSamples === 'number') ? winInfo.halfSamples : Math.floor(winInfo.samplesNeeded / 2);
             for (let i = 0; i < manualPoints.length; i++) {
-                const ptX = ((manualPoints[i].absIdx - winInfo.startIdx) / winInfo.samplesNeeded) * width;
+                const ptX = (width / 2) + (((manualPoints[i].absIdx - winInfo.startIdx) - halfN) / winInfo.samplesNeeded) * width;
                 if (Math.abs(clickX - ptX) < 3) return;
             }
 
@@ -1466,8 +2250,7 @@ async function checkAppVersion() {
             }
         }
 
-        // Đổi dấu để góc pha phản ánh chuẩn xác: khi Kênh B sớm pha hơn Kênh A (B leads A), phaseRad > 0
-        let phaseRad = -(trueShift / samplesPerCycle) * 2 * Math.PI;
+        let phaseRad = (trueShift / samplesPerCycle) * 2 * Math.PI;
         while (phaseRad > Math.PI) phaseRad -= 2 * Math.PI;
         while (phaseRad < -Math.PI) phaseRad += 2 * Math.PI;
         return phaseRad;
@@ -1483,18 +2266,36 @@ async function checkAppVersion() {
 
     function findZeroCrossingOffset(cfg, currentIndex, samplesNeeded) {
         if (!cfg || !cfg.active || !cfg.data || currentIndex <= 0) return 0;
-        const len = cfg.data.length, maxAvailable = Math.min(currentIndex, len - 4096);
-        if (maxAvailable <= samplesNeeded + 4) return 0;
+        const len = cfg.data.length;
+        const halfSamples = Math.floor(samplesNeeded / 2);
+        const maxAvailable = Math.min(currentIndex, len - 4096);
+        if (maxAvailable <= samplesNeeded + 4) return halfSamples;
+
         const maxSearchWindow = Math.min(maxAvailable - samplesNeeded - 2, Math.max(512, Math.floor(sampleRate / 60)));
-        if (maxSearchWindow <= 4) return 0;
-        const baseEnd = currentIndex - samplesNeeded; let peak = 0;
-        for (let k = 0; k < maxSearchWindow; k += 2) { let idx = ((baseEnd - k) % len + len) % len, absVal = Math.abs(cfg.data[idx]); if (absVal > peak) peak = absVal; }
-        if (peak < 0.008) return 0; const hysteresis = peak * 0.1;
-        for (let offset = 1; offset < maxSearchWindow - 4; offset++) {
-            let iCurr = ((baseEnd - offset) % len + len) % len, iPrev = ((baseEnd - offset - 1) % len + len) % len, vPrev = cfg.data[iPrev], vCurr = cfg.data[iCurr];
-            if (vPrev <= 0 && vCurr > 0) { let iBack = ((baseEnd - offset - 4) % len + len) % len; if (cfg.data[iBack] < -hysteresis || (vCurr - vPrev) > peak * 0.02) return offset; }
+        if (maxSearchWindow <= 4) return halfSamples;
+
+        const baseCenter = currentIndex - halfSamples;
+        let peak = 0;
+        for (let k = 0; k < maxSearchWindow; k += 2) {
+            let idx = ((baseCenter - k) % len + len) % len;
+            let absVal = Math.abs(cfg.data[idx]);
+            if (absVal > peak) peak = absVal;
         }
-        return 0;
+        if (peak < 0.008) return halfSamples;
+
+        const hysteresis = peak * 0.1;
+        for (let k = 1; k < maxSearchWindow - 4; k++) {
+            let iCurr = ((baseCenter - k) % len + len) % len;
+            let iPrev = ((baseCenter - k - 1) % len + len) % len;
+            let vPrev = cfg.data[iPrev], vCurr = cfg.data[iCurr];
+            if (vPrev <= 0 && vCurr > 0) {
+                let iBack = ((baseCenter - k - 4) % len + len) % len;
+                if (cfg.data[iBack] < -hysteresis || (vCurr - vPrev) > peak * 0.02) {
+                    return halfSamples + k;
+                }
+            }
+        }
+        return halfSamples;
     }
 
     function drawLabelWithPill(ctx, text, x, y, align = 'center', baseline = 'top', textColor = '#1e293b') {
@@ -1613,6 +2414,8 @@ async function checkAppVersion() {
         const isWorkletReady = await setupAudioWorklet(audioCtx); stopAudioChannel(channelId);
         const cfg = channelConfig[channelId];
         if (!cfg.data || cfg.data.length !== sampleRate * 10) { cfg.data = new Float32Array(sampleRate * 10); } cfg.index = 0;
+        if (channelId === 'A') frozenCenterIdxA = null;
+        else if (channelId === 'B') frozenCenterIdxB = null;
 
         try {
             const idA = micSelectA ? micSelectA.value : '', idB = micSelectB ? micSelectB.value : '', isSharedDevice = (idA === idB);
@@ -1634,7 +2437,7 @@ async function checkAppVersion() {
                 finalSourceNode = cfg.channelGain;
             }
             cfg.filterHP = audioCtx.createBiquadFilter(); cfg.filterHP.frequency.value = 45; cfg.filterHP.type = 'highpass';
-            cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 5000; cfg.filterLP.type = 'lowpass';
+            cfg.filterLP = audioCtx.createBiquadFilter(); cfg.filterLP.frequency.value = 3000; cfg.filterLP.type = 'lowpass';
             const handleAudioSamples = (inputChunk) => {
                 if (!isPaused && cfg.active && (!isTwoSourceModalOpen || !isTsPaused)) {
                     let len = cfg.data.length, currentIdx = cfg.index;
@@ -1670,9 +2473,12 @@ async function checkAppVersion() {
                     pauseButton.textContent = "Đo / Dừng";
                     pauseButton.className = "btn-green";
                     infoMessageText.innerHTML = "Đã khóa sóng &mdash; Sẵn sàng khảo sát";
-                    infoMessageText.style.color = "#059669";
+                    infoMessageText.style.color = "#dc2626";
                     updateAnalysisButtonState();
                     updateManualAnalysisButtonState();
+                    if (isTwoSourceModalOpen && typeof freezeTwoSourceModal === 'function') {
+                        freezeTwoSourceModal();
+                    }
                     drawFrame();
                 }
             }, 2000);
@@ -1694,6 +2500,7 @@ async function checkAppVersion() {
             lastDbSampleTime = 0;
             if (channelConfig.A.data) { channelConfig.A.data.fill(0); channelConfig.A.index = 0; }
             if (channelConfig.B.data) { channelConfig.B.data.fill(0); channelConfig.B.index = 0; }
+            frozenCenterIdxA = null; frozenCenterIdxB = null;
             isUserZoomed = false; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / lockedFrequency);
             pauseButton.textContent = "Đang đo..."; pauseButton.className = "btn-red";
             let text = "Đang quét tín hiệu: ";
@@ -1707,10 +2514,6 @@ async function checkAppVersion() {
             else clearTimeout(stopTimer);
         } else {
             isPaused = true;
-            if (animFrameId) {
-                cancelAnimationFrame(animFrameId);
-                animFrameId = null;
-            }
             clearTimeout(stopTimer);
             pauseButton.textContent = "Đo / Dừng";
             pauseButton.className = "btn-green";
@@ -1719,7 +2522,7 @@ async function checkAppVersion() {
             } else {
                 infoMessageText.innerHTML = isContinuousMode ? "Đã tạm dừng vẽ." : "Đã khóa sóng an toàn.";
             }
-            infoMessageText.style.color = "#059669";
+            infoMessageText.style.color = "#dc2626";
             updateAnalysisButtonState();
             updateManualAnalysisButtonState();
             drawFrame();
@@ -1944,8 +2747,9 @@ async function checkAppVersion() {
 
         drawMainGrid(canvasCtx, 0, boxA_Y, width, boxA_H, '#dc2626', channelConfig.A.active ? 'Biên độ' : 'Kênh A (Khóa)', true);
         if (channelConfig.A.active && channelConfig.A.data && channelConfig.A.index > samplesNeeded) {
-            let offset = isContinuousMode ? 0 : findZeroCrossingOffset(channelConfig.A, channelConfig.A.index, samplesNeeded);
-            drawWaveform(canvasCtx, channelConfig.A.data, channelConfig.A.index, offset, samplesNeeded, 0, boxA_Y, width, boxA_H, '#ef4444');
+            let centerIdxA = resolveChannelCenterIdx(channelConfig.A, 'A', samplesNeeded);
+            let offsetA = channelConfig.A.index - centerIdxA;
+            drawWaveform(canvasCtx, channelConfig.A.data, channelConfig.A.index, offsetA, samplesNeeded, 0, boxA_Y, width, boxA_H, '#ef4444');
             if (mode === '1') {
                 drawManualAnalysisOverlay(canvasCtx, width, height);
             }
@@ -1954,17 +2758,26 @@ async function checkAppVersion() {
         if (mode === '2') {
             drawMainGrid(canvasCtx, 0, boxB_Y, width, boxB_H, '#3b82f6', channelConfig.B.active ? 'Biên độ' : 'Kênh B (Khóa)', true);
             if (channelConfig.B.active && channelConfig.B.data && channelConfig.B.index > samplesNeeded) {
-                let offset = isContinuousMode ? 0 : findZeroCrossingOffset(channelConfig.B, channelConfig.B.index, samplesNeeded);
-                drawWaveform(canvasCtx, channelConfig.B.data, channelConfig.B.index, offset, samplesNeeded, 0, boxB_Y, width, boxB_H, '#3b82f6');
+                let centerIdxB = resolveChannelCenterIdx(channelConfig.B, 'B', samplesNeeded);
+                let offsetB = channelConfig.B.index - centerIdxB;
+                drawWaveform(canvasCtx, channelConfig.B.data, channelConfig.B.index, offsetB, samplesNeeded, 0, boxB_Y, width, boxB_H, '#3b82f6');
             }
+            drawTwoSourceAnalysisOverlay(canvasCtx, width, height);
         }
     }
 
     function drawWaveform(ctx, dataArray, currentIndex, offset, samplesNeeded, boxX, boxY, boxW, boxH, color) {
         ctx.beginPath(); ctx.lineWidth = 2.5; ctx.strokeStyle = color; ctx.lineJoin = 'round';
-        const len = dataArray.length; let startIdx = currentIndex - offset - samplesNeeded, step = Math.max(1, Math.floor(samplesNeeded / (boxW * 2)));
+        const len = dataArray.length;
+        const halfSamples = Math.floor(samplesNeeded / 2);
+        const centerIdx = currentIndex - offset;
+        const startIdx = centerIdx - halfSamples;
+        const step = Math.max(1, Math.floor(samplesNeeded / (boxW * 2)));
         for (let i = 0; i < samplesNeeded; i += step) {
-            let idx = ((startIdx + i) % len + len) % len, val = dataArray[idx], x = boxX + (i / samplesNeeded) * boxW, y = boxY + boxH / 2 - (val * currentZoomY * boxH / 2);
+            let idx = ((startIdx + i) % len + len) % len;
+            let val = dataArray[idx];
+            let x = boxX + boxW / 2 + ((i - halfSamples) / samplesNeeded) * boxW;
+            let y = boxY + boxH / 2 - (val * currentZoomY * boxH / 2);
             y = Math.max(boxY, Math.min(boxY + boxH, y));
             if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
@@ -1973,19 +2786,18 @@ async function checkAppVersion() {
 
     let animFrameId = null;
     function draw() {
-        if (!isPaused && targetFPS > 0) {
+        if (isPaused) {
+            animFrameId = null;
+            return;
+        }
+        if (targetFPS > 0) {
             let now = performance.now();
             if (now - lastDrawTime > (1000 / targetFPS)) {
                 drawFrame();
                 lastDrawTime = now;
             }
-            animFrameId = requestAnimationFrame(draw);
-        } else {
-            if (animFrameId) {
-                cancelAnimationFrame(animFrameId);
-                animFrameId = null;
-            }
         }
+        animFrameId = requestAnimationFrame(draw);
     }
 
     function resetFeaturesAndAdjustments(keepModes = true) {
@@ -2019,7 +2831,7 @@ async function checkAppVersion() {
 
         if (typeof checkAndShowQR === 'function') checkAndShowQR();
 
-        isUserZoomed = false; currentZoomY = 2.0; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440);
+        isUserZoomed = false; frozenCenterIdxA = null; frozenCenterIdxB = null; currentZoomY = 2.0; detectedFrequency = 0; lockedFrequency = 440; totalTimeOnScreen = 5 * (1.0 / 440);
 
         if (!keepModes) {
             if (channelModeSelect) channelModeSelect.value = '1';
@@ -2814,7 +3626,11 @@ async function checkAppVersion() {
     }
 
     function openFFTModal() {
+        if (getDisplayMode() !== 'oscilloscope' || getActiveChannelMode() !== '1' || isContinuousMode || (modeSelect && modeSelect.value === 'continuous')) {
+            return;
+        }
         if (typeof resetManualAnalysisState === 'function') resetManualAnalysisState();
+        if (typeof closeKinematicsModal === 'function' && isKinematicsModalOpen) closeKinematicsModal();
         stopFftSweepAnimation();
         closeFftHarmonicTable(true);
         fftSelectedPeakFreq = null;
@@ -3343,33 +4159,134 @@ async function checkAppVersion() {
         }
     }
 
-    function openTwoSourceModal() {
-        if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume().catch(() => {});
+    function computeAndUpdateTwoSourceMetrics(dataA, idxA, dataB, idxB, smooth = true) {
+        if (!dataA || !dataB) return;
+        const len = dataA.length;
+        let sqA = 0, sqB = 0;
+        if (idxA > 2048) {
+            let recA = new Float32Array(2048);
+            for (let i = 0; i < 2048; i++) {
+                let v = dataA[((idxA - 2048 + i) % len + len) % len];
+                recA[i] = v; sqA += v * v;
+            }
+            let fA = autoCorrelate(recA, sampleRate);
+            if (fA > 0) {
+                currentCalcFreqA = (!smooth || currentCalcFreqA === 0) ? fA : (currentCalcFreqA * 0.7 + fA * 0.3);
+            }
+            currentAmpA = (Math.sqrt(sqA / 2048) * 1.414).toFixed(2);
         }
-        isTwoSourceModalOpen = true; isTsPaused = false;
-        showTsResults = false; showTsEquations = false;
+        if (idxB > 2048) {
+            let recB = new Float32Array(2048);
+            for (let i = 0; i < 2048; i++) {
+                let v = dataB[((idxB - 2048 + i) % len + len) % len];
+                recB[i] = v; sqB += v * v;
+            }
+            let fB = autoCorrelate(recB, sampleRate);
+            if (fB > 0) {
+                currentCalcFreqB = (!smooth || currentCalcFreqB === 0) ? fB : (currentCalcFreqB * 0.7 + fB * 0.3);
+            }
+            currentAmpB = (Math.sqrt(sqB / 2048) * 1.414).toFixed(2);
+        }
 
-        if (channelConfig.A.active || channelConfig.B.active) {
-            isPaused = false;
-            clearTimeout(stopTimer);
-            if (pauseButton) {
-                pauseButton.textContent = "Đang đo...";
-                pauseButton.className = "btn-red";
+        document.getElementById('hudFreqA').innerText = currentCalcFreqA > 0 ? currentCalcFreqA.toFixed(1) : "0.0";
+        document.getElementById('hudFreqB').innerText = currentCalcFreqB > 0 ? currentCalcFreqB.toFixed(1) : "0.0";
+        document.getElementById('hudPerA').innerText = currentCalcFreqA > 0 ? (1000 / currentCalcFreqA).toFixed(2) : "0.00";
+        document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000 / currentCalcFreqB).toFixed(2) : "0.00";
+
+        let avgFreq = (currentCalcFreqA > 0 && currentCalcFreqB > 0)
+            ? ((currentCalcFreqA + currentCalcFreqB) / 2)
+            : (currentCalcFreqA || currentCalcFreqB || 0);
+        let calculatedPhase = calculatePhaseDifference(dataA, dataB, avgFreq > 0 ? avgFreq : 440, sampleRate, idxA, idxB);
+
+        updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase, currentAmpA, currentAmpB);
+    }
+
+    function freezeTwoSourceModal() {
+        isPaused = true;
+        isTsPaused = true;
+        clearTimeout(stopTimer);
+        isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
+        if (pauseButton) {
+            pauseButton.textContent = "Đo / Dừng";
+            pauseButton.className = "btn-green";
+        }
+        const btn = document.getElementById('tsPlayBtn');
+        const resBtn = document.getElementById('tsResultBtn');
+        const eqBtn = document.getElementById('tsEquationBtn');
+        if (btn) {
+            if (!isContinuousMode) {
+                btn.style.setProperty('display', 'none', 'important');
+            } else {
+                btn.style.setProperty('display', 'inline-flex', 'important');
+                btn.innerHTML = '▶ Tiếp tục';
+                btn.className = "btn-green";
             }
         }
+        if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
+        if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
+        if (channelConfig && channelConfig.A && channelConfig.A.data) {
+            snapDataA = new Float32Array(channelConfig.A.data);
+            snapIdxA = channelConfig.A.index;
+        }
+        if (channelConfig && channelConfig.B && channelConfig.B.data) {
+            snapDataB = new Float32Array(channelConfig.B.data);
+            snapIdxB = channelConfig.B.index;
+        }
+        computeAndUpdateTwoSourceMetrics(snapDataA, snapIdxA, snapDataB, snapIdxB, false);
+        calculatePhaseAndDrawLive();
+    }
+
+    function openTwoSourceModal() {
+        isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
+        if (getDisplayMode() !== 'oscilloscope' || getActiveChannelMode() !== '2' || !isContinuousMode) {
+            return;
+        }
+        const hasCapturedData = (channelConfig.A.index > 0 || channelConfig.B.index > 0);
+        const shouldOpenFrozen = isPaused && hasCapturedData;
+
+        isTwoSourceModalOpen = true;
+        showTsResults = false; showTsEquations = false;
 
         const overlay = document.getElementById('twoSourceModalOverlay');
         if (overlay) { overlay.style.display = 'flex'; setTimeout(() => overlay.classList.add('animUI-visible'), 10); }
 
-        const resBtn = document.getElementById('tsResultBtn'), eqBtn = document.getElementById('tsEquationBtn');
-        if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
-        if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
         document.getElementById('hudResults').style.display = 'none';
         document.getElementById('hudEquations').style.display = 'none';
 
+        if (shouldOpenFrozen) {
+            freezeTwoSourceModal();
+            return;
+        }
+
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
+        }
+        isTsPaused = false;
+
+        if (channelConfig.A.active || channelConfig.B.active) {
+            isPaused = false;
+            if (pauseButton) {
+                pauseButton.textContent = "Đang đo...";
+                pauseButton.className = "btn-red";
+            }
+            if (!isContinuousMode) triggerAutoStop();
+            else clearTimeout(stopTimer);
+        }
+
+        const resBtn = document.getElementById('tsResultBtn'), eqBtn = document.getElementById('tsEquationBtn');
+        if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
+        if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
+
         const btn = document.getElementById('tsPlayBtn');
-        if (btn) { btn.innerHTML = '⏸ Dừng'; btn.className = "btn-orange"; }
+        if (btn) {
+            if (!isContinuousMode) {
+                btn.style.setProperty('display', 'none', 'important');
+            } else {
+                btn.style.setProperty('display', 'inline-flex', 'important');
+                btn.innerHTML = '⏸ Dừng';
+                btn.className = "btn-orange";
+            }
+        }
 
         requestAnimationFrame(calculatePhaseAndDrawLive);
     }
@@ -3398,6 +4315,7 @@ async function checkAppVersion() {
     }
 
     function toggleTsPlay() {
+        isContinuousMode = (modeSelect && modeSelect.value === 'continuous');
         isTsPaused = !isTsPaused;
         const btn = document.getElementById('tsPlayBtn'), resBtn = document.getElementById('tsResultBtn'), eqBtn = document.getElementById('tsEquationBtn');
         if (!isTsPaused) {
@@ -3406,13 +4324,17 @@ async function checkAppVersion() {
             }
             if (channelConfig.A.active || channelConfig.B.active) {
                 isPaused = false;
-                clearTimeout(stopTimer);
                 if (pauseButton) {
                     pauseButton.textContent = "Đang đo...";
                     pauseButton.className = "btn-red";
                 }
+                if (!isContinuousMode) triggerAutoStop();
+                else clearTimeout(stopTimer);
             }
-            if (btn) { btn.innerHTML = '⏸ Dừng'; btn.className = "btn-orange"; }
+            if (btn) {
+                if (!isContinuousMode) btn.style.setProperty('display', 'none', 'important');
+                else { btn.innerHTML = '⏸ Dừng'; btn.className = "btn-orange"; }
+            }
             if (resBtn) resBtn.style.setProperty('display', 'none', 'important');
             if (eqBtn) eqBtn.style.setProperty('display', 'none', 'important');
             showTsResults = false; showTsEquations = false;
@@ -3420,24 +4342,7 @@ async function checkAppVersion() {
             document.getElementById('hudEquations').style.display = 'none';
             requestAnimationFrame(calculatePhaseAndDrawLive);
         } else {
-            isPaused = true;
-            clearTimeout(stopTimer);
-            if (pauseButton) {
-                pauseButton.textContent = "Đo / Dừng";
-                pauseButton.className = "btn-green";
-            }
-            if (btn) { btn.innerHTML = '▶ Tiếp tục'; btn.className = "btn-green"; }
-            if (resBtn) resBtn.style.setProperty('display', 'inline-flex', 'important');
-            if (eqBtn) eqBtn.style.setProperty('display', 'inline-flex', 'important');
-            if (channelConfig && channelConfig.A && channelConfig.A.data) {
-                snapDataA = new Float32Array(channelConfig.A.data);
-                snapIdxA = channelConfig.A.index;
-            }
-            if (channelConfig && channelConfig.B && channelConfig.B.data) {
-                snapDataB = new Float32Array(channelConfig.B.data);
-                snapIdxB = channelConfig.B.index;
-            }
-            calculatePhaseAndDrawLive();
+            freezeTwoSourceModal();
         }
     }
 
@@ -3467,40 +4372,8 @@ async function checkAppVersion() {
             if (!isTsPaused) {
                 let now = performance.now();
                 if (now - lastCorrelateTime > 300) {
-                    let sqA = 0, sqB = 0;
-                    if (cIdxA > 2048) {
-                        let recA = new Float32Array(2048);
-                        for (let i = 0; i < 2048; i++) {
-                            let v = activeDataA[((cIdxA - 2048 + i) % len + len) % len];
-                            recA[i] = v; sqA += v * v;
-                        }
-                        let fA = autoCorrelate(recA, sampleRate);
-                        if (fA > 0) currentCalcFreqA = (currentCalcFreqA === 0) ? fA : (currentCalcFreqA * 0.7 + fA * 0.3);
-                        currentAmpA = (Math.sqrt(sqA / 2048) * 1.414).toFixed(2);
-                    }
-                    if (cIdxB > 2048) {
-                        let recB = new Float32Array(2048);
-                        for (let i = 0; i < 2048; i++) {
-                            let v = activeDataB[((cIdxB - 2048 + i) % len + len) % len];
-                            recB[i] = v; sqB += v * v;
-                        }
-                        let fB = autoCorrelate(recB, sampleRate);
-                        if (fB > 0) currentCalcFreqB = (currentCalcFreqB === 0) ? fB : (currentCalcFreqB * 0.7 + fB * 0.3);
-                        currentAmpB = (Math.sqrt(sqB / 2048) * 1.414).toFixed(2);
-                    }
+                    computeAndUpdateTwoSourceMetrics(activeDataA, cIdxA, activeDataB, cIdxB, true);
                     lastCorrelateTime = now;
-
-                    document.getElementById('hudFreqA').innerText = currentCalcFreqA > 0 ? currentCalcFreqA.toFixed(1) : "0.0";
-                    document.getElementById('hudFreqB').innerText = currentCalcFreqB > 0 ? currentCalcFreqB.toFixed(1) : "0.0";
-                    document.getElementById('hudPerA').innerText = currentCalcFreqA > 0 ? (1000 / currentCalcFreqA).toFixed(2) : "0.00";
-                    document.getElementById('hudPerB').innerText = currentCalcFreqB > 0 ? (1000 / currentCalcFreqB).toFixed(2) : "0.00";
-
-                    let avgFreq = (currentCalcFreqA > 0 && currentCalcFreqB > 0)
-                        ? ((currentCalcFreqA + currentCalcFreqB) / 2)
-                        : (currentCalcFreqA || currentCalcFreqB || 0);
-                    let calculatedPhase = calculatePhaseDifference(activeDataA, activeDataB, avgFreq > 0 ? avgFreq : 440, sampleRate, cIdxA, cIdxB);
-
-                    updateEquationsHUD(currentCalcFreqA, currentCalcFreqB, calculatedPhase, currentAmpA, currentAmpB);
                 }
             }
 
@@ -3510,6 +4383,9 @@ async function checkAppVersion() {
             let refIdxB = isTsPaused ? snapIdxB : cIdxB;
 
             let offsetA = findZeroCrossingOffset({ active: true, data: refDataA }, refIdxA, samplesDraw);
+            let halfDraw = Math.floor(samplesDraw / 2);
+            let startIdxA = refIdxA - offsetA - halfDraw;
+            let startIdxB = refIdxB - offsetA - halfDraw;
 
             ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
             let step = Math.max(1, Math.floor(samplesDraw / (cw * 2.0)));
@@ -3519,18 +4395,18 @@ async function checkAppVersion() {
 
                 ctx.strokeStyle = '#ef4444'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i += step) {
-                    let idxA = ((refIdxA - offsetA - samplesDraw + i) % len + len) % len;
+                    let idxA = ((startIdxA + i) % len + len) % len;
                     let val = refDataA[idxA];
-                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                    let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
 
                 ctx.strokeStyle = '#3b82f6'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i += step) {
-                    let idxB = ((refIdxB - offsetA - samplesDraw + i) % len + len) % len;
+                    let idxB = ((startIdxB + i) % len + len) % len;
                     let val = refDataB[idxB];
-                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                    let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
@@ -3552,11 +4428,11 @@ async function checkAppVersion() {
 
                 ctx.strokeStyle = '#8b5cf6'; ctx.beginPath();
                 for (let i = 0; i < samplesDraw; i += step) {
-                    let idxA = ((refIdxA - offsetA - samplesDraw + i) % len + len) % len;
-                    let idxB = ((refIdxB - offsetA - samplesDraw + i) % len + len) % len;
+                    let idxA = ((startIdxA + i) % len + len) % len;
+                    let idxB = ((startIdxB + i) % len + len) % len;
                     let val = refDataA[idxA] + refDataB[idxB];
 
-                    let x = (i / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
+                    let x = cw / 2 + ((i - halfDraw) / samplesDraw) * cw, y = ch / 2 - (val * currentZoomY * ch / 2);
                     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
@@ -3565,39 +4441,75 @@ async function checkAppVersion() {
         if (isTwoSourceModalOpen && !isTsPaused) requestAnimationFrame(calculatePhaseAndDrawLive);
     }
 
+    function normalizeMarkdownForChat(rawText) {
+        if (!rawText) return '';
+        let s = String(rawText).replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+
+        // Chuẩn hóa công thức \[...\] và \(...\) sang $$...$$ và $...$
+        s = s.replace(/\\\[([\s\S]*?)\\\]/g, (_, expr) => '$$' + expr.trim() + '$$');
+        s = s.replace(/\\\(([\s\S]*?)\\\)/g, (_, expr) => '$' + expr.trim() + '$');
+
+        // Chuẩn hóa tiêu đề Markdown (#, ##, ###)
+        s = s.replace(/^(#{1,6})\s+(.+)$/gm, (_, hashes, title) => '**' + title.trim() + '**');
+
+        // Chuẩn hóa gạch đầu dòng
+        s = s.replace(/^([ \t]*)[-*][ \t]+/gm, '$1• ');
+
+        // Chuyển **bold** và *italic* bên ngoài khối công thức Toán/Vật lý
+        const parts = s.split(/(\$\$[\s\S]*?\$\$|\$[^$\n]+?\$)/g);
+        s = parts.map((seg, idx) => {
+            if (idx % 2 === 1) return seg;
+            return seg
+                .replace(/\*\*([^*\n]+?)\*\*/g, '<b>$1</b>')
+                .replace(/(^|[^\w*])\*([^\s*][^*\n]*?[^\s*])\*(?![\w*])/g, '$1<i>$2</i>');
+        }).join('');
+
+        s = s.replace(/\n{3,}/g, '\n\n');
+        return s.trim();
+    }
+
     function formatCompleteSentences(text) {
         if (!text) return '';
-        let trimmed = text.trim();
+        let trimmed = normalizeMarkdownForChat(text);
         if (!trimmed) return '';
 
         trimmed = trimmed.replace(/Fox_lab/gi, 'Fox-lab')
-                         .replace(/FOX_LAB/gi, 'Fox-lab')
+                         .replace(/Fox-lab/gi, 'Fox-lab')
                          .replace(/Foxlab/gi, 'Fox-lab');
 
-        let cleanText = trimmed.replace(/<[^>]+>/g, '').trim();
+        // Giữ nguyên nếu kết thúc bằng khối công thức $$...$$ hoặc $...$
+        if (/(\$\$|\$)[ \t]*$/.test(trimmed)) {
+            return trimmed;
+        }
+
+        // Loại bỏ dòng bullet cuối dở dang chỉ có 1 ký hiệu/biến lẻ
+        trimmed = trimmed.replace(/(?:^|\n)[ \t]*•[ \t]*(?:[A-Za-zÀ-ỹ0-9_]{1,2}|\$[^$\n]{1,3}\$)?[ \t]*$/g, '').trim();
+        if (!trimmed) return '';
+
+        let cleanText = trimmed
+            .replace(/\$\$[\s\S]*?\$\$/g, ' MATH ')
+            .replace(/\$[^$\n]+?\$/g, ' MATH ')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
         if (!cleanText) return trimmed;
 
         const lastChar = cleanText.slice(-1);
-        if (['.', '!', '?', ':', ';'].includes(lastChar)) {
-            if ([':', ';'].includes(lastChar)) {
+        if (['.', '!', '?', ':', ';', ')'].includes(lastChar)) {
+            if ([':', ';'].includes(lastChar) && !trimmed.endsWith('>')) {
                 trimmed = trimmed.replace(/[:;]\s*$/, '.');
             }
             return trimmed;
         }
 
-        // Kiểm tra nếu bị cụt lửng do giới hạn token, hiển thị chú thích tinh tế thay vì ép dấu chấm
         const lastWord = cleanText.split(/\s+/).pop().toLowerCase();
-        const trailingParticles = ['là', 'và', 'của', 'với', 'bằng', 'tại', 'trong', 'được', 'có', 'cho', 'các', 'như', 'khi', 'thì', 'để'];
+        const trailingParticles = ['là', 'và', 'của', 'với', 'bằng', 'tại', 'trong', 'được', 'có', 'cho', 'các', 'như', 'khi', 'thì', 'để', 'gồm', 'sau'];
         if (trailingParticles.includes(lastWord) || trimmed.endsWith(',')) {
-            return trimmed + ' … <span style="font-size:11px; color:#64748b; font-style:italic;">(Nội dung đầy đủ đã được truyền tải)</span>';
+            return trimmed + '… <span style="font-size:11px; color:#94a3b8; font-style:italic;">(Đã tự động nối hoàn chỉnh nội dung)</span>';
         }
 
         if (trimmed.endsWith('>')) {
-            let lastCloseTag = trimmed.lastIndexOf('</');
-            if (lastCloseTag !== -1) {
-                return trimmed.substring(0, lastCloseTag) + '.' + trimmed.substring(lastCloseTag);
-            }
-            return trimmed + '.';
+            return trimmed;
         }
 
         return trimmed + '.';
@@ -3663,27 +4575,349 @@ async function checkAppVersion() {
         sendFoxMessage();
     }
 
-    function handleImageSelected(event) {
-        const file = event.target.files[0];
+    let uploadedImageScanReport = "";
+    let activeConversationImageScanReport = "";
+
+    function prepareDetailedImageBase64(dataUrl, maxDim = 1920, quality = 0.93) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                let w = img.naturalWidth || img.width;
+                let h = img.naturalHeight || img.height;
+                if (!w || !h) { resolve(dataUrl); return; }
+                if (w > maxDim || h > maxDim) {
+                    const ratio = Math.min(maxDim / w, maxDim / h);
+                    w = Math.max(1, Math.round(w * ratio));
+                    h = Math.max(1, Math.round(h * ratio));
+                }
+                const c = document.createElement('canvas');
+                c.width = w;
+                c.height = h;
+                const ctx = c.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(img, 0, 0, w, h);
+
+                // Tăng nhẹ độ tương phản lưới ô xanh nhạt (#bae6fd) để AI nhìn rõ vạch chia
+                try {
+                    const imgData = ctx.getImageData(0, 0, w, h);
+                    const d = imgData.data;
+                    for (let i = 0; i < d.length; i += 4) {
+                        const r = d[i], g = d[i + 1], b = d[i + 2];
+                        if ((b - r) > 18 && g > 195 && b > 215 && r < 225) {
+                            d[i] = Math.max(0, r - 40);
+                            d[i + 1] = Math.max(0, g - 30);
+                            d[i + 2] = Math.max(0, b - 12);
+                        }
+                    }
+                    ctx.putImageData(imgData, 0, 0);
+                } catch (e) { }
+
+                resolve(c.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = () => resolve(dataUrl);
+            img.src = dataUrl;
+        });
+    }
+
+    function analyzeOscilloscopeImagePixels(dataUrl) {
+        return new Promise((resolve) => {
+            if (!dataUrl || typeof dataUrl !== 'string') { resolve(""); return; }
+            const img = new Image();
+            img.onload = () => {
+                try {
+                    const rawW = img.naturalWidth || img.width;
+                    const rawH = img.naturalHeight || img.height;
+                    if (!rawW || !rawH || rawW < 120 || rawH < 120) { resolve(""); return; }
+
+                    const scale = rawW > 800 ? (800 / rawW) : 1;
+                    const W = Math.round(rawW * scale);
+                    const H = Math.round(rawH * scale);
+
+                    const c = document.createElement('canvas');
+                    c.width = W;
+                    c.height = H;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(img, 0, 0, W, H);
+                    const d = ctx.getImageData(0, 0, W, H).data;
+
+                    const isRed = (i) => d[i] > 175 && d[i + 1] < 85 && d[i + 2] < 85 && (d[i] - d[i + 1]) > 105;
+                    const isBlue = (i) => d[i + 2] > 175 && d[i] < 85 && (d[i + 2] - d[i]) > 100;
+                    const isDark = (i) => {
+                        const r = d[i], g = d[i + 1], b = d[i + 2];
+                        return r < 95 && g < 100 && b < 115 && (Math.max(r, g, b) - Math.min(r, g, b)) < 35;
+                    };
+
+                    function findMainWaveBand(checkFn) {
+                        const ys = [];
+                        for (let y = 0; y < H; y++) {
+                            let rowCnt = 0;
+                            for (let x = 0; x < W; x++) {
+                                if (checkFn((y * W + x) * 4)) rowCnt++;
+                            }
+                            if (rowCnt > 0) ys.push(y);
+                        }
+                        if (ys.length < 30) return null;
+
+                        const bands = [];
+                        let s = ys[0], p = ys[0];
+                        for (let k = 1; k < ys.length; k++) {
+                            if (ys[k] - p <= 6) p = ys[k];
+                            else { bands.push([s, p]); s = p = ys[k]; }
+                        }
+                        bands.push([s, p]);
+
+                        let best = null, bestSpan = 0;
+                        for (const [y0, y1] of bands) {
+                            if ((y1 - y0) < 36) continue;
+                            let minX = W, maxX = -1;
+                            for (let y = y0; y <= y1; y++) {
+                                for (let x = 0; x < W; x++) {
+                                    if (checkFn((y * W + x) * 4)) {
+                                        if (x < minX) minX = x;
+                                        if (x > maxX) maxX = x;
+                                    }
+                                }
+                            }
+                            const span = maxX - minX;
+                            if (span > bestSpan) { bestSpan = span; best = [y0, y1]; }
+                        }
+                        return (best && bestSpan >= 0.35 * W) ? best : null;
+                    }
+
+                    function scanChannel(checkFn, chLabel) {
+                        const band = findMainWaveBand(checkFn);
+                        if (!band) return null;
+
+                        const [y0, y1] = band;
+                        const bandH = y1 - y0;
+                        const midTop = Math.max(0, Math.floor(y0 + 0.12 * bandH));
+                        const midBot = Math.min(H - 1, Math.floor(y1 - 0.12 * bandH));
+                        if (midBot <= midTop + 8) return null;
+
+                        // Tìm trục hoành t (#334155) & biên trái/phải thực tế của khung đồ thị
+                        let bestAxisY = -1, bestSpanLen = 0, boxLeft = 0, boxRight = W - 1;
+                        for (let y = midTop; y <= midBot; y++) {
+                            let runStart = -1, lastDark = -1;
+                            for (let x = 0; x < W; x++) {
+                                if (isDark((y * W + x) * 4)) {
+                                    if (runStart < 0) runStart = x;
+                                    lastDark = x;
+                                } else if (runStart >= 0 && (x - lastDark) > 22) {
+                                    const spanLen = lastDark - runStart + 1;
+                                    if (spanLen > bestSpanLen) {
+                                        bestSpanLen = spanLen;
+                                        bestAxisY = y;
+                                        boxLeft = runStart;
+                                        boxRight = lastDark;
+                                    }
+                                    runStart = -1;
+                                }
+                            }
+                            if (runStart >= 0) {
+                                const spanLen = lastDark - runStart + 1;
+                                if (spanLen > bestSpanLen) {
+                                    bestSpanLen = spanLen;
+                                    bestAxisY = y;
+                                    boxLeft = runStart;
+                                    boxRight = lastDark;
+                                }
+                            }
+                        }
+                        if (bestAxisY < 0 || bestSpanLen < 0.35 * W) return null;
+
+                        // Tâm trục hoành sub-pixel
+                        let sumAxisY = 0, wAxisY = 0;
+                        for (let dy = -2; dy <= 2; dy++) {
+                            const yy = bestAxisY + dy;
+                            if (yy < 0 || yy >= H) continue;
+                            let cnt = 0;
+                            for (let x = boxLeft; x <= boxRight; x++) {
+                                if (isDark((yy * W + x) * 4)) cnt++;
+                            }
+                            if (cnt > bestSpanLen * 0.5) { sumAxisY += yy * cnt; wAxisY += cnt; }
+                        }
+                        const axisY = wAxisY > 0 ? (sumAxisY / wAxisY) : bestAxisY;
+
+                        const boxW = boxRight - boxLeft + 1;
+                        const gridStepX = boxW / 10.0;
+
+                        // Tìm trục tung ở vùng giữa khung đồ thị
+                        const sTop = Math.max(0, Math.floor(y0 - 0.2 * bandH));
+                        const sBot = Math.min(H - 1, Math.floor(y1 + 0.2 * bandH));
+                        const xSearchMin = Math.max(boxLeft, Math.floor(boxLeft + 0.35 * boxW));
+                        const xSearchMax = Math.min(boxRight, Math.ceil(boxRight - 0.35 * boxW));
+                        let bestAxisX = Math.round(boxLeft + boxW / 2), maxColDark = 0;
+                        for (let x = xSearchMin; x <= xSearchMax; x++) {
+                            let cnt = 0;
+                            for (let y = sTop; y <= sBot; y++) {
+                                if (isDark((y * W + x) * 4)) cnt++;
+                            }
+                            if (cnt > maxColDark) { maxColDark = cnt; bestAxisX = x; }
+                        }
+                        if (maxColDark < Math.max(25, bandH * 0.45)) return null;
+
+                        let sumAxisX = 0, wAxisX = 0;
+                        for (let dx = -2; dx <= 2; dx++) {
+                            const xx = bestAxisX + dx;
+                            if (xx < boxLeft || xx > boxRight) continue;
+                            let cnt = 0;
+                            for (let y = sTop; y <= sBot; y++) {
+                                if (isDark((y * W + xx) * 4)) cnt++;
+                            }
+                            if (cnt > maxColDark * 0.5) { sumAxisX += xx * cnt; wAxisX += cnt; }
+                        }
+                        const axisX = wAxisX > 0 ? (sumAxisX / wAxisX) : bestAxisX;
+
+                        // Trích xuất quỹ đạo sóng y(x)
+                        const cTop = Math.max(0, y0 - 8);
+                        const cBot = Math.min(H - 1, y1 + 8);
+                        const xs = [], ys = [];
+                        for (let x = boxLeft; x <= boxRight; x++) {
+                            let sumY = 0, cnt = 0;
+                            for (let y = cTop; y <= cBot; y++) {
+                                if (checkFn((y * W + x) * 4)) { sumY += y; cnt++; }
+                            }
+                            if (cnt > 0) {
+                                xs.push(x);
+                                ys.push(axisY - (sumY / cnt));
+                            }
+                        }
+                        if (xs.length < 60) return null;
+
+                        const ysSmooth = ys.map((_, idx) => {
+                            let sum = 0, n = 0;
+                            for (let k = Math.max(0, idx - 2); k <= Math.min(ys.length - 1, idx + 2); k++) {
+                                sum += ys[k]; n++;
+                            }
+                            return sum / n;
+                        });
+                        const gxs = xs.map(x => (x - axisX) / gridStepX);
+
+                        // Tìm các điểm cắt trục hoành t (u = 0)
+                        const zeros = [];
+                        let lastZ = -999;
+                        for (let i = 0; i < gxs.length - 1; i++) {
+                            if (ysSmooth[i] * ysSmooth[i + 1] <= 0 && ysSmooth[i] !== ysSmooth[i + 1]) {
+                                const gx0 = gxs[i] - ysSmooth[i] * (gxs[i + 1] - gxs[i]) / (ysSmooth[i + 1] - ysSmooth[i]);
+                                if (gx0 - lastZ >= 0.45) {
+                                    const dir = ysSmooth[i + 1] > ysSmooth[i] ? "đi lên (+)" : "đi xuống (-)";
+                                    zeros.push({ gx: Number(gx0.toFixed(2)), dir });
+                                    lastZ = gx0;
+                                }
+                            }
+                        }
+                        if (zeros.length < 2) return null;
+
+                        // Tìm đỉnh dương & đỉnh âm
+                        const win = Math.max(5, Math.floor(0.65 * gridStepX));
+                        let maxAbsY = 0;
+                        for (let i = 0; i < ysSmooth.length; i++) {
+                            if (Math.abs(ysSmooth[i]) > maxAbsY) maxAbsY = Math.abs(ysSmooth[i]);
+                        }
+                        const ampThr = 0.3 * maxAbsY;
+                        const posPeaks = [], negPeaks = [];
+                        for (let i = win; i < ysSmooth.length - win; i++) {
+                            let segMax = -Infinity, segMin = Infinity;
+                            for (let k = i - win; k <= i + win; k++) {
+                                if (ysSmooth[k] > segMax) segMax = ysSmooth[k];
+                                if (ysSmooth[k] < segMin) segMin = ysSmooth[k];
+                            }
+                            if (ysSmooth[i] === segMax && ysSmooth[i] > ampThr) {
+                                if (posPeaks.length === 0 || gxs[i] - posPeaks[posPeaks.length - 1] >= 0.8) {
+                                    posPeaks.push(Number(gxs[i].toFixed(2)));
+                                }
+                            }
+                            if (ysSmooth[i] === segMin && ysSmooth[i] < -ampThr) {
+                                if (negPeaks.length === 0 || gxs[i] - negPeaks[negPeaks.length - 1] >= 0.8) {
+                                    negPeaks.push(Number(gxs[i].toFixed(2)));
+                                }
+                            }
+                        }
+
+                        const halfDivs = [];
+                        for (let i = 0; i < zeros.length - 1; i++) {
+                            halfDivs.push(zeros[i + 1].gx - zeros[i].gx);
+                        }
+                        const avgHalf = halfDivs.reduce((a, b) => a + b, 0) / halfDivs.length;
+
+                        let fullDivs = avgHalf * 2;
+                        if (zeros.length >= 3) {
+                            const sameDirSpans = [];
+                            for (let i = 0; i < zeros.length - 2; i++) {
+                                sameDirSpans.push(zeros[i + 2].gx - zeros[i].gx);
+                            }
+                            fullDivs = sameDirSpans.reduce((a, b) => a + b, 0) / sameDirSpans.length;
+                        }
+                        fullDivs = Number(fullDivs.toFixed(2));
+
+                        const zDesc = zeros.map(z => `${z.gx >= 0 ? '+' : ''}${z.gx} ô (${z.dir})`).join(", ");
+                        const pPosDesc = posPeaks.length ? posPeaks.map(v => `${v >= 0 ? '+' : ''}${v} ô`).join(", ") : "không rõ";
+                        const pNegDesc = negPeaks.length ? negPeaks.map(v => `${v >= 0 ? '+' : ''}${v} ô`).join(", ") : "không rõ";
+
+                        return (
+                            `• ${chLabel}:\n` +
+                            `  - Các điểm sóng cắt trục hoành t (u = 0) đo theo số ô lưới: ${zDesc}.\n` +
+                            `  - Vị trí đỉnh dương: ${pPosDesc}; đỉnh âm: ${pNegDesc}.\n` +
+                            `  - Nửa chu kỳ (T/2): ${avgHalf.toFixed(2)} ô | Chu kỳ trọn vẹn (T): ${fullDivs} ô.`
+                        );
+                    }
+
+                    const chAReport = scanChannel(isRed, "Kênh A (đường đỏ)");
+                    const chBReport = scanChannel(isBlue, "Kênh B (đường xanh)");
+                    const reports = [chAReport, chBReport].filter(Boolean);
+                    if (reports.length === 0) { resolve(""); return; }
+
+                    resolve(
+                        `[DỮ LIỆU ĐO PIXEL CHÍNH XÁC TỪ ẢNH ĐỒ THỊ DAO ĐỘNG KÝ (10 Ô NGANG, GỐC t = 0 Ở TRỤC DỌC GIỮA)]\n` +
+                        reports.join("\n") + "\n" +
+                        `[QUY TẮC TÍNH TOÁN BẮT BUỘC TỪ SỐ LIỆU TRÊN]\n` +
+                        `- Bước 1: Đọc nhãn vạch chia trên trục hoành t trong ảnh để lấy giá trị của 1 ô ngang Δt (đơn vị ms/ô).\n` +
+                        `- Bước 2: Dùng đúng số ô chu kỳ T đo ở trên (tuyệt đối KHÔNG tự làm tròn về số nguyên nếu là số thập phân) để tính: T = (số ô chu kỳ) × Δt (ms).\n` +
+                        `- Bước 3: Tính tần số dao động f = 1 / T (đổi T sang giây: 1 ms = 10^-3 s), đối chiếu kiểm chéo với các điểm cắt trục và đỉnh sóng.`
+                    );
+                } catch (err) {
+                    resolve("");
+                }
+            };
+            img.onerror = () => resolve("");
+            img.src = dataUrl;
+        });
+    }
+
+    async function processSelectedImageFile(file, inputElToReset = null) {
         if (!file) return;
-        if (file.size > 4 * 1024 * 1024) {
-            alert("⚠️ Dung lượng ảnh quá lớn (> 4MB). Vui lòng chọn ảnh nhẹ hơn!");
-            event.target.value = '';
+        if (file.size > 15 * 1024 * 1024) {
+            alert("⚠️ Dung lượng ảnh quá lớn (> 15MB). Vui lòng chọn ảnh nhẹ hơn!");
+            if (inputElToReset) inputElToReset.value = '';
             return;
         }
         const reader = new FileReader();
-        reader.onload = function(e) {
-            uploadedImageBase64 = e.target.result;
-            document.getElementById('imagePreviewThumb').src = uploadedImageBase64;
-            document.getElementById('imagePreviewName').innerText = file.name;
-            document.getElementById('imagePreviewContainer').style.display = 'flex';
+        reader.onload = async function(e) {
+            const optimizedDataUrl = await prepareDetailedImageBase64(e.target.result, 1920, 0.93);
+            uploadedImageBase64 = optimizedDataUrl;
+            uploadedImageScanReport = await analyzeOscilloscopeImagePixels(optimizedDataUrl);
+            const thumb = document.getElementById('imagePreviewThumb');
+            const nameEl = document.getElementById('imagePreviewName');
+            const prevBox = document.getElementById('imagePreviewContainer');
+            if (thumb) thumb.src = uploadedImageBase64;
+            if (nameEl) nameEl.innerText = file.name || 'Anh_de_bai.jpg';
+            if (prevBox) prevBox.style.display = 'flex';
             if (sendBtn) sendBtn.disabled = false;
         };
         reader.readAsDataURL(file);
     }
 
+    function handleImageSelected(event) {
+        const file = event.target.files[0];
+        processSelectedImageFile(file, event.target);
+    }
+
     function clearImageUpload() {
         uploadedImageBase64 = null;
+        uploadedImageScanReport = "";
         const upInput = document.getElementById('foxImageUpload');
         if (upInput) upInput.value = '';
         const prevContainer = document.getElementById('imagePreviewContainer');
@@ -3695,7 +4929,7 @@ async function checkAppVersion() {
 
     function exportChatReport(btn) {
         const chatRows = document.querySelectorAll('.fox-msg-row');
-        let reportText = "=== BÁO CÁO LỊCH SỬ CHAT - FOX_LAB ===\n";
+        let reportText = "=== BÁO CÁO LỊCH SỬ CHAT - Fox-lab ===\n";
         reportText += "Thời gian xuất: " + new Date().toLocaleString() + "\n";
         if (detectedFrequency > 0) {
             reportText += "Tần số khảo sát hiện tại: " + detectedFrequency.toFixed(1) + " Hz\n";
@@ -3727,6 +4961,20 @@ async function checkAppVersion() {
     const chatInput = document.getElementById('fox-chat-input'), sendBtn = document.getElementById('foxSendBtn'), chatContent = document.getElementById('fox-chat-content');
     chatInput.addEventListener('input', () => { sendBtn.disabled = chatInput.value.trim() === '' && !uploadedImageBase64; });
     chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !sendBtn.disabled) sendFoxMessage(); });
+    chatInput.addEventListener('paste', (e) => {
+        const items = (e.clipboardData || window.clipboardData)?.items;
+        if (!items) return;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type && items[i].type.indexOf('image/') === 0) {
+                const imgFile = items[i].getAsFile();
+                if (imgFile) {
+                    e.preventDefault();
+                    processSelectedImageFile(imgFile, null);
+                    break;
+                }
+            }
+        }
+    });
     sendBtn.addEventListener('click', sendFoxMessage);
 
     const foxMicBtn = document.getElementById('foxMicBtn');
@@ -3825,9 +5073,10 @@ async function checkAppVersion() {
 
     
     // [Đã loại bỏ hoàn toàn tính năng trợ lý đọc phản hồi thành tiếng (TTS) theo yêu cầu]
-;
 
     let foxChatHistory = [];
+    let activeConversationImageBase64 = null;
+    let activeConversationImageSummary = "";
 
     function getLabTelemetry() {
         let fA = (detectedFrequency > 0 ? detectedFrequency : 0);
@@ -3901,25 +5150,46 @@ async function checkAppVersion() {
         }
     }
 
-    async function fetchGasChatWithRetry(payload, maxRetries = 1, timeoutMs = 20000) {
+    async function fetchGasChatWithRetry(payload, maxRetries = 2, timeoutMs = 35000) {
+        const excludedKeys = Array.isArray(payload.excludeKeyIndices) ? payload.excludeKeyIndices.slice() : [];
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
             const controller = new AbortController();
             const timerId = setTimeout(() => controller.abort(), timeoutMs);
             try {
+                const reqBody = Object.assign({}, payload, {
+                    retryAttempt: attempt,
+                    excludeKeyIndices: excludedKeys
+                });
                 const response = await fetch(CHAT_GAS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify(reqBody),
                     signal: controller.signal
                 });
                 clearTimeout(timerId);
-                if (response.ok) return await response.json();
+                if (response.ok) {
+                    const data = await response.json();
+                    const replyStr = (data && data.reply) ? String(data.reply) : '';
+                    const isQuotaOrOverload =
+                        (data && (data.status === 'quota_exhausted' || data.retryWithNextKey === true)) ||
+                        /quá tải|quota|429|RESOURCE_EXHAUSTED/i.test(replyStr);
+                    if (isQuotaOrOverload && attempt < maxRetries) {
+                        if (typeof data.usedKeyIndex === 'number' && !excludedKeys.includes(data.usedKeyIndex)) {
+                            excludedKeys.push(data.usedKeyIndex);
+                        }
+                        const statusText = document.getElementById('foxStatusText');
+                        if (statusText) statusText.innerText = "Đang kết nối token mới...";
+                        await new Promise(r => setTimeout(r, 400));
+                        continue;
+                    }
+                    return data;
+                }
             } catch (err) {
                 clearTimeout(timerId);
                 if (attempt < maxRetries) {
                     const statusText = document.getElementById('foxStatusText');
-                    if (statusText) statusText.innerText = "Đang kết nối lại...";
-                    await new Promise(r => setTimeout(r, 600));
+                    if (statusText) statusText.innerText = "Đang kết nối token mới...";
+                    await new Promise(r => setTimeout(r, 500));
                     continue;
                 }
                 throw err;
@@ -3935,15 +5205,17 @@ async function checkAppVersion() {
             .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
             .replace(/<embed\b[^<]*>/gi, '')
             .replace(/<link\b[^<]*>/gi, '')
-            .replace(/<meta\b[^<]*>/gi, '')
-            .replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, '')
-            .replace(/<math\b[^<]*(?:(?!<\/math>)<[^<]*)*<\/math>/gi, '')
-            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-            .replace(/<base\b[^<]*>/gi, '')
-            .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '');
+            .replace(/<meta\b[^<]*>/gi, '');
         sanitized = sanitized.replace(/\s*on\w+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
-        sanitized = sanitized.replace(/(href|src|xlink:href|formaction|action)\s*=\s*(?:'(?:javascript|vbscript|data):[^']*'|"(?:javascript|vbscript|data):[^"]*"|(?:javascript|vbscript|data):[^\s>]+)/gi, '');
+        sanitized = sanitized.replace(/(href|src)\s*=\s*(?:'javascript:[^']*'|"javascript:[^"]*"|javascript:[^\s>]+)/gi, '');
         return sanitized;
+    }
+
+    function stripHtmlToPlainText(htmlStr) {
+        if (!htmlStr) return '';
+        const tmp = document.createElement('div');
+        tmp.innerHTML = String(htmlStr).replace(/<br\s*\/?>/gi, '\n');
+        return (tmp.textContent || tmp.innerText || '').trim();
     }
 
     function isLabMeasurementQuery(userText, hasUploadedImage) {
@@ -3960,6 +5232,60 @@ async function checkAppVersion() {
         return labKeywords.some(kw => lower.includes(kw));
     }
 
+    function isFollowUpOnActiveImage(userText) {
+        if (!activeConversationImageBase64 || !userText) return false;
+        const lower = userText.toLowerCase().trim();
+        const followUpMarkers = [
+            "ảnh", "hình", "trên", "này", "đó", "tiếp", "câu", "ý", "phần",
+            "tại sao", "vì sao", "giải thích", "chi tiết", "cụ thể", "rõ hơn",
+            "tính lại", "bước", "công thức", "đồ thị", "trục", "đỉnh", "biên độ",
+            "chu kỳ", "tần số", "pha", "số liệu", "giá trị", "kết quả", "đáp án",
+            "còn", "thế thì", "vậy", "như vậy", "tương tự", "mở rộng", "khác gì"
+        ];
+        if (followUpMarkers.some(kw => lower.includes(kw))) return true;
+        return foxChatHistory.length > 0 && lower.split(/\s+/).length <= 18;
+    }
+
+    function isReplyIncompleteByTokens(resultObj, currentText) {
+        if (!currentText) return false;
+        const rawFinish = String(
+            (resultObj && (resultObj.finishReason || resultObj.finish_reason || resultObj.stopReason || '')) || ''
+        ).toUpperCase();
+        if (rawFinish.includes('MAX_TOKENS') || rawFinish.includes('LENGTH') || (resultObj && resultObj.isTruncated === true)) {
+            return true;
+        }
+        const clean = String(currentText)
+            .replace(/\$\$[\s\S]*?\$\$/g, ' MATH ')
+            .replace(/\$[^$\n]+?\$/g, ' MATH ')
+            .replace(/<[^>]+>/g, ' ')
+            .trim();
+        if (!clean) return false;
+        const lastChar = clean.slice(-1);
+        const lastWord = (clean.split(/\s+/).pop() || '').toLowerCase();
+        const danglingWords = ['là', 'và', 'của', 'với', 'bằng', 'tại', 'trong', 'được', 'có', 'cho', 'các', 'như', 'khi', 'thì', 'để', 'gồm', 'sau', 'trên', 'dưới', 'theo', 'từ'];
+        if (clean.length > 260 && !['.', '!', '?', ')', ']', '"', '”'].includes(lastChar)) {
+            return true;
+        }
+        if (clean.length > 180 && (danglingWords.includes(lastWord) || clean.endsWith(',') || clean.endsWith(':'))) {
+            return true;
+        }
+        return false;
+    }
+
+    function mergeContinuationText(baseText, nextPart) {
+        const a = String(baseText || '').trim();
+        const b = String(nextPart || '').trim();
+        if (!b) return a;
+        if (!a) return b;
+        const plainA = stripHtmlToPlainText(a).slice(-120).toLowerCase();
+        const plainBStart = stripHtmlToPlainText(b).slice(0, 60).toLowerCase();
+        if (plainA && plainBStart && plainA.includes(plainBStart.slice(0, 28))) {
+            return a;
+        }
+        const needsSpace = !/[\n>]$/.test(a) && !/^[\n<•*-]/.test(b);
+        return a + (needsSpace ? ' ' : '\n') + b;
+    }
+
     async function sendFoxMessage() {
         const text = chatInput.value.trim();
         if (!text && !uploadedImageBase64) return;
@@ -3967,16 +5293,43 @@ async function checkAppVersion() {
         const isQuickPreset = pendingQuickPrompt;
         pendingQuickPrompt = false;
 
-        const isLabQuery = !isQuickPreset && isLabMeasurementQuery(text, uploadedImageBase64);
+        const hasNewUpload = !!uploadedImageBase64;
+        const explicitLiveLabMarkers = [
+            "đang đo", "đo được", "thiết bị đo", "máy đo", "kết quả đo",
+            "đồ thị hiện tại", "sóng đang đo", "kết quả hiện tại", "thực nghiệm này"
+        ];
+        const lowerInputText = text.toLowerCase().trim();
+        const isExplicitLiveLab = !hasNewUpload && !isQuickPreset && explicitLiveLabMarkers.some(kw => lowerInputText.includes(kw));
+        if (isExplicitLiveLab) {
+            activeConversationImageBase64 = null;
+            activeConversationImageScanReport = "";
+            activeConversationImageSummary = "";
+        }
+
+        const isContinuingImageThread = !hasNewUpload && !isQuickPreset && !isExplicitLiveLab && isFollowUpOnActiveImage(text);
+        const isLabQuery = !isQuickPreset && !hasNewUpload && !isContinuingImageThread && isLabMeasurementQuery(text, false);
 
         let safeUserText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         let userDisplayHtml = safeUserText;
-        let imgBase64ToSend = uploadedImageBase64;
-        if (uploadedImageBase64) {
+        let imgBase64ToSend = null;
+        let scanReportToSend = "";
+
+        if (hasNewUpload) {
             userDisplayHtml = `<img src="${uploadedImageBase64}" class="fox-preview-img"><br>` + safeUserText;
+            imgBase64ToSend = uploadedImageBase64;
+            activeConversationImageBase64 = uploadedImageBase64;
+            activeConversationImageScanReport = uploadedImageScanReport;
+            scanReportToSend = uploadedImageScanReport;
+            activeConversationImageSummary = "";
+        } else if (isContinuingImageThread) {
+            imgBase64ToSend = activeConversationImageBase64;
+            scanReportToSend = activeConversationImageScanReport;
         } else if (isLabQuery && (channelConfig.A.active || channelConfig.B.active)) {
             // Chỉ chụp snapshot dao động ký khi người dùng hỏi đích danh về đồ thị/kết quả đang đo
             imgBase64ToSend = captureOscilloscopeSnapshot();
+            if (imgBase64ToSend) {
+                scanReportToSend = await analyzeOscilloscopeImagePixels(imgBase64ToSend);
+            }
         }
 
         addChatMessage('user', userDisplayHtml); 
@@ -3989,32 +5342,105 @@ async function checkAppVersion() {
         let measuredFreq = (isLabQuery && detectedFrequency > 0) ? detectedFrequency : null;
         let labTelemetry = (isLabQuery && (channelConfig.A.active || channelConfig.B.active)) ? getLabTelemetry() : null;
 
-        // Cập nhật lịch sử hội thoại cho user
-        foxChatHistory.push({ role: 'user', content: text || "Phân tích đồ thị dao động ký và thông số thí nghiệm này." });
+        const userHistoryContent = hasNewUpload
+            ? `[Người dùng đã tải lên 1 hình ảnh] ${text || "Hãy đọc và phân tích thật chi tiết hình ảnh này."}`
+            : (text || "Phân tích đồ thị dao động ký và thông số thí nghiệm này.");
 
-        let promptMessage = text || "Phân tích hình ảnh đề bài hoặc đồ thị dao động ký này.";
-        if (!isLabQuery && !uploadedImageBase64) {
+        let promptMessage = text || "Hãy đọc, nhận dạng toàn bộ chữ, ký hiệu, số liệu, trục tọa độ và phân tích thật chi tiết hình ảnh này.";
+        if (hasNewUpload) {
+            promptMessage =
+                "YÊU CẦU ĐỌC & PHÂN TÍCH ẢNH CHI TIẾT:\n" +
+                (scanReportToSend ? (scanReportToSend + "\n\n") : "") +
+                "- Hãy quan sát thật kỹ toàn bộ hình ảnh được tải lên: đọc chính xác mọi chữ viết, đề bài, câu hỏi trắc nghiệm/tự luận, số liệu, đơn vị, ký hiệu vật lý, trục tọa độ (tên trục, đơn vị, vạch chia, các điểm đặc biệt trên đồ thị) hoặc sơ đồ thí nghiệm.\n" +
+                "- Trình bày đầy đủ, mạch lạc theo từng phần: (1) Tóm tắt dữ kiện/nội dung đọc được từ ảnh, (2) Phân tích & lời giải chi tiết từng bước kèm công thức, (3) Kết luận rõ ràng.\n" +
+                "- Câu hỏi cụ thể của người dùng: " + (text || "Phân tích chi tiết toàn bộ nội dung trong ảnh.");
+        } else if (isContinuingImageThread) {
+            promptMessage =
+                "CÂU HỎI NỐI TIẾP VỀ CÙNG MỘT HÌNH ẢNH / VẤN ĐỀ ĐANG TRAO ĐỔI:\n" +
+                (scanReportToSend ? (scanReportToSend + "\n\n") : "") +
+                "- Ảnh đính kèm chính là hình ảnh đã tải lên ở lượt trước trong cuộc hội thoại này. Hãy đối chiếu trực tiếp với hình ảnh và các phân tích trước đó để trả lời sâu, chính xác và nhất quán.\n" +
+                "- Câu hỏi tiếp theo của người dùng: " + text;
+        } else if (!isLabQuery) {
             promptMessage += "\n(Lưu ý: Đây là câu hỏi lý thuyết tổng quát, giải thích công thức chuẩn SGK, KHÔNG áp dụng hoặc gán số liệu đo của thiết bị vào câu trả lời).";
+        } else if (scanReportToSend) {
+            promptMessage += "\n\n" + scanReportToSend;
         }
 
+        const recentHistory = foxChatHistory.slice(-12);
+
         try {
-            const result = await fetchGasChatWithRetry({
+            let result = await fetchGasChatWithRetry({
                 message: promptMessage,
                 frequency: measuredFreq,
                 isQuickPrompt: isQuickPreset,
                 role: currentFoxRole,
                 imageBase64: imgBase64ToSend,
-                history: foxChatHistory.slice(0, -1).slice(-8), // Truyền 8 lượt hội thoại trước đó
+                history: recentHistory,
                 labData: labTelemetry
-            });
+            }, 2, 35000);
+
+            let fullReply = (result && result.reply) ? String(result.reply) : "Fox-lab AI đã ghi nhận câu hỏi của bạn.";
+            let contRounds = 0;
+            const maxContRounds = 3;
+            const usedKeysForContinuation = [];
+            if (result && typeof result.usedKeyIndex === 'number') {
+                usedKeysForContinuation.push(result.usedKeyIndex);
+            }
+
+            while (contRounds < maxContRounds && isReplyIncompleteByTokens(result, fullReply)) {
+                contRounds++;
+                const statusEl = document.getElementById('foxStatusText');
+                if (statusEl) statusEl.innerText = `Đang nối tiếp token mới (${contRounds})...`;
+                const typingTextEl = document.querySelector(`#${thinkingId} .fox-typing-text`);
+                if (typingTextEl) typingTextEl.innerText = `Đang kết nối token mới để hoàn chỉnh câu trả lời (phần ${contRounds + 1})...`;
+
+                const contHistory = recentHistory.concat([
+                    { role: 'user', content: userHistoryContent },
+                    { role: 'model', content: stripHtmlToPlainText(fullReply).slice(-2500) }
+                ]).slice(-16);
+
+                const contPrompt =
+                    "CÂU TRẢ LỜI TRƯỚC ĐÓ ĐÃ CHẠM GIỚI HẠN TOKEN VÀ CHƯA HOÀN CHỈNH:\n" +
+                    "--- PHẦN ĐÃ VIẾT ---\n" +
+                    fullReply.slice(-1800) +
+                    "\n--- HẾT PHẦN ĐÃ VIẾT ---\n" +
+                    "Hãy TIẾP TỤC viết nối tiếp ngay từ chỗ bị dừng để hoàn chỉnh trọn vẹn câu trả lời cho câu hỏi: \"" +
+                    (text || "Phân tích chi tiết hình ảnh / vấn đề này") +
+                    "\". Không lặp lại phần đầu đã viết.";
+
+                result = await fetchGasChatWithRetry({
+                    message: contPrompt,
+                    frequency: measuredFreq,
+                    isQuickPrompt: false,
+                    role: currentFoxRole,
+                    imageBase64: imgBase64ToSend,
+                    history: contHistory,
+                    labData: labTelemetry,
+                    isContinuation: true,
+                    continuationRound: contRounds,
+                    excludeKeyIndices: usedKeysForContinuation
+                }, 2, 35000);
+
+                if (result && typeof result.usedKeyIndex === 'number' && !usedKeysForContinuation.includes(result.usedKeyIndex)) {
+                    usedKeysForContinuation.push(result.usedKeyIndex);
+                }
+                const nextChunk = (result && result.reply) ? String(result.reply).trim() : '';
+                if (!nextChunk) break;
+                fullReply = mergeContinuationText(fullReply, nextChunk);
+            }
+
             removeTypingIndicator(thinkingId); 
             document.getElementById('foxStatusText').innerText = "Trực tuyến";
-            let replyText = (result && result.reply) ? result.reply : "Fox-lab AI đã ghi nhận câu hỏi của bạn.";
-            replyText = formatCompleteSentences(replyText);
+            let replyText = formatCompleteSentences(fullReply);
 
-            // Cập nhật phản hồi bot vào lịch sử hội thoại
-            foxChatHistory.push({ role: 'model', content: replyText });
-            if (foxChatHistory.length > 10) foxChatHistory = foxChatHistory.slice(-10);
+            const plainReplyForHistory = stripHtmlToPlainText(replyText);
+            if (hasNewUpload) {
+                activeConversationImageSummary = plainReplyForHistory.slice(0, 1200);
+            }
+
+            foxChatHistory.push({ role: 'user', content: userHistoryContent });
+            foxChatHistory.push({ role: 'model', content: plainReplyForHistory });
+            if (foxChatHistory.length > 16) foxChatHistory = foxChatHistory.slice(-16);
 
             addChatMessage('bot', replyText);
         } catch (e) {
@@ -4050,7 +5476,7 @@ async function checkAppVersion() {
         row.innerHTML = html;
         if (sender === 'bot') {
             const cBtn = row.querySelector('.fox-copy-btn');
-            if (cBtn) cBtn.dataset.copyText = text.replace(/<[^>]+>/g, '');
+            if (cBtn) cBtn.dataset.copyText = stripHtmlToPlainText(formattedText);
             
         }
         chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight;
@@ -4072,6 +5498,7 @@ async function checkAppVersion() {
         chatContent.appendChild(row); chatContent.scrollTop = chatContent.scrollHeight; return id;
     }
     function removeTypingIndicator(id) { const el = document.getElementById(id); if (el) el.remove(); }
+
 /**
  * graph-snapshot.js
  * Module tự động gắn nút "📷 Xuất ảnh đồ thị" lên TẤT CẢ các vùng đồ thị (<canvas>)
@@ -4385,14 +5812,75 @@ async function checkAppVersion() {
     let expDbRows = [];
     let expLiveImages = { osc: null, fft: null, db: null };
     let cachedFftSnapshot = null;
+    let lastSyncedDbSignature = "";
+    let expSingleRowFlags = { osc: false, fft: false, db: false };
 
     function showExpToast(text) {
         const toast = document.getElementById("expToastMsg");
-        if (!toast) return;
-        toast.textContent = text;
-        toast.classList.add("show");
-        clearTimeout(window._expToastTimer);
-        window._expToastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+        if (toast) {
+            toast.textContent = text;
+            toast.classList.add("show");
+            clearTimeout(window._expToastTimer);
+            window._expToastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+            return;
+        }
+        let globalToast = document.getElementById("gs-global-toast");
+        if (!globalToast) {
+            globalToast = document.createElement("div");
+            globalToast.id = "gs-global-toast";
+            globalToast.className = "gs-toast";
+            document.body.appendChild(globalToast);
+        }
+        globalToast.textContent = text;
+        globalToast.classList.add("show");
+        clearTimeout(window._gsToastTimer);
+        window._gsToastTimer = setTimeout(() => globalToast.classList.remove("show"), 2600);
+    }
+
+    function readStoredReportData() {
+        try {
+            const raw = localStorage.getItem(EXP_STORAGE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return (parsed && typeof parsed === "object") ? parsed : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Tự động nhận diện có phải dữ liệu mẫu mặc định ban đầu hay không
+    function isSampleOscRows(rows) {
+        if (!Array.isArray(rows) || rows.length !== 3) return false;
+        return rows[0]?.soChuKi === 5 && Number(rows[0]?.deltaT_ms) === 11.35 &&
+               rows[1]?.soChuKi === 5 && Number(rows[1]?.deltaT_ms) === 11.38 &&
+               rows[2]?.soChuKi === 5 && Number(rows[2]?.deltaT_ms) === 11.34;
+    }
+
+    function isSampleFftRows(rows) {
+        if (!Array.isArray(rows) || rows.length !== 3) return false;
+        return String(rows[0]?.nguon || "").includes("Âm thoa chuẩn 440 Hz") &&
+               String(rows[1]?.nguon || "").includes("Sáo trúc");
+    }
+
+    function isSampleDbRows(rows) {
+        if (!Array.isArray(rows) || rows.length !== 3) return false;
+        return Number(rows[0]?.r) === 0.5 && Number(rows[0]?.lAvg) === 75.0 &&
+               Number(rows[1]?.r) === 1.0 && Number(rows[1]?.lAvg) === 68.8;
+    }
+
+    // Cập nhật 1 dòng dữ liệu theo quy tắc:
+    // - Nếu người dùng đã chỉnh bảng về còn 1 dòng (singleRow = true): ghi đè dòng 1 bằng dữ liệu mới nhất.
+    // - Ngược lại: mỗi lần đồng bộ nối thêm 1 dòng mới (Lần 1 -> Lần 2 -> Lần 3...).
+    function applySingleRowSync(existingRows, newRow, isSingleRowMode, isSampleChecker) {
+        const cleanExisting = Array.isArray(existingRows) ? existingRows.slice() : [];
+        if (cleanExisting.length === 0 || (typeof isSampleChecker === "function" && isSampleChecker(cleanExisting))) {
+            return [newRow];
+        }
+        if (isSingleRowMode) {
+            return [newRow];
+        }
+        cleanExisting.push(newRow);
+        return cleanExisting;
     }
 
     // Lưu lại kết quả & ảnh đồ thị FFT ngay trước khi đóng modal FFT
@@ -4417,174 +5905,195 @@ async function checkAppVersion() {
                 dacDiem: (fftLastAnalysis.harmonicsList && fftLastAnalysis.harmonicsList.filter(h => h.isPresent).length > 1)
                     ? "Sóng tuần hoàn giàu họa âm"
                     : "Sóng hình sin gần thuần khiết",
-                img: fftImg
+                img: fftImg,
+                synced: false,
+                capturedAt: Date.now()
             };
         }
     };
 
-    window.openExpReportModal = function () {
-        const overlay = document.getElementById("expReportModalOverlay");
-        if (!overlay) return;
-        document.getElementById("expExportTime").textContent = new Date().toLocaleString("vi-VN");
-        overlay.style.display = "block";
-        syncFoxLabToReport(false);
-
-        const params = new URLSearchParams(window.location.search);
-        const partParam = params.get("parts") || params.get("part");
-        if (partParam) {
-            applyExpPreset(partParam);
+    // Giữ nguyên nút "📄 Xuất báo cáo" trên thanh công cụ, đồng thời hỗ trợ đồng bộ từng chức năng sang report_4.html
+    function upgradeExportReportButtonsToSync() {
+        const btn = document.getElementById("btnExportReport");
+        if (!btn) return;
+        if (btn.textContent.trim() !== "📄 Xuất báo cáo") {
+            btn.textContent = "📄 Xuất báo cáo";
         }
-    };
+        btn.title = "Mở trang phiếu báo cáo thí nghiệm A4 (report_4.html)";
+        if (btn.dataset.exportBound !== "true") {
+            btn.dataset.exportBound = "true";
+            btn.removeAttribute("onclick");
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.navigateToStandaloneReport();
+            });
+        }
+    }
 
-    window.closeExpReportModal = function () {
-        saveExpReportToStorage(false);
-        const overlay = document.getElementById("expReportModalOverlay");
-        if (overlay) overlay.style.display = "none";
-        document.body.classList.remove("printing-exp-report");
-    };
-
-    // Mở trang báo cáo độc lập (report.html) ở tab mới, giữ nguyên trang đo FOX_LAB cũ đang chạy
-    window.navigateToStandaloneReport = function () {
-        syncFoxLabToReport(false);
-        const payload = saveExpReportToStorage(true);
+    window.syncChannelModeToReport = function (isDual) {
         try {
+            const prev = readStoredReportData() || {};
+            const payload = Object.assign({}, prev, {
+                _source: "main_app",
+                _updatedAt: Date.now(),
+                syncFeature: "mode_only",
+                isDualChannel: Boolean(isDual),
+                dualSource: Boolean(isDual)
+            });
+            delete payload.cacLanDo;
+            delete payload.phoTanSo;
+            delete payload.mucCuongDoAm;
+            localStorage.setItem(EXP_STORAGE_KEY, JSON.stringify(payload));
             const bc = new BroadcastChannel("foxlab_report_sync");
             bc.postMessage({ type: "SYNC_REPORT_DATA", payload });
             bc.close();
         } catch (e) {}
-
-        const targetPage = window.FOX_REPORT_PAGE || "report.html";
-        const reportWin = window.open(targetPage, "_blank", "noopener");
-        if (!reportWin) {
-            const link = document.createElement("a");
-            link.href = targetPage;
-            link.target = "_blank";
-            link.rel = "noopener";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Ẩn modal báo cáo trên tab cũ để lộ màn hình đo FOX_LAB đang chạy (không ghi đè trạng thái live)
-        const overlay = document.getElementById("expReportModalOverlay");
-        if (overlay) overlay.style.display = "none";
-        document.body.classList.remove("printing-exp-report");
     };
 
-    // Thu thập tự động số liệu và ảnh đồ thị đang đo từ FOX_LAB
-    window.syncFoxLabToReport = function (notifyUser) {
-        let hasLive = false;
-        const banner = document.getElementById("expReportStatusBanner");
-        const statusText = document.getElementById("expReportStatusText");
+    window.syncFeatureToReport = function (featureType) {
+        const isDual = (typeof getActiveChannelMode === "function") && (getActiveChannelMode() === "2");
+        const prev = readStoredReportData() || {};
+        const now = Date.now();
 
-        // Giữ lại thông tin hành chính người dùng đã nhập trước đó (nếu có)
-        try {
-            const prevRaw = localStorage.getItem(EXP_STORAGE_KEY);
-            if (prevRaw) {
-                const prev = JSON.parse(prevRaw);
-                if (prev.truong) document.getElementById("expSchoolName").textContent = prev.truong;
-                if (prev.toChuyenMon) document.getElementById("expDeptName").textContent = prev.toChuyenMon;
-                if (prev.nhom) document.getElementById("expGroupName").textContent = prev.nhom;
-                if (prev.lop) document.getElementById("expClassName").textContent = prev.lop;
-                if (prev.thanhVien) document.getElementById("expStudentNames").textContent = prev.thanhVien;
-                if (prev.nhanXet) document.getElementById("expStudentNotes").innerHTML = sanitizeChatHtml(prev.nhanXet);
-            }
-        } catch (e) {}
+        const payload = Object.assign({}, prev, {
+            _source: "main_app",
+            _updatedAt: now,
+            syncFeature: featureType,
+            isLiveMeasurement: true,
+            isDualChannel: isDual,
+            dualSource: isDual
+        });
 
-        // 1. Cập nhật thanh thông số kỹ thuật từ FOX_LAB
         if (typeof totalTimeOnScreen === "number" && totalTimeOnScreen > 0) {
-            const msPerDiv = (totalTimeOnScreen / 10) * 1000;
-            document.getElementById("expScaleX").textContent = msPerDiv.toFixed(2).replace(".", ",") + " ms/ô";
+            payload.scaleX = ((totalTimeOnScreen / 10) * 1000).toFixed(2).replace(".", ",") + " ms/ô";
         }
         if (typeof currentZoomY === "number" && currentZoomY > 0) {
-            const vPerDiv = 1.0 / currentZoomY;
-            document.getElementById("expScaleY").textContent = vPerDiv.toFixed(2).replace(".", ",") + " V/ô";
+            payload.scaleY = (1.0 / currentZoomY).toFixed(2).replace(".", ",") + " V/ô";
         }
         if (typeof sampleRate === "number" && sampleRate > 0) {
-            document.getElementById("expSampleRate").textContent = Math.round(sampleRate) + " Hz";
+            payload.sampleRate = Math.round(sampleRate) + " Hz";
         }
         if (typeof channelConfig !== "undefined" && channelConfig.A) {
             const hp = channelConfig.A.filterHP ? Math.round(channelConfig.A.filterHP.frequency.value) : 45;
             const lp = channelConfig.A.filterLP ? Math.round(channelConfig.A.filterLP.frequency.value) : 3000;
-            const bandLabel = `Thông dải (${hp} – ${lp} Hz)`;
-            document.getElementById("expFilterStatus").textContent = bandLabel;
-            const bandCell = document.getElementById("expFilterBandCell");
-            if (bandCell) bandCell.textContent = `${hp} – ${lp} Hz`;
+            payload.filterStatus = `Thông dải (${hp} – ${lp} Hz)`;
+            payload.filterBand = `${hp} – ${lp} Hz`;
         }
 
-        // 2. Thu thập số liệu Dao động kí (2 điểm thủ công hoặc tần số tự động)
-        const liveOsc = [];
-        if (typeof manualPoints !== "undefined" && Array.isArray(manualPoints) && manualPoints.length === 2 &&
-            typeof getVisibleChannelAWindow === "function" && typeof calculateFromGraphClicks === "function") {
-            const winInfo = getVisibleChannelAWindow();
-            if (winInfo) {
-                const res = calculateFromGraphClicks(manualPoints[0], manualPoints[1], winInfo);
+        // Xóa dữ liệu của các chức năng khác trong gói đồng bộ tức thời để chỉ đồng bộ đúng chức năng được chọn
+        delete payload.cacLanDo;
+        delete payload.phoTanSo;
+        delete payload.mucCuongDoAm;
+        delete payload.anhDoThiBase64;
+        delete payload.anhPhoBase64;
+        delete payload.anhDbBase64;
+
+        if (featureType === "osc" || featureType === "kinematics") {
+            const targetCanvas = (featureType === "kinematics")
+                ? document.getElementById("kinematicsCanvas")
+                : document.getElementById("oscilloscope");
+            let snapImg = null;
+            if (targetCanvas && targetCanvas.width > 0) {
+                try { snapImg = targetCanvas.toDataURL("image/png"); } catch (e) {}
+            }
+
+            let entry = null;
+            if (typeof manualPoints !== "undefined" && Array.isArray(manualPoints) && manualPoints.length === 2 &&
+                typeof getVisibleChannelAWindow === "function" && typeof calculateFromGraphClicks === "function") {
+                const winInfo = getVisibleChannelAWindow();
+                const res = winInfo ? calculateFromGraphClicks(manualPoints[0], manualPoints[1], winInfo) : null;
                 if (res && res.dt_ms > 0 && res.T_ms > 0) {
-                    const estCycles = Math.max(1, Math.round(res.dt_ms / res.T_ms));
-                    liveOsc.push({ soChuKi: estCycles, deltaT_ms: Number(res.dt_ms.toFixed(2)) });
+                    const N = Math.max(1, Math.round(res.dt_ms / res.T_ms));
+                    entry = { kenh: "", soChuKi: N, deltaT_ms: Number(res.dt_ms.toFixed(2)), imageBase64: snapImg };
                 }
             }
-        }
-        let liveFreq = (typeof detectedFrequency === "number" && detectedFrequency > 0)
-            ? detectedFrequency
-            : ((typeof lockedFrequency === "number" && lockedFrequency > 0 && lockedFrequency !== 440) ? lockedFrequency : 0);
-
-        if (liveFreq <= 0 && typeof computeFrozenAutoFrequency === "function") {
-            const frozenF = computeFrozenAutoFrequency();
-            if (frozenF > 0) liveFreq = frozenF;
-        }
-
-        if (liveFreq > 0) {
-            const T_ms = 1000 / liveFreq;
-            const N = 5;
-            liveOsc.push({ soChuKi: N, deltaT_ms: Number((N * T_ms).toFixed(2)) });
-            const freqCell = document.getElementById("expFilterFreqCell");
-            if (freqCell) freqCell.textContent = `${liveFreq.toFixed(1).replace(".", ",")} Hz (ổn định)`;
-            document.getElementById("expSoundSource").textContent = `Nguồn âm đo trực tiếp (~${liveFreq.toFixed(1)} Hz)`;
-        }
-
-        if (liveOsc.length > 0) {
-            expOscRows = liveOsc;
-            hasLive = true;
-        }
-
-        // 3. Chụp ảnh canvas chính (Oscilloscope hoặc dB Meter)
-        const mainCanvas = document.getElementById("oscilloscope");
-        const curMode = (typeof getDisplayMode === "function") ? getDisplayMode() : "oscilloscope";
-        const hasSignalData = (typeof channelConfig !== "undefined") &&
-            ((channelConfig.A && channelConfig.A.index > 256) || (channelConfig.B && channelConfig.B.index > 256));
-
-        if (mainCanvas && mainCanvas.width > 0 && hasSignalData) {
-            try {
-                const snapDataUrl = mainCanvas.toDataURL("image/png");
-                if (curMode === "dbMeter") {
-                    expLiveImages.db = snapDataUrl;
-                } else {
-                    expLiveImages.osc = snapDataUrl;
+            if (!entry) {
+                let fHz = 0;
+                if (typeof computeFrozenAutoFrequency === "function") fHz = computeFrozenAutoFrequency();
+                if ((!fHz || fHz <= 0) && typeof detectedFrequency === "number" && detectedFrequency > 0) fHz = detectedFrequency;
+                if (fHz > 0) {
+                    const N = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fHz));
+                    const dtMs = Number(((N * 1000) / fHz).toFixed(2));
+                    entry = { kenh: "", soChuKi: N, deltaT_ms: dtMs, imageBase64: snapImg };
                 }
-                hasLive = true;
-            } catch (e) {}
-        }
+            }
+            if (!entry) {
+                showExpToast("⚠️ Chưa có dữ liệu đồ thị hợp lệ để đồng bộ!");
+                return;
+            }
+            payload.cacLanDo = [entry];
+            payload.anhDoThiBase64 = snapImg;
+        } else if (featureType === "twoSource") {
+            const tsCanvas = (typeof isTwoSourceModalOpen !== "undefined" && isTwoSourceModalOpen)
+                ? document.getElementById("twoSourceCanvas")
+                : document.getElementById("oscilloscope");
+            let snapImg = null;
+            if (tsCanvas && tsCanvas.width > 0) {
+                try { snapImg = tsCanvas.toDataURL("image/png"); } catch (e) {}
+            }
 
-        // 4. Thu thập dữ liệu Phổ tần số FFT (đang mở hoặc đã quét trước đó)
-        if (typeof fftLastAnalysis !== "undefined" && fftLastAnalysis && !fftLastAnalysis.isEmptySignal) {
-            cacheFftSnapshotForReport();
-        }
-        if (cachedFftSnapshot && cachedFftSnapshot.f0 > 0) {
-            expFftRows = [{
-                nguon: document.getElementById("expSoundSource").textContent.trim() || "Nguồn âm khảo sát",
+            let entryA = null, entryB = null;
+            if (typeof twoSourcePoints !== "undefined" && Array.isArray(twoSourcePoints.A) && twoSourcePoints.A.length === 2 &&
+                typeof getVisibleChannelWindow === "function" && typeof calculateFromGraphClicks === "function") {
+                const winA = getVisibleChannelWindow("A");
+                const resA = winA ? calculateFromGraphClicks(twoSourcePoints.A[0], twoSourcePoints.A[1], winA, "A") : null;
+                if (resA && resA.dt_ms > 0 && resA.T_ms > 0) {
+                    const nA = Math.max(1, Math.round(resA.dt_ms / resA.T_ms));
+                    entryA = { kenh: "Kênh A", soChuKi: nA, deltaT_ms: Number(resA.dt_ms.toFixed(2)), imageBase64: snapImg };
+                }
+            }
+            if (typeof twoSourcePoints !== "undefined" && Array.isArray(twoSourcePoints.B) && twoSourcePoints.B.length === 2 &&
+                typeof getVisibleChannelWindow === "function" && typeof calculateFromGraphClicks === "function") {
+                const winB = getVisibleChannelWindow("B");
+                const resB = winB ? calculateFromGraphClicks(twoSourcePoints.B[0], twoSourcePoints.B[1], winB, "B") : null;
+                if (resB && resB.dt_ms > 0 && resB.T_ms > 0) {
+                    const nB = Math.max(1, Math.round(resB.dt_ms / resB.T_ms));
+                    entryB = { kenh: "Kênh B", soChuKi: nB, deltaT_ms: Number(resB.dt_ms.toFixed(2)), imageBase64: snapImg };
+                }
+            }
+            if (!entryA) {
+                const fA = (typeof currentCalcFreqA === "number" && currentCalcFreqA > 0) ? currentCalcFreqA : 440;
+                const nA = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fA));
+                entryA = { kenh: "Kênh A", soChuKi: nA, deltaT_ms: Number(((nA * 1000) / fA).toFixed(2)), imageBase64: snapImg };
+            }
+            if (!entryB) {
+                const fB = (typeof currentCalcFreqB === "number" && currentCalcFreqB > 0) ? currentCalcFreqB : 440;
+                const nB = Math.max(1, Math.round((totalTimeOnScreen || 0.02) * fB));
+                entryB = { kenh: "Kênh B", soChuKi: nB, deltaT_ms: Number(((nB * 1000) / fB).toFixed(2)), imageBase64: snapImg };
+            }
+            payload.cacLanDo = [entryA, entryB];
+            payload.anhDoThiBase64 = snapImg;
+        } else if (featureType === "fft") {
+            if (typeof cacheFftSnapshotForReport === "function") cacheFftSnapshotForReport();
+            if (!cachedFftSnapshot || !(cachedFftSnapshot.f0 > 0)) {
+                showExpToast("⚠️ Hãy nhấn 'Quét Họa âm' hoặc nhập f₀ trên phổ FFT trước khi đồng bộ!");
+                return;
+            }
+            payload.phoTanSo = [{
+                kenh: "",
+                nguon: `Nguồn âm f₀ ≈ ${cachedFftSnapshot.f0.toFixed(1)} Hz`,
                 f0: cachedFftSnapshot.f0.toFixed(1).replace(".", ","),
                 hoaAm: cachedFftSnapshot.harms,
-                dacDiem: cachedFftSnapshot.dacDiem
+                dacDiem: cachedFftSnapshot.dacDiem,
+                imageBase64: cachedFftSnapshot.img || null
             }];
-            if (cachedFftSnapshot.img) expLiveImages.fft = cachedFftSnapshot.img;
-            hasLive = true;
-        }
-
-        // 5. Thu thập dữ liệu Mức cường độ âm (dB) nếu có lịch sử đo
-        if (typeof dbHistoryA !== "undefined" && Array.isArray(dbHistoryA) && dbHistoryA.length > 0) {
-            const vals = dbHistoryA.map(item => typeof item === "number" ? item : (item.db || item.val || 0)).filter(v => v > 0);
-            if (vals.length > 0) {
+            payload.anhPhoBase64 = cachedFftSnapshot.img || null;
+        } else if (featureType === "db") {
+            const hasDbA = (typeof dbHistoryA !== "undefined" && Array.isArray(dbHistoryA) && dbHistoryA.length > 0);
+            const hasDbB = (isDual && typeof dbHistoryB !== "undefined" && Array.isArray(dbHistoryB) && dbHistoryB.length > 0);
+            if (!hasDbA && !hasDbB) {
+                showExpToast("⚠️ Chưa có dữ liệu mức cường độ âm (dB) để đồng bộ!");
+                return;
+            }
+            const mainCanvas = document.getElementById("oscilloscope");
+            let dbImg = null;
+            if (mainCanvas && mainCanvas.width > 0 && (typeof getDisplayMode === "function" && getDisplayMode() === "dbMeter")) {
+                try { dbImg = mainCanvas.toDataURL("image/png"); } catch (e) {}
+            }
+            const buildDbEntry = (histArr, chTag) => {
+                const vals = histArr.map(item => typeof item === "number" ? item : (item.db || item.val || 0)).filter(v => v > 0);
+                if (vals.length === 0) return null;
                 const lMin = Math.min(...vals);
                 const lMax = Math.max(...vals);
                 const lAvg = vals.reduce((a, b) => a + b, 0) / vals.length;
@@ -4592,93 +6101,377 @@ async function checkAppVersion() {
                 if (typeof sourceRefState !== "undefined" && sourceRefState && sourceRefState.r0 > 0 && sourceRefState.L0 > 0) {
                     rEst = Number((sourceRefState.r0 * Math.pow(10, (sourceRefState.L0 - lAvg) / 20)).toFixed(2));
                 }
-                expDbRows = [{
-                    viTri: "Vị trí đo Kênh A",
+                return {
+                    kenh: chTag,
+                    viTri: chTag ? `Điểm đo (${chTag})` : "Điểm đo",
                     r: rEst,
                     lMin: Number(lMin.toFixed(1)),
                     lMax: Number(lMax.toFixed(1)),
-                    lAvg: Number(lAvg.toFixed(1))
-                }];
-                if (typeof dbHistoryB !== "undefined" && Array.isArray(dbHistoryB) && dbHistoryB.length > 0) {
-                    const valsB = dbHistoryB.map(item => typeof item === "number" ? item : (item.db || item.val || 0)).filter(v => v > 0);
-                    if (valsB.length > 0) {
-                        const lMinB = Math.min(...valsB);
-                        const lMaxB = Math.max(...valsB);
-                        const lAvgB = valsB.reduce((a, b) => a + b, 0) / valsB.length;
-                        let rEstB = 1.0;
-                        if (typeof sourceRefState !== "undefined" && sourceRefState && sourceRefState.r0 > 0 && sourceRefState.L0 > 0) {
-                            rEstB = Number((sourceRefState.r0 * Math.pow(10, (sourceRefState.L0 - lAvgB) / 20)).toFixed(2));
-                        }
-                        expDbRows.push({
-                            viTri: "Vị trí đo Kênh B",
-                            r: rEstB,
-                            lMin: Number(lMinB.toFixed(1)),
-                            lMax: Number(lMaxB.toFixed(1)),
-                            lAvg: Number(lAvgB.toFixed(1))
-                        });
+                    lAvg: Number(lAvg.toFixed(1)),
+                    imageBase64: dbImg
+                };
+            };
+            const listDb = [];
+            if (hasDbA) {
+                const eA = buildDbEntry(dbHistoryA, isDual ? "Kênh A" : "");
+                if (eA) listDb.push(eA);
+            }
+            if (hasDbB) {
+                const eB = buildDbEntry(dbHistoryB, "Kênh B");
+                if (eB) listDb.push(eB);
+            }
+            if (listDb.length === 0) {
+                showExpToast("⚠️ Chưa có giá trị dB hợp lệ để đồng bộ!");
+                return;
+            }
+            payload.mucCuongDoAm = listDb;
+            payload.anhDbBase64 = dbImg;
+        }
+
+        const serialized = JSON.stringify(payload);
+        localStorage.setItem(EXP_STORAGE_KEY, serialized);
+        window.name = "FOXLAB_DATA:" + serialized;
+        try {
+            const bc = new BroadcastChannel("foxlab_report_sync");
+            bc.postMessage({ type: "SYNC_REPORT_DATA", payload });
+            bc.close();
+        } catch (e) {}
+
+        const targetPage = window.FOX_REPORT_PAGE || "report_4.html";
+        const reportWin = window.open(targetPage, "FoxLabReportWindow");
+        if (!reportWin) {
+            const link = document.createElement("a");
+            link.href = targetPage;
+            link.target = "FoxLabReportWindow";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        const labelMap = {
+            osc: "Phân tích đồ thị",
+            kinematics: "Đồ thị liên quan (u-t, v-t, a-t)",
+            twoSource: "Xử lý 2 nguồn âm",
+            fft: "Phổ họa âm FFT",
+            db: "Mức cường độ âm (dB)"
+        };
+        showExpToast(`✅ Đã đồng bộ [${labelMap[featureType] || featureType}] sang báo cáo!`);
+    };
+
+    window.syncReportToStandalone = function () {
+        window.navigateToStandaloneReport();
+    };
+
+    window.openExpReportModal = function () {
+        window.navigateToStandaloneReport();
+    };
+
+    window.closeExpReportModal = function () {
+        const overlay = document.getElementById("expReportModalOverlay");
+        if (overlay) overlay.style.display = "none";
+        document.body.classList.remove("printing-exp-report");
+    };
+
+    window.navigateToStandaloneReport = function () {
+        const isDual = (typeof getActiveChannelMode === "function") && (getActiveChannelMode() === "2");
+        window.syncChannelModeToReport(isDual);
+        const targetPage = window.FOX_REPORT_PAGE || "report_4.html";
+        const reportWin = window.open(targetPage, "FoxLabReportWindow");
+        if (!reportWin) {
+            window.location.href = targetPage;
+        }
+    };
+
+    // Thu thập tự động 1 dòng số liệu & ảnh đồ thị cho mỗi lần đồng bộ từ Fox-lab
+    window.syncFoxLabToReport = function (notifyUser) {
+        let hasNewMeasurement = false;
+        const banner = document.getElementById("expReportStatusBanner");
+        const statusText = document.getElementById("expReportStatusText");
+        const setTxt = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined && val !== null) el.textContent = val; };
+
+        // 0. Nạp trạng thái hiện tại từ localStorage để không bao giờ xung đột / mất dữ liệu đã lưu bên report.html
+        const prev = readStoredReportData();
+        if (prev) {
+            if (prev.truong) setTxt("expSchoolName", prev.truong);
+            if (prev.toChuyenMon) setTxt("expDeptName", prev.toChuyenMon);
+            if (prev.nhom) setTxt("expGroupName", prev.nhom);
+            if (prev.lop) setTxt("expClassName", prev.lop);
+            if (prev.thanhVien) setTxt("expStudentNames", prev.thanhVien);
+            const notesEl = document.getElementById("expStudentNotes");
+            if (notesEl && prev.nhanXet) notesEl.innerHTML = prev.nhanXet;
+
+            if (Array.isArray(prev.cacLanDo)) expOscRows = prev.cacLanDo.slice();
+            if (Array.isArray(prev.phoTanSo)) expFftRows = prev.phoTanSo.slice();
+            if (Array.isArray(prev.mucCuongDoAm)) expDbRows = prev.mucCuongDoAm.slice();
+
+            if (prev.anhDoThiBase64 && !expLiveImages.osc) expLiveImages.osc = prev.anhDoThiBase64;
+            if (prev.anhPhoBase64 && !expLiveImages.fft) expLiveImages.fft = prev.anhPhoBase64;
+            if (prev.anhDbBase64 && !expLiveImages.db) expLiveImages.db = prev.anhDbBase64;
+
+            // Đồng bộ chính xác trạng thái "Chỉnh 1 dòng (Ghi đè)" từ report_5.html
+            const prevFlags = prev.singleRowFlags || {};
+            const isGlobalSingle = (prev.singleRowMode === true);
+            expSingleRowFlags = {
+                osc: isGlobalSingle || Boolean(prevFlags.osc),
+                fft: isGlobalSingle || Boolean(prevFlags.fft),
+                db: isGlobalSingle || Boolean(prevFlags.db)
+            };
+        }
+
+        // 1. Cập nhật thông số kỹ thuật từ máy đo Fox-lab
+        const techMeta = {};
+        if (typeof totalTimeOnScreen === "number" && totalTimeOnScreen > 0) {
+            const msPerDiv = (totalTimeOnScreen / 10) * 1000;
+            techMeta.scaleX = msPerDiv.toFixed(2).replace(".", ",") + " ms/ô";
+            setTxt("expScaleX", techMeta.scaleX);
+        }
+        if (typeof currentZoomY === "number" && currentZoomY > 0) {
+            const vPerDiv = 1.0 / currentZoomY;
+            techMeta.scaleY = vPerDiv.toFixed(2).replace(".", ",") + " V/ô";
+            setTxt("expScaleY", techMeta.scaleY);
+        }
+        if (typeof sampleRate === "number" && sampleRate > 0) {
+            techMeta.sampleRate = Math.round(sampleRate) + " Hz";
+            setTxt("expSampleRate", techMeta.sampleRate);
+        }
+        if (typeof channelConfig !== "undefined" && channelConfig.A) {
+            const hp = channelConfig.A.filterHP ? Math.round(channelConfig.A.filterHP.frequency.value) : 45;
+            const lp = channelConfig.A.filterLP ? Math.round(channelConfig.A.filterLP.frequency.value) : 3000;
+            techMeta.filterStatus = `Thông dải (${hp} – ${lp} Hz)`;
+            techMeta.filterBand = `${hp} – ${lp} Hz`;
+            setTxt("expFilterStatus", techMeta.filterStatus);
+            setTxt("expFilterBandCell", techMeta.filterBand);
+        }
+
+        const curMode = (typeof getDisplayMode === "function") ? getDisplayMode() : "oscilloscope";
+        const chMode = (typeof getActiveChannelMode === "function") ? getActiveChannelMode() : "1";
+        const hasSignalData = (typeof channelConfig !== "undefined") &&
+            ((channelConfig.A && channelConfig.A.index > 256) || (channelConfig.B && channelConfig.B.index > 256));
+
+        // 2. Chụp ảnh canvas hiện tại (ưu tiên modal đang mở, sau đó tới canvas chính)
+        let activeOscSnap = null;
+        let activeDbSnap = null;
+        const activeCanvasEl = (typeof isTwoSourceModalOpen !== "undefined" && isTwoSourceModalOpen)
+            ? document.getElementById("twoSourceCanvas")
+            : ((typeof isKinematicsModalOpen !== "undefined" && isKinematicsModalOpen)
+                ? document.getElementById("kinematicsCanvas")
+                : document.getElementById("oscilloscope"));
+
+        if (activeCanvasEl && activeCanvasEl.width > 0 && (hasSignalData || (typeof dbHistoryA !== "undefined" && dbHistoryA.length > 0))) {
+            try {
+                const snapDataUrl = activeCanvasEl.toDataURL("image/png");
+                if (curMode === "dbMeter") {
+                    activeDbSnap = snapDataUrl;
+                    expLiveImages.db = snapDataUrl;
+                } else {
+                    activeOscSnap = snapDataUrl;
+                    expLiveImages.osc = snapDataUrl;
+                }
+            } catch (e) {}
+        }
+
+        // 3. Thu thập 1 dòng số liệu Dao động kí kèm ảnh đồ thị của lần đo đó
+        let singleOscEntry = null;
+        if (curMode === "oscilloscope") {
+            if (typeof manualPoints !== "undefined" && Array.isArray(manualPoints) && manualPoints.length === 2 &&
+                typeof getVisibleChannelAWindow === "function" && typeof calculateFromGraphClicks === "function") {
+                const winInfo = getVisibleChannelAWindow();
+                if (winInfo) {
+                    const res = calculateFromGraphClicks(manualPoints[0], manualPoints[1], winInfo);
+                    if (res && res.dt_ms > 0 && res.T_ms > 0) {
+                        const estCycles = Math.max(1, Math.round(res.dt_ms / res.T_ms));
+                        singleOscEntry = { soChuKi: estCycles, deltaT_ms: Number(res.dt_ms.toFixed(2)), img: activeOscSnap };
                     }
                 }
-                hasLive = true;
+            } else if (typeof twoSourcePoints !== "undefined" && Array.isArray(twoSourcePoints.A) && twoSourcePoints.A.length === 2 &&
+                typeof getVisibleChannelWindow === "function" && typeof calculateFromGraphClicks === "function") {
+                const winA = getVisibleChannelWindow("A");
+                if (winA) {
+                    const resA = calculateFromGraphClicks(twoSourcePoints.A[0], twoSourcePoints.A[1], winA, "A");
+                    if (resA && resA.dt_ms > 0 && resA.T_ms > 0) {
+                        const estCycles = Math.max(1, Math.round(resA.dt_ms / resA.T_ms));
+                        singleOscEntry = { soChuKi: estCycles, deltaT_ms: Number(resA.dt_ms.toFixed(2)), img: activeOscSnap };
+                    }
+                }
+            }
+
+            let liveFreq = (typeof detectedFrequency === "number" && detectedFrequency > 0)
+                ? detectedFrequency
+                : ((typeof lockedFrequency === "number" && lockedFrequency > 0 && lockedFrequency !== 440) ? lockedFrequency : 0);
+
+            if (liveFreq <= 0 && hasSignalData && typeof computeFrozenAutoFrequency === "function") {
+                const frozenF = computeFrozenAutoFrequency();
+                if (frozenF > 0) liveFreq = frozenF;
+            }
+
+            if (liveFreq > 0) {
+                techMeta.filterFreq = `${liveFreq.toFixed(1).replace(".", ",")} Hz (ổn định)`;
+                techMeta.nguonAm = `Nguồn âm đo trực tiếp (~${liveFreq.toFixed(1)} Hz)`;
+                setTxt("expFilterFreqCell", techMeta.filterFreq);
+                setTxt("expSoundSource", techMeta.nguonAm);
+
+                if (!singleOscEntry) {
+                    const T_ms = 1000 / liveFreq;
+                    const N = Math.max(1, Math.round(totalTimeOnScreen * liveFreq));
+                    singleOscEntry = { soChuKi: N, deltaT_ms: Number((N * T_ms).toFixed(2)), img: activeOscSnap };
+                }
+            }
+
+            if (singleOscEntry) {
+                expOscRows = applySingleRowSync(expOscRows, singleOscEntry, expSingleRowFlags.osc, isSampleOscRows);
+                window._expOscSyncCount = (Number(prev?.oscSyncCount) || 0) + 1;
+                hasNewMeasurement = true;
             }
         }
 
-        if (hasLive) {
+        // 4. Thu thập 1 dòng dữ liệu Phổ tần số FFT kèm ảnh phổ
+        if (typeof fftLastAnalysis !== "undefined" && fftLastAnalysis && !fftLastAnalysis.isEmptySignal) {
+            cacheFftSnapshotForReport();
+        }
+        const fftOverlay = document.getElementById("fftModalOverlay");
+        const isFftModalVisible = fftOverlay && fftOverlay.style.display === "flex";
+        if (cachedFftSnapshot && cachedFftSnapshot.f0 > 0 && (!cachedFftSnapshot.synced || isFftModalVisible)) {
+            const sourceLabel = (document.getElementById("expSoundSource")?.textContent?.trim())
+                || techMeta.nguonAm
+                || prev?.nguonAm
+                || `Nguồn âm f₀ ≈ ${cachedFftSnapshot.f0.toFixed(1)} Hz`;
+            const singleFftEntry = {
+                nguon: sourceLabel,
+                f0: cachedFftSnapshot.f0.toFixed(1).replace(".", ","),
+                hoaAm: cachedFftSnapshot.harms,
+                dacDiem: cachedFftSnapshot.dacDiem,
+                img: cachedFftSnapshot.img || null
+            };
+            expFftRows = applySingleRowSync(expFftRows, singleFftEntry, expSingleRowFlags.fft, isSampleFftRows);
+            if (cachedFftSnapshot.img) expLiveImages.fft = cachedFftSnapshot.img;
+            cachedFftSnapshot.synced = true;
+            window._expFftSyncCount = (Number(prev?.fftSyncCount) || 0) + 1;
+            hasNewMeasurement = true;
+        }
+
+        // 5. Thu thập dữ liệu Mức cường độ âm (dB) cho Kênh A (và Kênh B nếu đo 2 kênh) kèm ảnh biểu đồ cột
+        const hasDbA = (typeof dbHistoryA !== "undefined" && Array.isArray(dbHistoryA) && dbHistoryA.length > 0);
+        const hasDbB = (chMode === "2" && typeof dbHistoryB !== "undefined" && Array.isArray(dbHistoryB) && dbHistoryB.length > 0);
+        if (hasDbA || hasDbB) {
+            const dbSig = `${dbStartTime || 0}_${hasDbA ? dbHistoryA.length : 0}_${hasDbB ? dbHistoryB.length : 0}`;
+            if (curMode === "dbMeter" || dbSig !== lastSyncedDbSignature) {
+                const buildDbEntry = (histArr, chTag) => {
+                    const vals = histArr.map(item => typeof item === "number" ? item : (item.db || item.val || 0)).filter(v => v > 0);
+                    if (vals.length === 0) return null;
+                    const lMin = Math.min(...vals);
+                    const lMax = Math.max(...vals);
+                    const lAvg = vals.reduce((a, b) => a + b, 0) / vals.length;
+                    let rEst = 1.0;
+                    if (typeof sourceRefState !== "undefined" && sourceRefState && sourceRefState.r0 > 0 && sourceRefState.L0 > 0) {
+                        rEst = Number((sourceRefState.r0 * Math.pow(10, (sourceRefState.L0 - lAvg) / 20)).toFixed(2));
+                    }
+                    const nextIdx = (isSampleDbRows(expDbRows) || expSingleRowFlags.db) ? 1 : (expDbRows.length + 1);
+                    const posLabel = chTag ? `Điểm ${nextIdx} (${chTag})` : `Điểm ${nextIdx}`;
+                    return {
+                        viTri: posLabel,
+                        r: rEst,
+                        lMin: Number(lMin.toFixed(1)),
+                        lMax: Number(lMax.toFixed(1)),
+                        lAvg: Number(lAvg.toFixed(1)),
+                        img: activeDbSnap
+                    };
+                };
+
+                let addedAnyDb = false;
+                if (hasDbA) {
+                    const entryA = buildDbEntry(dbHistoryA, chMode === "2" ? "Kênh A" : "");
+                    if (entryA) {
+                        expDbRows = applySingleRowSync(expDbRows, entryA, expSingleRowFlags.db, isSampleDbRows);
+                        addedAnyDb = true;
+                    }
+                }
+                if (hasDbB) {
+                    const entryB = buildDbEntry(dbHistoryB, "Kênh B");
+                    if (entryB) {
+                        expDbRows = applySingleRowSync(expDbRows, entryB, expSingleRowFlags.db, isSampleDbRows);
+                        addedAnyDb = true;
+                    }
+                }
+                if (addedAnyDb) {
+                    lastSyncedDbSignature = dbSig;
+                    window._expDbSyncCount = (Number(prev?.dbSyncCount) || 0) + 1;
+                    hasNewMeasurement = true;
+                }
+            }
+        }
+
+        window._expLatestTechMeta = techMeta;
+
+        const hasAnyLiveData = hasNewMeasurement || Boolean(prev && prev.isLiveMeasurement);
+        if (hasAnyLiveData) {
             if (banner) banner.classList.add("live-mode");
             if (statusText) {
-                statusText.innerHTML = "<strong>✅ Đã đồng bộ số liệu &amp; đồ thị thực tế từ máy đo FOX_LAB!</strong> Bạn có thể chỉnh sửa trực tiếp, xuất PDF/Ảnh từng phần hoặc bấm <strong>Sang trang báo cáo</strong>.";
+                statusText.innerHTML = "<strong>✅ Đã đồng bộ số liệu &amp; đồ thị từ máy đo Fox-lab!</strong> Mỗi lần đồng bộ thêm 1 dòng dữ liệu (hoặc cập nhật 1 dòng mới nhất nếu bảng chỉ có 1 dòng).";
             }
-            if (expOscRows.length === 0) expOscRows = [{ soChuKi: 5, deltaT_ms: 11.36 }];
-            if (expFftRows.length === 0) expFftRows = [{ nguon: "Âm thoa / Nguồn âm", f0: liveFreq > 0 ? liveFreq.toFixed(1).replace(".", ",") : "440,0", hoaAm: "f₀ (chưa mở tab quét FFT)", dacDiem: "Dao động điều hòa" }];
-            if (expDbRows.length === 0) expDbRows = [{ viTri: "Điểm 1", r: 1.0, lMin: 65.0, lMax: 67.2, lAvg: 66.1 }];
-
             renderExpOscTable();
             renderExpFftTable();
             renderExpDbTable();
             redrawAllExpCanvases();
             saveExpReportToStorage(true);
-            if (notifyUser) showExpToast("Đã cập nhật số liệu mới nhất từ máy đo FOX_LAB!");
+            if (notifyUser && hasNewMeasurement) showExpToast("Đã đồng bộ 1 dòng dữ liệu mới từ Fox-lab!");
         } else {
             if (banner) banner.classList.remove("live-mode");
             if (statusText) {
-                statusText.innerHTML = "<strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Chưa có phép đo đang chạy trên máy đo. Hãy đo sóng trên FOX_LAB rồi mở lại báo cáo, hoặc dùng ngay mẫu dưới đây.";
+                statusText.innerHTML = "<strong>Chế độ xem trước (Dữ liệu mẫu):</strong> Chưa có phép đo đang chạy trên máy đo. Hãy đo sóng trên Fox-lab rồi bấm <strong>Đồng bộ báo cáo</strong>.";
             }
-            const savedRaw = localStorage.getItem(EXP_STORAGE_KEY);
-            if (savedRaw && !notifyUser) {
-                try {
-                    const data = JSON.parse(savedRaw);
-                    applyExpIncomingData(data);
-                    return;
-                } catch (e) {}
+            if (prev) {
+                applyExpIncomingData(prev);
+            } else {
+                loadExpSampleAll(false);
             }
-            loadExpSampleAll(notifyUser);
         }
+
+        return hasNewMeasurement;
     };
 
     function saveExpReportToStorage(isLiveMeasurement) {
         try {
+            const prev = readStoredReportData() || {};
+            const meta = window._expLatestTechMeta || {};
+            const getTxt = (id, fallback = "") => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const txt = el.textContent.trim();
+                    if (txt) return txt;
+                }
+                return fallback;
+            };
+            const notesEl = document.getElementById("expStudentNotes");
+
             const payload = {
                 isLiveMeasurement: Boolean(isLiveMeasurement),
-                truong: document.getElementById("expSchoolName").textContent.trim(),
-                toChuyenMon: document.getElementById("expDeptName").textContent.trim(),
-                tenThiNghiem: document.getElementById("expReportTitle").textContent.trim(),
-                tieuDePhu: document.getElementById("expReportSubtitle").textContent.trim(),
-                nguonAm: document.getElementById("expSoundSource").textContent.trim(),
-                nhom: document.getElementById("expGroupName").textContent.trim(),
-                lop: document.getElementById("expClassName").textContent.trim(),
-                thanhVien: document.getElementById("expStudentNames").textContent.trim(),
-                scaleX: document.getElementById("expScaleX").textContent.trim(),
-                scaleY: document.getElementById("expScaleY").textContent.trim(),
-                sampleRate: document.getElementById("expSampleRate").textContent.trim(),
-                filterStatus: document.getElementById("expFilterStatus").textContent.trim(),
-                filterBand: document.getElementById("expFilterBandCell")?.textContent.trim() || "45 – 3000 Hz",
-                filterFreq: document.getElementById("expFilterFreqCell")?.textContent.trim() || "440,1 Hz (ổn định)",
-                nhanXet: document.getElementById("expStudentNotes").innerHTML,
+                syncedAt: new Date().toISOString(),
+                oscSyncCount: window._expOscSyncCount || prev.oscSyncCount || expOscRows.length,
+                fftSyncCount: window._expFftSyncCount || prev.fftSyncCount || expFftRows.length,
+                dbSyncCount: window._expDbSyncCount || prev.dbSyncCount || expDbRows.length,
+                singleRowFlags: expSingleRowFlags,
+                singleRowMode: Boolean(expSingleRowFlags.osc && expSingleRowFlags.fft && expSingleRowFlags.db),
+                truong: getTxt("expSchoolName", prev.truong || ""),
+                toChuyenMon: getTxt("expDeptName", prev.toChuyenMon || ""),
+                tenThiNghiem: getTxt("expReportTitle", prev.tenThiNghiem || EXP_DEFAULT_TITLE),
+                tieuDePhu: getTxt("expReportSubtitle", prev.tieuDePhu || ""),
+                nguonAm: getTxt("expSoundSource", meta.nguonAm || prev.nguonAm || ""),
+                nhom: getTxt("expGroupName", prev.nhom || ""),
+                lop: getTxt("expClassName", prev.lop || ""),
+                thanhVien: getTxt("expStudentNames", prev.thanhVien || ""),
+                scaleX: getTxt("expScaleX", meta.scaleX || prev.scaleX || ""),
+                scaleY: getTxt("expScaleY", meta.scaleY || prev.scaleY || ""),
+                sampleRate: getTxt("expSampleRate", meta.sampleRate || prev.sampleRate || ""),
+                filterStatus: getTxt("expFilterStatus", meta.filterStatus || prev.filterStatus || ""),
+                filterBand: getTxt("expFilterBandCell", meta.filterBand || prev.filterBand || "45 – 3000 Hz"),
+                filterFreq: getTxt("expFilterFreqCell", meta.filterFreq || prev.filterFreq || "440,1 Hz (ổn định)"),
+                nhanXet: notesEl ? notesEl.innerHTML : (prev.nhanXet || ""),
                 cacLanDo: expOscRows,
                 phoTanSo: expFftRows,
                 mucCuongDoAm: expDbRows,
-                anhDoThiBase64: expLiveImages.osc,
-                anhPhoBase64: expLiveImages.fft,
-                anhDbBase64: expLiveImages.db
+                anhDoThiBase64: expLiveImages.osc || prev.anhDoThiBase64 || null,
+                anhPhoBase64: expLiveImages.fft || prev.anhPhoBase64 || null,
+                anhDbBase64: expLiveImages.db || prev.anhDbBase64 || null
             };
             localStorage.setItem(EXP_STORAGE_KEY, JSON.stringify(payload));
             return payload;
@@ -4688,22 +6481,28 @@ async function checkAppVersion() {
     }
 
     function applyExpIncomingData(data) {
-        if (data.truong) document.getElementById("expSchoolName").textContent = data.truong;
-        if (data.toChuyenMon) document.getElementById("expDeptName").textContent = data.toChuyenMon;
-        if (data.tenThiNghiem) document.getElementById("expReportTitle").textContent = data.tenThiNghiem;
-        if (data.tieuDePhu) document.getElementById("expReportSubtitle").textContent = data.tieuDePhu;
-        if (data.nguonAm) document.getElementById("expSoundSource").textContent = data.nguonAm;
-        if (data.nhom) document.getElementById("expGroupName").textContent = data.nhom;
-        if (data.lop) document.getElementById("expClassName").textContent = data.lop;
-        if (data.thanhVien) document.getElementById("expStudentNames").textContent = data.thanhVien;
-        if (data.scaleX) document.getElementById("expScaleX").textContent = data.scaleX;
-        if (data.scaleY) document.getElementById("expScaleY").textContent = data.scaleY;
-        if (data.sampleRate) document.getElementById("expSampleRate").textContent = data.sampleRate;
-        if (data.filterStatus) document.getElementById("expFilterStatus").textContent = data.filterStatus;
-        if (data.nhanXet) document.getElementById("expStudentNotes").innerHTML = data.nhanXet;
-        if (Array.isArray(data.cacLanDo) && data.cacLanDo.length) expOscRows = data.cacLanDo;
-        if (Array.isArray(data.phoTanSo) && data.phoTanSo.length) expFftRows = data.phoTanSo;
-        if (Array.isArray(data.mucCuongDoAm) && data.mucCuongDoAm.length) expDbRows = data.mucCuongDoAm;
+        if (!data || typeof data !== "object") return;
+        const setTxt = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
+        setTxt("expSchoolName", data.truong);
+        setTxt("expDeptName", data.toChuyenMon);
+        setTxt("expReportTitle", data.tenThiNghiem);
+        setTxt("expReportSubtitle", data.tieuDePhu);
+        setTxt("expSoundSource", data.nguonAm);
+        setTxt("expGroupName", data.nhom);
+        setTxt("expClassName", data.lop);
+        setTxt("expStudentNames", data.thanhVien);
+        setTxt("expScaleX", data.scaleX);
+        setTxt("expScaleY", data.scaleY);
+        setTxt("expSampleRate", data.sampleRate);
+        setTxt("expFilterStatus", data.filterStatus);
+        const notesEl = document.getElementById("expStudentNotes");
+        if (notesEl && data.nhanXet) notesEl.innerHTML = data.nhanXet;
+        if (Array.isArray(data.cacLanDo)) expOscRows = data.cacLanDo.slice();
+        if (Array.isArray(data.phoTanSo)) expFftRows = data.phoTanSo.slice();
+        if (Array.isArray(data.mucCuongDoAm)) expDbRows = data.mucCuongDoAm.slice();
+        if (data.singleRowFlags) {
+            expSingleRowFlags = Object.assign({ osc: false, fft: false, db: false }, data.singleRowFlags);
+        }
         expLiveImages.osc = data.anhDoThiBase64 || null;
         expLiveImages.fft = data.anhPhoBase64 || null;
         expLiveImages.db = data.anhDbBase64 || null;
@@ -4714,27 +6513,37 @@ async function checkAppVersion() {
         redrawAllExpCanvases();
     }
 
+    // Lắng nghe thay đổi từ tab report.html (khi người dùng xóa/chỉnh sửa bảng về còn 1 dòng bên file report)
+    window.addEventListener("storage", (e) => {
+        if (e.key === EXP_STORAGE_KEY && e.newValue) {
+            try {
+                const updated = JSON.parse(e.newValue);
+                applyExpIncomingData(updated);
+            } catch (err) {}
+        }
+    });
+
     window.applyExpPreset = function (mode) {
         document.querySelectorAll(".exp-rep-preset").forEach(b => b.classList.remove("active"));
         const activeBtn = document.getElementById(`expPreset-${mode}`);
         if (activeBtn) activeBtn.classList.add("active");
 
         const parts = ["1", "2", "3", "4"];
+        const titleEl = document.getElementById("expReportTitle");
         if (mode === "all") {
-            parts.forEach(p => document.getElementById(`expChk-part${p}`).checked = true);
-            document.getElementById("expChk-part5").checked = true;
-            document.getElementById("expReportTitle").textContent = EXP_DEFAULT_TITLE;
+            parts.forEach(p => { const c = document.getElementById(`expChk-part${p}`); if (c) c.checked = true; });
+            const c5 = document.getElementById("expChk-part5"); if (c5) c5.checked = true;
+            if (titleEl) titleEl.textContent = EXP_DEFAULT_TITLE;
         } else {
             const selected = String(mode).split(",");
             parts.forEach(p => {
-                document.getElementById(`expChk-part${p}`).checked = selected.includes(p);
+                const c = document.getElementById(`expChk-part${p}`);
+                if (c) c.checked = selected.includes(p);
             });
-            document.getElementById("expChk-part5").checked = true;
-            if (selected.length === 1) {
+            const c5 = document.getElementById("expChk-part5"); if (c5) c5.checked = true;
+            if (selected.length === 1 && titleEl) {
                 const sec = document.getElementById(`expPart${selected[0]}`);
-                if (sec && sec.dataset.title) {
-                    document.getElementById("expReportTitle").textContent = sec.dataset.title;
-                }
+                if (sec && sec.dataset.title) titleEl.textContent = sec.dataset.title;
             }
         }
         syncExpCheckboxes();
@@ -4786,7 +6595,7 @@ async function checkAppVersion() {
         const sheet = document.getElementById("expReportSheet");
         if (!sheet) return;
         const groupSlug = (document.getElementById("expGroupName")?.textContent || "Nhom01").trim().replace(/\s+/g, "_");
-        const fileName = `FOXLAB_BaoCao_${groupSlug}.pdf`;
+        const fileName = `FoxLab_BaoCao_${groupSlug}.pdf`;
 
         if (typeof html2pdf === "undefined") {
             showExpToast("⚠️ Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
@@ -4813,35 +6622,34 @@ async function checkAppVersion() {
     };
 
     window.exportSingleExpPartToPDF = function (partId, fileTag) {
-        if (typeof html2pdf === "undefined") {
-            showExpToast("⚠️ Chưa tải được thư viện xuất PDF, vui lòng kiểm tra kết nối mạng!");
-            return;
-        }
         const allParts = ["expPart1", "expPart2", "expPart3", "expPart4"];
         const prevStates = {};
-        const prevTitle = document.getElementById("expReportTitle").textContent;
+        const titleEl = document.getElementById("expReportTitle");
+        const prevTitle = titleEl ? titleEl.textContent : EXP_DEFAULT_TITLE;
 
         allParts.forEach(id => {
             const el = document.getElementById(id);
+            if (!el) return;
             prevStates[id] = el.classList.contains("hidden-part");
             if (id === partId) {
                 el.classList.remove("hidden-part", "temp-print-hide");
-                if (el.dataset.title) document.getElementById("expReportTitle").textContent = el.dataset.title;
+                if (el.dataset.title && titleEl) titleEl.textContent = el.dataset.title;
             } else {
                 el.classList.add("temp-print-hide");
             }
         });
         const part5 = document.getElementById("expPart5");
-        const prevPart5 = part5.classList.contains("hidden-part");
-        part5.classList.remove("hidden-part", "temp-print-hide");
+        const prevPart5 = part5 ? part5.classList.contains("hidden-part") : false;
+        if (part5) part5.classList.remove("hidden-part", "temp-print-hide");
 
         const sheet = document.getElementById("expReportSheet");
+        if (!sheet) return;
         sheet.classList.add("exp-exporting-pdf");
         showExpToast(`⏳ Đang tạo PDF ${fileTag}...`);
 
         const opt = {
             margin: [8, 8, 8, 8],
-            filename: `FOXLAB_${fileTag}.pdf`,
+            filename: `FoxLab_${fileTag}.pdf`,
             image: { type: "jpeg", quality: 0.96 },
             html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff", scrollY: 0 },
             jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
@@ -4850,12 +6658,13 @@ async function checkAppVersion() {
             sheet.classList.remove("exp-exporting-pdf");
             allParts.forEach(id => {
                 const el = document.getElementById(id);
+                if (!el) return;
                 el.classList.remove("temp-print-hide");
                 el.classList.toggle("hidden-part", prevStates[id]);
             });
-            part5.classList.toggle("hidden-part", prevPart5);
-            document.getElementById("expReportTitle").textContent = prevTitle;
-            showExpToast(`✅ Đã tải PDF: FOXLAB_${fileTag}.pdf`);
+            if (part5) part5.classList.toggle("hidden-part", prevPart5);
+            if (titleEl) titleEl.textContent = prevTitle;
+            showExpToast(`✅ Đã tải PDF: FoxLab_${fileTag}.pdf`);
         }).catch(() => {
             sheet.classList.remove("exp-exporting-pdf");
         });
@@ -4864,8 +6673,8 @@ async function checkAppVersion() {
     window.exportSelectedExpToExcelCSV = function () {
         document.querySelectorAll(".exp-tb-dropdown").forEach(el => el.classList.remove("open"));
         const rows = [
-            ["BÁO CÁO KẾT QUẢ THÍ NGHIỆM SÓNG ÂM - FOX_LAB"],
-            ["Nhóm", document.getElementById("expGroupName").textContent.trim(), "Lớp", document.getElementById("expClassName").textContent.trim()],
+            ["BÁO CÁO KẾT QUẢ THÍ NGHIỆM SÓNG ÂM - Fox-lab"],
+            ["Nhóm", document.getElementById("expGroupName")?.textContent?.trim() || "", "Lớp", document.getElementById("expClassName")?.textContent?.trim() || ""],
             []
         ];
         if (document.getElementById("expChk-part1")?.checked) {
@@ -4888,10 +6697,10 @@ async function checkAppVersion() {
             rows.push([]);
         }
         if (document.getElementById("expChk-part4")?.checked) {
-            rows.push(["PHẦN IV: BỘ LỌC SỐ"], ["Trạng thái bộ lọc", document.getElementById("expFilterStatus").textContent.trim()]);
+            rows.push(["PHẦN IV: BỘ LỌC SỐ"], ["Trạng thái bộ lọc", document.getElementById("expFilterStatus")?.textContent?.trim() || ""]);
             rows.push([]);
         }
-        downloadExpCSV(rows, "FOXLAB_BaoCao_DaChon.csv");
+        downloadExpCSV(rows, "FoxLab_BaoCao_DaChon.csv");
     };
 
     function triggerCleanA4Print(onAfterPrint) {
@@ -4918,15 +6727,17 @@ async function checkAppVersion() {
     window.printSingleExpPart = function (partId) {
         const allParts = ["expPart1", "expPart2", "expPart3", "expPart4"];
         const prevStates = {};
-        const prevTitle = document.getElementById("expReportTitle").textContent;
+        const titleEl = document.getElementById("expReportTitle");
+        const prevTitle = titleEl ? titleEl.textContent : EXP_DEFAULT_TITLE;
 
         allParts.forEach(id => {
             const el = document.getElementById(id);
+            if (!el) return;
             prevStates[id] = el.classList.contains("hidden-part");
             if (id === partId) {
                 el.classList.remove("hidden-part", "temp-print-hide");
-                if (el.dataset.title) {
-                    document.getElementById("expReportTitle").textContent = el.dataset.title;
+                if (el.dataset.title && titleEl) {
+                    titleEl.textContent = el.dataset.title;
                 }
             } else {
                 el.classList.add("temp-print-hide");
@@ -4934,17 +6745,18 @@ async function checkAppVersion() {
         });
 
         const part5 = document.getElementById("expPart5");
-        const prevPart5 = part5.classList.contains("hidden-part");
-        part5.classList.remove("hidden-part", "temp-print-hide");
+        const prevPart5 = part5 ? part5.classList.contains("hidden-part") : false;
+        if (part5) part5.classList.remove("hidden-part", "temp-print-hide");
 
         triggerCleanA4Print(() => {
             allParts.forEach(id => {
                 const el = document.getElementById(id);
+                if (!el) return;
                 el.classList.remove("temp-print-hide");
                 el.classList.toggle("hidden-part", prevStates[id]);
             });
-            part5.classList.toggle("hidden-part", prevPart5);
-            document.getElementById("expReportTitle").textContent = prevTitle;
+            if (part5) part5.classList.toggle("hidden-part", prevPart5);
+            if (titleEl) titleEl.textContent = prevTitle;
         });
     };
 
@@ -4987,14 +6799,14 @@ async function checkAppVersion() {
             table.exp-data-table tr.summary-row td { background-color: #f8fafc; font-weight: bold; }
             .exp-result-box { border: 1px solid #0f172a; background: #f8fafc; padding: 7px 11px; margin-bottom: 10px; font-size: 11.5pt; }
         `;
-        const groupName = document.getElementById("expGroupName").textContent.trim();
-        const className = document.getElementById("expClassName").textContent.trim();
+        const groupName = document.getElementById("expGroupName")?.textContent?.trim() || "Nhóm 01";
+        const className = document.getElementById("expClassName")?.textContent?.trim() || "11";
 
         const wrapperHtml = `
             <div xmlns="http://www.w3.org/1999/xhtml" style="background:#ffffff; padding:12px 16px; font-family:'Times New Roman', serif; color:#0f172a;">
               <style>${scopedStyle}</style>
               <div style="display:flex; justify-content:space-between; font-size:11pt; border-bottom:1px solid #94a3b8; padding-bottom:4px; margin-bottom:6px;">
-                <span><strong>FOX_LAB</strong> | ${groupName} – Lớp ${className}</span>
+                <span><strong>Fox-lab</strong> | ${groupName} – Lớp ${className}</span>
                 <span>Thời gian: ${new Date().toLocaleString("vi-VN")}</span>
               </div>
               ${clone.outerHTML}
@@ -5031,12 +6843,12 @@ async function checkAppVersion() {
                     const pngUrl = URL.createObjectURL(blob);
                     const a = document.createElement("a");
                     a.href = pngUrl;
-                    a.download = `FOXLAB_${fileTag}.png`;
+                    a.download = `FoxLab_${fileTag}.png`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
-                    showExpToast(`Đã xuất ảnh trọn gói: FOXLAB_${fileTag}.png`);
+                    showExpToast(`Đã xuất ảnh trọn gói: FoxLab_${fileTag}.png`);
                 }, "image/png");
             } catch (err) {
                 printSingleExpPart(partId);
@@ -5051,6 +6863,7 @@ async function checkAppVersion() {
 
     window.loadExpSampleAll = function (notifyUser) {
         expLiveImages = { osc: null, fft: null, db: null };
+        expSingleRowFlags = { osc: false, fft: false, db: false };
         expOscRows = [
             { soChuKi: 5, deltaT_ms: 11.35 },
             { soChuKi: 5, deltaT_ms: 11.38 },
@@ -5299,7 +7112,7 @@ async function checkAppVersion() {
         const now = new Date();
         const pad = (n) => String(n).padStart(2, "0");
         const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-        const fileName = `FOXLAB_${tag}_${stamp}.png`;
+        const fileName = `FoxLab_${tag}_${stamp}.png`;
 
         canvasEl.toBlob((blob) => {
             if (!blob) return;
@@ -5324,7 +7137,7 @@ async function checkAppVersion() {
 
         expOscRows.forEach((row, idx) => {
             const N = row.soChuKi > 0 ? row.soChuKi : 1;
-            const dt = row.deltaT_ms;
+            const dt = Number(row.deltaT_ms) || 0;
             const T = dt > 0 ? dt / N : 0;
             const f = T > 0 ? 1000 / T : 0;
             if (T > 0) listT.push(T);
@@ -5349,24 +7162,37 @@ async function checkAppVersion() {
             return { mean, err };
         };
         const stT = stats(listT), stF = stats(listF);
-        document.getElementById("expAvgT").textContent = stT ? stT.mean.toFixed(2) : "—";
-        document.getElementById("expErrT").textContent = stT ? "± " + stT.err.toFixed(2) : "—";
-        document.getElementById("expAvgF").textContent = stF ? stF.mean.toFixed(1) : "—";
-        document.getElementById("expErrF").textContent = stF ? "± " + stF.err.toFixed(1) : "—";
+        const setEl = (id, val, isHtml = false) => { const el = document.getElementById(id); if (el) { if (isHtml) el.innerHTML = val; else el.textContent = val; } };
+        setEl("expAvgT", stT ? stT.mean.toFixed(2) : "—");
+        setEl("expErrT", stT ? "± " + stT.err.toFixed(2) : "—");
+        setEl("expAvgF", stF ? stF.mean.toFixed(1) : "—");
+        setEl("expErrF", stF ? "± " + stF.err.toFixed(1) : "—");
 
-        document.getElementById("expResT").innerHTML = stT ? `<i>T</i> = (${stT.mean.toFixed(2)} ± ${stT.err.toFixed(2)}) ms` : "<i>T</i> = (— ± —) ms";
-        document.getElementById("expResF").innerHTML = stF ? `<i>f</i> = (${stF.mean.toFixed(1)} ± ${stF.err.toFixed(1)}) Hz` : "<i>f</i> = (— ± —) Hz";
-        document.getElementById("expRelF").textContent = stF && stF.mean > 0 ? ((stF.err / stF.mean) * 100).toFixed(2) + "%" : "—";
+        setEl("expResT", stT ? `<i>T</i> = (${stT.mean.toFixed(2)} ± ${stT.err.toFixed(2)}) ms` : "<i>T</i> = (— ± —) ms", true);
+        setEl("expResF", stF ? `<i>f</i> = (${stF.mean.toFixed(1)} ± ${stF.err.toFixed(1)}) Hz` : "<i>f</i> = (— ± —) Hz", true);
+        setEl("expRelF", stF && stF.mean > 0 ? ((stF.err / stF.mean) * 100).toFixed(2) + "%" : "—");
     }
 
     window.updateExpOsc = function (i, k, val) {
         const n = parseFloat(val.replace(",", ".").trim());
         if (!isNaN(n) && n >= 0) expOscRows[i][k] = k === "soChuKi" ? Math.max(1, Math.round(n)) : n;
+        if (expOscRows.length === 1) expSingleRowFlags.osc = true;
         renderExpOscTable();
         saveExpReportToStorage(true);
     };
-    window.addExpOscRow = function () { expOscRows.push({ soChuKi: 5, deltaT_ms: 11.35 }); renderExpOscTable(); saveExpReportToStorage(true); };
-    window.delExpOsc = function (i) { expOscRows.splice(i, 1); renderExpOscTable(); saveExpReportToStorage(true); };
+    window.addExpOscRow = function () {
+        expOscRows.push({ soChuKi: 5, deltaT_ms: 11.35 });
+        expSingleRowFlags.osc = false;
+        renderExpOscTable();
+        saveExpReportToStorage(true);
+    };
+    window.delExpOsc = function (i) {
+        const hadMultiple = expOscRows.length > 1;
+        expOscRows.splice(i, 1);
+        if (hadMultiple && expOscRows.length === 1) expSingleRowFlags.osc = true;
+        renderExpOscTable();
+        saveExpReportToStorage(true);
+    };
 
     // --- Render Bảng Phần II ---
     function renderExpFftTable() {
@@ -5385,13 +7211,24 @@ async function checkAppVersion() {
             tbody.appendChild(tr);
         });
     }
-    window.updateExpFft = function (i, k, val) { expFftRows[i][k] = val.trim(); saveExpReportToStorage(true); };
+    window.updateExpFft = function (i, k, val) {
+        expFftRows[i][k] = val.trim();
+        if (expFftRows.length === 1) expSingleRowFlags.fft = true;
+        saveExpReportToStorage(true);
+    };
     window.addExpFftRow = function () {
         expFftRows.push({ nguon: "Nguồn âm mới", f0: "512,0", hoaAm: "f₀, 2f₀", dacDiem: "Dao động tuần hoàn" });
+        expSingleRowFlags.fft = false;
         renderExpFftTable();
         saveExpReportToStorage(true);
     };
-    window.delExpFft = function (i) { expFftRows.splice(i, 1); renderExpFftTable(); saveExpReportToStorage(true); };
+    window.delExpFft = function (i) {
+        const hadMultiple = expFftRows.length > 1;
+        expFftRows.splice(i, 1);
+        if (hadMultiple && expFftRows.length === 1) expSingleRowFlags.fft = true;
+        renderExpFftTable();
+        saveExpReportToStorage(true);
+    };
 
     // --- Render Bảng Phần III ---
     function renderExpDbTable() {
@@ -5417,27 +7254,35 @@ async function checkAppVersion() {
     window.updateExpDb = function (i, k, val, rerender) {
         if (k === "viTri") expDbRows[i][k] = val.trim();
         else expDbRows[i][k] = parseFloat(val.replace(",", ".")) || 0;
+        if (expDbRows.length === 1) expSingleRowFlags.db = true;
         if (rerender) renderExpDbTable();
         saveExpReportToStorage(true);
     };
     window.addExpDbRow = function () {
         expDbRows.push({ viTri: `Điểm ${expDbRows.length + 1}`, r: 3.0, lMin: 58.0, lMax: 59.5, lAvg: 58.8 });
+        expSingleRowFlags.db = false;
         renderExpDbTable();
         saveExpReportToStorage(true);
     };
-    window.delExpDb = function (i) { expDbRows.splice(i, 1); renderExpDbTable(); saveExpReportToStorage(true); };
+    window.delExpDb = function (i) {
+        const hadMultiple = expDbRows.length > 1;
+        expDbRows.splice(i, 1);
+        if (hadMultiple && expDbRows.length === 1) expSingleRowFlags.db = true;
+        renderExpDbTable();
+        saveExpReportToStorage(true);
+    };
 
     // --- Xuất CSV từng phần & Toàn bộ ---
     window.exportSingleExpPartCSV = function (partId) {
         let rows = [
-            ["FOX_LAB - XUẤT SỐ LIỆU THÍ NGHIỆM"],
-            ["Nhóm", document.getElementById("expGroupName").textContent.trim(), "Lớp", document.getElementById("expClassName").textContent.trim()],
+            ["Fox-lab - XUẤT SỐ LIỆU THÍ NGHIỆM"],
+            ["Nhóm", document.getElementById("expGroupName")?.textContent?.trim() || "", "Lớp", document.getElementById("expClassName")?.textContent?.trim() || ""],
             []
         ];
-        let fileName = "FOXLAB_SoLieu.csv";
+        let fileName = "FoxLab_SoLieu.csv";
 
         if (partId === "expPart1") {
-            fileName = "FOXLAB_Phan1_DaoDongKi.csv";
+            fileName = "FoxLab_Phan1_DaoDongKi.csv";
             rows.push(["PHẦN I: ĐO CHU KÌ VÀ TẦN SỐ (DAO ĐỘNG KÍ)"], ["Lần đo", "Số chu kì N", "Δt (ms)", "Chu kì T (ms)", "Tần số f (Hz)"]);
             expOscRows.forEach((r, i) => {
                 const T = r.deltaT_ms / (r.soChuKi || 1);
@@ -5445,11 +7290,11 @@ async function checkAppVersion() {
                 rows.push([`Lần ${i + 1}`, r.soChuKi, r.deltaT_ms.toFixed(2), T.toFixed(2), f.toFixed(1)]);
             });
         } else if (partId === "expPart2") {
-            fileName = "FOXLAB_Phan2_PhoFFT.csv";
-            rows.push(["PHẦN II: PHÂN TÍCH PHỔ TẦN SỐ (FFT)"], ["Nguồn âm", "Tần số cơ bản f0 (Hz)", "Các họa âm", "Đặc điểm & Âm sắc"]);
+            fileName = "FoxLab_Phan2_PhoFFT.csv";
+            rows.push(["PHẦN II: PHỔ TẦN SỐ (FFT)"], ["Nguồn âm", "Tần số cơ bản f0 (Hz)", "Các họa âm", "Đặc điểm & Âm sắc"]);
             expFftRows.forEach(r => rows.push([r.nguon, r.f0, r.hoaAm, r.dacDiem]));
         } else if (partId === "expPart3") {
-            fileName = "FOXLAB_Phan3_MucCuongDoAm.csv";
+            fileName = "FoxLab_Phan3_MucCuongDoAm.csv";
             rows.push(["PHẦN III: ĐO MỨC CƯỜNG ĐỘ ÂM (dB)"], ["Vị trí đo", "Khoảng cách r (m)", "L_min (dB)", "L_max (dB)", "L_TB (dB)"]);
             expDbRows.forEach(r => rows.push([r.viTri, r.r, r.lMin, r.lMax, r.lAvg]));
         }
@@ -5459,8 +7304,8 @@ async function checkAppVersion() {
 
     window.exportAllExpCSV = function () {
         const rows = [
-            ["BÁO CÁO KẾT QUẢ THÍ NGHIỆM SÓNG ÂM - FOX_LAB"],
-            ["Nhóm", document.getElementById("expGroupName").textContent.trim(), "Lớp", document.getElementById("expClassName").textContent.trim()],
+            ["BÁO CÁO KẾT QUẢ THÍ NGHIỆM SÓNG ÂM - Fox-lab"],
+            ["Nhóm", document.getElementById("expGroupName")?.textContent?.trim() || "", "Lớp", document.getElementById("expClassName")?.textContent?.trim() || ""],
             [],
             ["PHẦN I: DAO ĐỘNG KÍ (T, f)"],
             ["Lần đo", "Số chu kì N", "Δt (ms)", "Chu kì T (ms)", "Tần số f (Hz)"]
@@ -5475,7 +7320,7 @@ async function checkAppVersion() {
         rows.push([], ["PHẦN III: MỨC CƯỜNG ĐỘ ÂM (dB)"], ["Vị trí", "Khoảng cách r (m)", "L_min (dB)", "L_max (dB)", "L_TB (dB)"]);
         expDbRows.forEach(r => rows.push([r.viTri, r.r, r.lMin, r.lMax, r.lAvg]));
 
-        downloadExpCSV(rows, "FOXLAB_BaoCao_DayDu.csv");
+        downloadExpCSV(rows, "FoxLab_BaoCao_DayDu.csv");
     };
 
     function downloadExpCSV(rows, fileName) {
@@ -5491,20 +7336,29 @@ async function checkAppVersion() {
         URL.revokeObjectURL(url);
         showExpToast(`Đã xuất file Excel: ${fileName}`);
     }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", upgradeExportReportButtonsToSync);
+    } else {
+        upgradeExportReportButtonsToSync();
+    }
+    const btnObserver = new MutationObserver(() => upgradeExportReportButtonsToSync());
+    btnObserver.observe(document.documentElement, { childList: true, subtree: true });
 })();
 
+// Đăng ký Service Worker duy nhất
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then((reg) => {
-      // Ép kiểm tra file sw.js mới mỗi lần mở app
-      reg.update();
-    });
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+            reg.update();
+        }).catch(err => console.log('ServiceWorker registration failed:', err));
 
-    // Tự động reload trang khi Service Worker mới tiếp quản
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        refreshing = true;
-        window.location.reload();
-      }
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                refreshing = true;
+                window.location.reload();
+            }
+        });
     });
-  }
+}
